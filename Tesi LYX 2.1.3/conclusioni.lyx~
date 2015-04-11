@@ -1,0 +1,252 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass book
+\options openright
+\use_default_options false
+\master tesi.lyx
+\maintain_unincluded_children false
+\language italian
+\language_package default
+\inputencoding auto
+\fontencoding T1
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 11
+\spacing single
+\use_hyperref false
+\papersize a4paper
+\use_geometry false
+\use_package amsmath 2
+\use_package amssymb 2
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 0
+\use_package mathtools 1
+\use_package mhchem 0
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 0
+\index Indice
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 2
+\paperpagestyle fancy
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+In questo lavoro di tesi ho mostrato lo studio dell'attuale implementazione
+ di 
+\emph on
+Wi-Fi Direct
+\emph default
+ su dispositivi Android, con lo scopo di estendere a livello software le
+ funzionalità di tale protocollo ed utilizzarlo principalmente nell'ambito
+ delle 
+\emph on
+Opportunistic Newtork
+\emph default
+s.
+ In particolare mi sono posto due obiettivi:
+\end_layout
+
+\begin_layout Enumerate
+la scalabilità del protocollo;
+\end_layout
+
+\begin_layout Enumerate
+la disponibilità della rete.
+ 
+\end_layout
+
+\begin_layout Standard
+Dopo aver proposto le soluzioni teoriche ad essi, ho individuato un ostacolo
+ legato all'implementazione di Android, in comune ad entrambi, cioè l'impossibil
+ità per un dispositivo di far parte di due reti 
+\emph on
+Wi-Fi Direct
+\emph default
+ contemporaneamente.
+ Ciò non è vietato dalle specifiche del protocollo, ma dal sistema operativo.
+\end_layout
+
+\begin_layout Standard
+Quindi, dopo l'analisi dello stato dell'arte, mi sono accorto che tale problema
+ non è mai stato realmente affrontato in Android.
+ Le uniche soluzioni proposte sono tecniche per aggirarlo, sfruttando la
+ combinazione con altri protocolli o studiando scenari limitati ed estremamente
+ specifici.
+ Il problema in questione è causato da limiti nella gestione di interfacce
+ di rete virtuali da parte di Android, su cui le API ufficiali non permettono
+ nessuno controllo allo sviluppatore.
+\end_layout
+
+\begin_layout Standard
+Non avendo trovato ricerche che spieghino nel dettaglio la causa di tali
+ limiti, ho affrontato il problema in modo strutturato e graduale, isolando
+ le componenti del sistema operativo secondo i livelli dell'architettura
+ e studiandone i più rilevanti per questo lavoro di tesi.
+ L'ordine dei capitoli segue proprio la struttura a livelli dell'architettura.
+ Infatti, ho scelto inizialmente di sperimentare le API fornite agli sviluppator
+i, studiandone i limiti.
+ Per farlo ho realizzato due app.
+\end_layout
+
+\begin_layout Itemize
+La prima, chiamata 
+\emph on
+PingPong
+\emph default
+, mette in luce i problemi legati ad una particolare fase del protocollo
+ 
+\emph on
+Wi-Fi Direct
+\emph default
+ in Android, chiamata 
+\emph on
+fase di Discovery.
+\end_layout
+
+\begin_layout Itemize
+La seconda è un esempio reale di applicazione di messaggistica per gestire
+ reti costituite da un numero elevato e potenzialmente infinito di dispositivi.
+ Quest'ultima applicazione risolve il problema della scalabilità in modo
+ più che soddisfacente per il caso di studio scelto.
+\end_layout
+
+\begin_layout Standard
+Poiché, l'obiettivo di questo lavoro di tesi si riferisce in modo più generale
+ alle 
+\emph on
+Opportunistic Newtorks
+\emph default
+ e non a casi particolari di utilizzo.
+ Ho deciso di studiare il codice sorgente del sistema operativo, quindi
+ come le API sono state realizzate da Google, per individuare il motivo
+ per cui un dispositivo non può partecipare a due o più gruppi.
+ Da questa analisi, sia della parte Java, sia da quella in C/C++ e JNI,
+ ho scoperto che queste API sono ancora incomplete, oltre a risultare molto
+ instabili.
+\end_layout
+
+\begin_layout Standard
+Così, ho deciso di analizzare il livello inferiore dell'architettura del
+ sistema operativo, fornendo prima una spiegazione teorica e poi pratica
+ del processo di compilazione di Android e del kernel dai codici sorgente.
+ Acquisite tali basi, ho mostrato il funzionamento del programma 
+\begin_inset Quotes eld
+\end_inset
+
+nativo
+\begin_inset Quotes erd
+\end_inset
+
+ che il framework Android utilizza per fornire all'utente la connettività
+ Wi-Fi e 
+\emph on
+Wi-Fi Direct
+\emph default
+, chiamato 
+\emph on
+wpa_supplicant
+\emph default
+.
+ Senza i limiti del framework Android e grazie all'uso di 
+\emph on
+wpa_supplicant
+\emph default
+, ho individuato in modo più preciso i problemi riguardo le interfacce virtuali
+ di rete.
+ Quindi, ho modificato e ricompilato il kernel di Android per superare questo
+ limite, fino a capire che si trova in una zona specifica del kernel, cioè
+ dove ci sono i driver wireless.
+\end_layout
+
+\begin_layout Standard
+Così, nell'ultimo capitolo ho analizzato tali driver, fornendo una breve
+ introduzione storica e dettagli teorici riguardo l'architettura, per poi
+ analizzarne l'implementazione e capire che il problema è legato ai driver
+ proprietari della società che produce il chip hardware per la gestione
+ della connettività wireless.
+ Essendo proprietario (quindi NON 
+\emph on
+Open source
+\emph default
+ e NON modificabile) non è stato possibile analizzarne il codice sorgente.
+ Nonostante ciò, ho mostrato come col passare delle generazioni di Smartphone
+ tali limiti stiano diminuendo sempre più ed in futuro la soluzione proposta
+ potrebbe diventare applicabile.
+ Inoltre, dall'analisi fatta, ho dimostrato come sia possibile superare
+ i limiti del framework Android e utilizzare direttamente software in un
+ livello architetturale più basso.
+ Questo potrà rilevarsi utile, qualora i produttori di hardware decidessero
+ di implementare tali funzioni, ma Google non le esponesse agli sviluppatori.
+\end_layout
+
+\begin_layout Standard
+Quindi, i risultati ottenuti sono importanti, perché dimostrano, finalmente,
+ quale sia la reale causa dei limiti riscontrati in Android, sia nella mia
+ sperimentazione, sia in quelle indicate nello stato dell'arte.
+ Inoltre, l'applicazione chiama 
+\emph on
+Pigeon Messeger
+\emph default
+ dimostra un altro fatto importante, cioè che sebbene questi limiti siano
+ presenti, esistono applicazioni in cui si possono comunque realizzare soluzioni
+ funzionanti.
+\end_layout
+
+\begin_layout Standard
+Questo lavoro di tesi, può costituire la base per future ricerche in tale
+ ambito, per esempio studiare dispositivi più recenti e verificare se tali
+ limiti siano ancora presenti.
+ Allo stato attuale, è comunque possibile pensare a nuovi scenari di utilizzo
+ in cui questi limiti risultino irrilevanti, infatti quello da me proposto
+ riguardante la messaggistica è solo uno di essi.
+ Inoltre, potrebbe essere interessante estendere l'app 
+\emph on
+Pigeon Messenger
+\emph default
+ a chat di gruppo ed implementare meccanismi di sicurezza per garantire
+ la privacy.
+\end_layout
+
+\end_body
+\end_document

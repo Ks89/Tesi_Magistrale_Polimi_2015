@@ -1,0 +1,893 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass book
+\options openright
+\use_default_options false
+\master tesi.lyx
+\maintain_unincluded_children false
+\language italian
+\language_package default
+\inputencoding auto
+\fontencoding T1
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 11
+\spacing single
+\use_hyperref false
+\papersize a4paper
+\use_geometry false
+\use_package amsmath 2
+\use_package amssymb 2
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 0
+\use_package mathtools 1
+\use_package mhchem 0
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 0
+\index Indice
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 2
+\paperpagestyle fancy
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+L’introduzione deve essere atomica, quindi non deve contenere né sottosezioni
+ né paragrafi né altro.
+ Il titolo, il sommario e l’introduzione devono sembrare e e delle scatole
+ cinesi, nel senso che lette in quest’ordine devono progressivamente svelare
+ informazioni sul contenuto per incatenare l’attenzione del lettore e indurlo
+ a leggere l’opera fino in fondo.
+ L’introduzione deve essere tripartita, non graficamente ma logicamente.
+\end_layout
+
+\end_inset
+
+
+\emph on
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+
+\emph on
+Inquadramento generale
+\end_layout
+
+\begin_layout Plain Layout
+La prima parte contiene una frase che spiega l’area generale dove si svolge
+ il lavoro; una che spiega la sottoarea più specifica dove si svolge il
+ lavoro e la terza, che dovrebbe cominciare con le seguenti parole 
+\begin_inset Quotes fld
+\end_inset
+
+lo scopo della tesi è \SpecialChar \ldots{}
+
+\begin_inset Quotes frd
+\end_inset
+
+, illustra l’obbiettivo del lavoro.
+ Poi vi devono essere una o due e frasi che contengano una breve spiegazione
+ di cosa e come è stato fatto, e delle attività sperimentali, dei risultati
+ ottenuti con una valutazione e degli a sviluppi futuri.
+ La prima parte deve essere circa una facciata e mezza o due.
+\end_layout
+
+\end_inset
+
+
+\emph default
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+
+\emph on
+Breve descrizione del lavoro
+\end_layout
+
+\begin_layout Plain Layout
+La seconda parte deve essere una esplosione della prima e deve quindi mostrare
+ in maniera pi` esplicita l’area dove si svolge il lavoro, le fonti u bibliograf
+iche pi` importanti su cui si fonda il lavoro in maniera sintetica u (una
+ pagina) evidenziando i lavori in letteratura che presentano attinenza con
+ il lavoro affrontato in modo da mostrare da dove e perché è sorta la tematica
+ di studio.
+ Poi si mostrano esplicitamente le realizzazioni, le direttive future di
+ ricerca, quali sono i problemi aperti e quali quelli affrontati e si ripete
+ lo scopo della tesi.
+ Questa parte deve essere piena di citazioni bibliografiche e deve essere
+ lunga circa 4 facciate.
+\end_layout
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+
+\emph on
+Struttura della tesi
+\end_layout
+
+\begin_layout Plain Layout
+La terza parte contiene la descrizione della struttura della tesi ed è organizza
+ta nel modo seguente.
+ 
+\begin_inset Quotes fld
+\end_inset
+
+La tesi è strutturata nel modo seguente
+\begin_inset Quotes frd
+\end_inset
+
+.
+ Nella sezione due si mostra\SpecialChar \ldots{}
+, nella sezione tre si illustra\SpecialChar \ldots{}
+ .
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+Contesto 
+\end_layout
+
+\begin_layout Standard
+Nel 2013 sono stati contati 1,2 miliardi di Smartphone/Tablet in tutto il
+ mondo
+\begin_inset CommandInset citation
+LatexCommand cite
+key "smartphone-num-world"
+
+\end_inset
+
+.
+ Questi numeri impressionanti stanno crescendo senza freni e sono destinati
+ solamente ad aumentare, infatti si prevedono 4 miliardi di Smartphone nel
+ 2017
+\begin_inset CommandInset citation
+LatexCommand cite
+key "smartphone-num-world"
+
+\end_inset
+
+.
+ Inoltre, stanno nascendo nuovi mercati di dispositivi 
+\begin_inset Quotes eld
+\end_inset
+
+Smart
+\begin_inset Quotes erd
+\end_inset
+
+, come per esempio quello degli 
+\emph on
+Smart Watch
+\emph default
+, ancora giovane ed acerbo, ma pronto ad esplodere, o la diffusione di dispositi
+vi di fascia bassa nei paesi in via di sviluppo.
+\end_layout
+
+\begin_layout Standard
+Con il crescere del numero degli utenti, stanno aumentando anche il numero
+ delle funzionalità di ogni dispositivo, sempre più vicine ad eguagliare
+ quelle dei classici computer portatili.
+ Anche le richieste e le esigenze degli utenti stessi stanno crescendo,
+ alimentando nuove ricerche.
+ Un esempio è il desiderio di essere sempre connessi ad internet e poter
+ navigare a velocità sempre più elevate in ogni luogo.
+ Infatti, in precedenza il problema della connettività su dispositivi mobili
+ non è mai stato affrontato nel modo in cui si è costretti a fare ora.
+ Adesso vi è una vera e propria spinta e richiesta degli utenti che dovrà
+ essere soddisfatta.
+ La comunicazione come siamo abituati a concepirla non è più sufficiente,
+ ora si vuole un vero e proprio scambio di grandi quantità di dati in mobilità.
+ Il concetto di 
+\begin_inset Quotes eld
+\end_inset
+
+mobilità
+\begin_inset Quotes erd
+\end_inset
+
+ non è stato considerato nel modo in cui lo vediamo oggi, perché alla fine
+ degli anni '90, quando è nata la tecnologia Wi-Fi, è stata pensata per
+ un ambiente più statico.
+ Oggi invece gli utenti richiedono sempre più dinamismo e di conseguenza
+ dovrà, e di fatto sta subendo, una vera e propria evoluzione.
+ 
+\end_layout
+
+\begin_layout Standard
+Questi desideri stanno dando vita ad un mondo, che negli ultimi anni è stato
+ definito 
+\emph on
+Internet Of Things
+\emph default
+, cioè un nuovo modo di usare la rete, dove ogni oggetto è connesso.
+ In questo settore possiamo considerare il concetto di 
+\emph on
+Opportunistic Network
+\emph default
+s, cioè reti senza fili, in cui i nodi sono dispositivi portati da utenti,
+ senza infrastrutture di rete, con ricerca e comunicazione automatica in
+ ambienti vari ed estremamente dinamici.
+ In queste reti l'utente e il dispositivo sono un tutt'uno.
+ 
+\end_layout
+
+\begin_layout Standard
+Queste nuove richieste si sono scontrate con un settore non pronto per soddisfar
+le, cioè le tecnologie e protocolli di comunicazione, che hanno dovuto reinventa
+re la comunicazione tra dispositivi mobili con requisiti differenti.
+ Infatti, negli ultimi anni stanno nascendo nuove soluzioni che mirano a
+ rendere tali scenari non più idee in ambito della ricerca, ma pura realtà
+ alla portata di tutti.
+ Oggi ci sono diverse di queste tecnologie, ma sono ancora molto giovani,
+ come per esempio 
+\emph on
+Wi-Fi Direct
+\emph default
+, 
+\emph on
+Bluetooth 4
+\emph default
+ ed 
+\emph on
+LTE Direct
+\emph default
+ (ancora non disponibile pubblicamente).
+\end_layout
+
+\begin_layout Standard
+In questo lavoro di tesi mi concentrerò sulla prima, cioè 
+\emph on
+Wi-Fi Direct
+\emph default
+, che approfondirò nella Sezione 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Wi-Fi-Direct"
+
+\end_inset
+
+.
+ Il problema principale per il suo utilizzo in scenari per lo più assimilabili
+ ad 
+\emph on
+Opportunistic Network
+\emph default
+s, è che il protocollo non è stato pensato per gestire reti in situazioni
+ molto dinamiche ed imprevedibili.
+ Lo stato attuale di questo protocollo di rete è più vicino all'essere un
+ passo intermedio verso il raggiungimento dell'obiettivo delle 
+\emph on
+Opportunistic Network
+\emph default
+s.
+\end_layout
+
+\begin_layout Section*
+Scopo del lavoro
+\end_layout
+
+\begin_layout Standard
+Lo scopo di questo lavoro di tesi è quello di studiare e sperimentare una
+ di queste tecnologie, cioè 
+\emph on
+Wi-Fi Direct
+\emph default
+, su dispositivi Android.
+ In particolare, l'obiettivo è il superamento di due ostacoli intrinseci
+ nel protocollo per la creazione delle 
+\emph on
+Opportunistic Networks,
+\emph default
+ costruendo un livello software o middleware sopra ad esso, senza modificarne
+ lo standard.
+ Gli obiettivi sono:
+\end_layout
+
+\begin_layout Itemize
+rendere il protocollo scalabile al crescere del numero dei dispositivi;
+\end_layout
+
+\begin_layout Itemize
+rendere trasparente all'utente la ricostruzione della rete.
+\end_layout
+
+\begin_layout Standard
+Nonostante il primo problema riguardi la scalabilità e il secondo la disponibili
+tà, hanno in comune lo stesso requisito.
+ Quest'ultimo si ricollega ai problemi già affrontati in precedenza da altri
+ ricercatori.
+ Infatti, a volte sono state proposte soluzioni difficilmente utilizzabili
+ su un vasto numero di prodotti di diverse marche; altre volte appoggiandosi
+ a più tecnologie, per cercare di superare i limiti di 
+\emph on
+Wi-Fi Direct
+\emph default
+.
+ Parlerò nel dettaglio di questo e di una ricerca che si avvicina molto
+ al mio obiettivo nel Capitolo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:primo-capitolo"
+
+\end_inset
+
+, ma che sfrutta anche la tecnologia Wi-Fi classica.
+ Altre soluzioni, tra cui le più famose sono 
+\emph on
+AllSeen
+\emph default
+ (precedentemente 
+\emph on
+AllJoyn
+\emph default
+) 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "allseen"
+
+\end_inset
+
+ e 
+\emph on
+Intel CCF
+\emph default
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "intelccf"
+
+\end_inset
+
+
+\emph on
+,
+\emph default
+ sfruttano la stessa idea che per risolvere i problemi di un protocollo
+ lo si può combinare con altri e scegliere quello più adatto in quel preciso
+ momento.
+ 
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Il mio obiettivo è differente, infatti voglio lavorare solamente su 
+\emph on
+Wi-Fi Direct
+\emph default
+ senza appoggiarmi ad altre tecnologie, per risolvere i limiti sopra citati.
+
+\series default
+ Per tale motivo non parlerò più delle altre tecnologie, alternative a 
+\emph on
+Wi-Fi Direct
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Per raggiungere gli obiettivi, il requisito più importante, in comune con
+ entrambi, è che un dispositivo Android possa appartenere a più gruppi 
+\emph on
+Wi-Fi Direct
+\emph default
+ contemporaneamente.
+ Questo perché, idealmente, si potrebbero usare i dispositivi in comune
+ tra i gruppi per ridirezionare il traffico dati mettendo in comunicazione
+ tutti i dispositivi.
+ Inoltre, questo permetterebbe di rendere la rete sempre disponibile tramite
+ il concetto di ridondanza, cioè la replicazione di alcuni nodi della rete.
+ Queste sono all'incirca le caratteristiche delle 
+\emph on
+reti mesh
+\emph default
+, ma che purtroppo non sono supportate da Android.
+\end_layout
+
+\begin_layout Standard
+Il problema principale è che in Android non è permesso che un dispositivo
+ appartenga a due gruppi contemporaneamente.
+ Questo non è un limite dello standard 
+\emph on
+Wi-Fi Direct
+\emph default
+, il quale è molto aperto e allo stesso tempo impreciso su tale argomento,
+ piuttosto una limitazione presente in Android, probabilmente per scelta
+ di Google e degli altri partner che contribuiscono nello sviluppo di questo
+ sistema operativo.
+ 
+\end_layout
+
+\begin_layout Standard
+Prima di affrontare ciò in modo tecnico, propongo la mia soluzione teorica
+ per risolvere il problema.
+\end_layout
+
+\begin_layout Subsection*
+Scalabilità
+\end_layout
+
+\begin_layout Standard
+Per rendere il protocollo scalabile in Android si può adottare la strategia
+ intuitiva di far partecipare un dispositivo a più gruppi 
+\emph on
+Wi-Fi Direct
+\emph default
+ (avvicinandosi al concetto di 
+\emph on
+rete mesh
+\emph default
+), cioè di utilizzare più interfacce di rete virtuali contemporaneamente.
+ L'approccio comune adottato nelle pubblicazioni che citerò nel Capitolo
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:primo-capitolo"
+
+\end_inset
+
+ è quello di sfruttare le uniche interfacce preesistenti in Android.
+ Ciò significa dover utilizzare il protocollo 
+\emph on
+Wi-Fi Direct
+\emph default
+ con un'interfaccia ed una rete Wi-Fi classica in modalità 
+\emph on
+Access Point
+\emph default
+ o 
+\emph on
+ad-hoc
+\emph default
+ con l'altra (parlerò in modo più approfondito di questi concetti nel Capitolo
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:primo-capitolo"
+
+\end_inset
+
+).
+ Invece, la mia idea si basa sull'estensione di 
+\emph on
+Wi-Fi Direct
+\emph default
+ tramite la creazione di più interfacce virtuali di tipo P2P.
+ Anche il concetto di 
+\emph on
+interfaccia di rete virtuale
+\emph default
+ lo approfondirò in seguito, ma intuitivamente può essere considerato come
+ l'equivalente di una macchina virtuale, cioè su una sola scheda di rete
+ fisica si può creare più interfacce di rete, dette 
+\begin_inset Quotes eld
+\end_inset
+
+virtuali
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+A tal proposito, nella figura seguente, mostro la soluzione per rendere
+ il protocollo scalabile considerando più interfacce P2P contemporaneamente.
+ In questo modo, potendo connettere ogni nodo a più gruppi, il problema
+ della scalabilità sarebbe risolto.
+ Infatti, ogni dispositivo potrebbe gestire comunque un numero limitato
+ di 
+\emph on
+Client
+\emph default
+ e comunicare con gli altri quando è necessario, tramite trasmissioni 
+\emph on
+multi-hop
+\emph default
+.
+ Quindi, ogni 
+\emph on
+Group Owner
+\emph default
+ (GO)
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+In Wi-Fi Direct si definisce Group Owner l'equivalente di un Access Point
+ Wi-Fi, cioè un dispositivo che gestisce un gruppo, a cui si collegano altri
+ dispositivi, detti Client.
+ Per maggiori informazioni fare riferimento alle specifiche ufficiali 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "wifi_direct_specification"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+ raccoglierebbe i dati dei propri 
+\emph on
+Client
+\emph default
+ e li inoltrerebbe agli altri.
+ Questa soluzione è molto simile a quella proposta in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "wifidirect_multigroup_dissemination_publicsafety"
+
+\end_inset
+
+, l'unica differenza consiste nella mia volontà di adottare solo interfacce
+ P2P per rendere il tutto più scalabile e sfruttare i miglioramenti introdotti
+ col protocollo 
+\emph on
+Wi-Fi Direct
+\emph default
+, rispetto alle 
+\emph on
+reti ad-hoc
+\emph default
+, che discuterò nel Capitolo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:primo-capitolo"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename capitolo-1/immagini/Schema_tesi_obiettivi-scalabilita.png
+	lyxscale 80
+	width 100col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace defskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Disponibilità
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Nelle specifiche di 
+\emph on
+Wi-Fi Direct
+\emph default
+ c'è scritto che il ruolo di GO non è trasferibile quando la rete è formata
+\series default
+, ma se dovesse non essere più disponibile, l'intera rete cadrebbe di conseguenz
+a.
+ Per far si che una rete 
+\emph on
+Wi-Fi Direct
+\emph default
+ sia sempre disponibile, è necessario creare un sistema che alla caduta
+ di un GO sia in grado di ricollegare i Client ai GO esistenti, oppure eleggere
+ uno dei Client come GO al quale essi si collegheranno automaticamente.
+ In ogni caso, poiché 
+\emph on
+Wi-Fi Direct
+\emph default
+ non è un protocollo pensato per questo (non solo in Android, ma anche nelle
+ specifiche), è necessario che alla formazione del gruppo e ad ogni cambiamento
+ nel gruppo stesso, tutti i Client e il GO siano informati sullo stato di
+ tutti i dispositivi presenti in esso.
+ Ciò è facilmente realizzabile adottando un approccio a scambio di messaggi.
+ Una tecnica simile verrà adottata nel Capitolo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:sesto-capitolo"
+
+\end_inset
+
+ per realizzare l'app chiamata 
+\emph on
+Pigeon Messenger
+\emph default
+.
+ Anche in questo caso, il problema principale è che per rendere totalmente
+ trasparente il processo, cioè non creare disagi agli utenti finali, l'operazion
+e dovrebbe essere svolta in tempi molto brevi.
+ Purtroppo, a causa di problemi intrinseci nel protocollo dovuti alla 
+\emph on
+fase di Discovery
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+In 
+\emph on
+Wi-Fi Direct 
+\emph default
+la 
+\emph on
+fase di Discovery
+\emph default
+ è un intervallo di tempo in cui i dispositivi cercando un canale di comunicazio
+ne comune per poter dialogare.
+ Per maggiore informazioni vedere le specifiche ufficiali del protocollo
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "wifi_direct_specification"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\emph default
+ non si riesce ad ottenere performance accettabili, come dimostrerò nel
+ Capitolo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:sesto-capitolo"
+
+\end_inset
+
+ tramite l'app chiamata 
+\emph on
+PingPong
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Quindi ho deciso di pensare ad una soluzione differente, cioè far si che
+ ogni GO abbia un 
+\emph on
+Backup Group Owner
+\emph default
+ (BGO) scelto tra i Client del gruppo stesso.
+ A questo BGO sono collegati tutti gli altri Client del gruppo e il GO stesso.
+ Quindi alla caduta del Group Owner, il BGO si può accorgere facilmente
+ del cambiamento di stato del GO e continuare le comunicazioni con i dispositivi.
+ Nelle figure seguenti, c'è un esempio di questa situazione, infatti nella
+ prima si può trovare il GO e il suo Backup, mentre nella seconda il GO
+ cade (per esempio esce dall'area di ricezione o finisce la batteria) e
+ il BGO diventa velocemente il GO, grazie al fatto che i collegamenti sono
+ già stati creati prima, non si verificherebbero ritardi legati al protocollo.
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace defskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename capitolo-1/immagini/Schema_tesi_obiettivi-disponibilita_prima_caduta_go.png
+	lyxscale 80
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace defskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename capitolo-1/immagini/Schema_tesi_obiettivi-disponibilita_go_caduto.png
+	lyxscale 80
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace defskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Come già anticipato, questa soluzione richiede comunque l'uso di interfacce
+ di rete virtuali, esattamente come la soluzione al problema precedente.
+ Visto che gli obbiettivi posti sono due, le soluzioni di scalabilità e
+ disponibilità devono valere contemporaneamente, questo fa si che siano
+ necessarie molte più interfacce di rete virtuali per ogni dispositivo.
+ Per esempio, se impongo il limite che un dispositivo può appartenere a
+ due soli gruppi, sarebbero necessarie due interfacce per la connessione
+ ed altre due di 
+\begin_inset Quotes eld
+\end_inset
+
+backup
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Quindi, l'obiettivo si estende a trovare un modo per supportare un numero
+ di interfacce virtuali variabile, almeno quattro.
+ Questo fa si che tutte le soluzioni con l'interfaccia Wi-Fi classica configurat
+a come 
+\emph on
+rete ad-hoc
+\emph default
+ o 
+\emph on
+Access Point 
+\emph default
+siano scartate a priori (che descriverò nel Capitolo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:primo-capitolo"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Section*
+Struttura della tesi
+\end_layout
+
+\begin_layout Standard
+Il documento è strutturato secondo i seguenti capitoli.
+\end_layout
+
+\begin_layout Itemize
+Il capitolo 1 descrive lo stato dell’arte e introduce al protocollo Wi-Fi,
+ alle tipologie di rete e a 
+\emph on
+Wi-Fi Direct
+\emph default
+.
+ Inoltre, comprende un inquadramento sullo sviluppo attuale di progetti
+ relativi principalmente ad 
+\emph on
+Opportunistic Networks
+\emph default
+ con 
+\emph on
+reti ad-hoc
+\emph default
+ e/o 
+\emph on
+Wi-Fi Direct.
+\end_layout
+
+\begin_layout Itemize
+Il capitolo 2 spiega alcuni problemi dell'implementazione di 
+\emph on
+Wi-Fi Direct
+\emph default
+ in Android, tramite la progettazione ed implementazione di due app, 
+\emph on
+PingPong
+\emph default
+ e 
+\emph on
+Pigeon Messenger.
+\end_layout
+
+\begin_layout Itemize
+Il capitolo 3 descrive lo studio del framework di Android, dei suoi limiti
+ e le sue possibili estensioni.
+\end_layout
+
+\begin_layout Itemize
+Il capitolo 4 mostra l'
+\emph on
+Android Build System
+\emph default
+, le procedure per compilare Android, il kernel e modificarne la configurazione.
+\end_layout
+
+\begin_layout Itemize
+Il capitolo 5 parla di interfacce di rete virtuali, come abilitarle nel
+ kernel di Android ed i loro limiti, per poi utilizzare 
+\emph on
+wpa_supplicant 
+\emph default
+con l'obiettivo di risolvere i problemi accennati in questa introduzione.
+\end_layout
+
+\begin_layout Itemize
+Il capitolo 6 analizza nel dettaglio i driver Wi-Fi nel kernel Linux, in
+ particolare quelli di Broadcom per il Nexus 5.
+ Infine, mostra i limiti di tali driver per quanto riguarda la gestione
+ delle interfacce di rete virtuali.
+\end_layout
+
+\begin_layout Itemize
+Le appendici mostrano informazioni e procedure basate sulle mie esperienze
+ che possono essere utili per svolgere alcune operazioni accennate in questo
+ lavoro di tesi.
+\end_layout
+
+\end_body
+\end_document

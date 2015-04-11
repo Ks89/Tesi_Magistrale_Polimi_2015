@@ -1,0 +1,3591 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass book
+\options openright
+\use_default_options false
+\master ../tesi.lyx
+\maintain_unincluded_children false
+\language italian
+\language_package default
+\inputencoding auto
+\fontencoding T1
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 11
+\spacing single
+\use_hyperref false
+\papersize a4paper
+\use_geometry false
+\use_package amsmath 2
+\use_package amssymb 2
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 0
+\use_package mathtools 1
+\use_package mhchem 0
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 0
+\index Indice
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 2
+\paperpagestyle fancy
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\author -396080294 "Stefano Cappa" 
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+Nell'introduzione ho spiegato quali sono gli obiettivi e come raggiungerli
+ dal punto di vista teorico, mentre nel Capitolo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:sesto-capitolo"
+
+\end_inset
+
+ ho realizzato due app per studiare i limiti dell'implementazione attuale
+ di 
+\emph on
+Wi-Fi Direct 
+\emph default
+in Android.
+ Ciò che ho appreso è che le API dell'
+\emph on
+SDK
+\emph default
+ in Android sono estremamente limitate, in particolare vi sono metodi mancanti,
+ ma soprattutto problemi nella gestione della 
+\emph on
+fase di Discovery
+\emph default
+ del protocollo.
+\end_layout
+
+\begin_layout Standard
+Per raggiungere gli obiettivi prefissati le API non sono sufficienti, infatti
+ non permettono che un dispositivo possa fare parte di più gruppi
+\emph on
+ Wi-Fi Direct 
+\emph default
+contemporaneamente, come già spiegato in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "wifidirect_multigroup_dissemination_publicsafety"
+
+\end_inset
+
+.
+ 
+\emph on
+Wi-Fi Alliance 
+\emph default
+non vieta questo nelle specifiche, ma allo stesso tempo non fornisce nemmeno
+ dettagli specifici al riguardo.
+ Purtroppo, Google non ha implementato tale funzionalità nel sistema operativo.
+ Nell'introduzione ho già spiegato che per raggiungere tale obiettivo è
+ necessario gestire manualmente le interfacce di rete.
+ Non esistendo API per questo, ho deciso di analizzare il codice sorgente
+ del sistema operativo per capire dove sono i limiti in questione.
+ 
+\end_layout
+
+\begin_layout Standard
+Prima di fare ciò, devo mostrare come le API dell'SDK gestiscono le interfacce
+ di rete, cioè fornire alcune informazioni sul package 
+\family sans
+android.net.wifi.p2p
+\family default
+ di Android.
+ Quest'ultimo è costituito da un insieme di classi generiche per 
+\emph on
+Wi-Fi Direct
+\emph default
+ e da altre più specifiche (nel sotto-package 
+\family sans
+nsd
+\family default
+) che si riferiscono a 
+\emph on
+Network Service Discovery
+\emph default
+ (NSD) sfruttando i protocolli
+\emph on
+ Universal Plug and Play (UPnP)
+\emph default
+
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Universal Plug and Play (UPnP) è un protocollo di rete per permettere a
+ diversi terminali di connettersi l'uno all'altro.
+ Il termine UPnP deriva da 
+\begin_inset Quotes eld
+\end_inset
+
+Plug and play
+\begin_inset Quotes erd
+\end_inset
+
+ cioè 
+\begin_inset Quotes eld
+\end_inset
+
+Inserisci e utilizza
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Per maggiori dettagli vedi 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://it.wikipedia.org/wiki/Universal_Plug_and_Play
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+ e 
+\emph on
+Bonjour
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Bonjour è un marchio registrato da Apple per indicare una tecnologia nata
+ per individuare automaticamente la presenza di servizi nelle reti domestiche.
+ Per maggiori informazioni vedi 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://it.wikipedia.org/wiki/Bonjour
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\emph default
+.
+ Tramite questo sotto-package ho realizzato l'app 
+\emph on
+Pigeon Messenger 
+\emph default
+nel Capitolo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:sesto-capitolo"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace medskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Quindi, invece di sfruttare una funzione già implementata, ho pensato di
+ realizzarla gestendo manualmente le interfacce di rete.
+ Purtroppo, anche in questo caso, Google non ha creato API per farlo.
+\end_layout
+
+\begin_layout Standard
+Quindi, in questo capitolo mostrerò l'implementazione del package 
+\family sans
+android.net.wifi.p2p
+\family default
+ per capirne i limiti e fornire alcuni dettagli su Android NDK.
+\end_layout
+
+\begin_layout Section
+Visibilità dei metodi Java in Android
+\end_layout
+
+\begin_layout Standard
+Prima di procedere, è bene precisare che Android è costituito principalmente
+ da classi Java, file C e C++.
+ L'SDK di Android fornisce agli sviluppatori di app solo i metodi Java creati
+ da Google.
+ Per utilizzare funzioni più a basso livello è necessario usare l'NDK.
+ In questa sezione mi occuperò solamente dell'SDK, ma nel proseguo del capitolo
+ avrò modo di affrontare alcuni dei concetti più importanti, con l'aiuto
+ di alcuni esempi.
+\end_layout
+
+\begin_layout Standard
+Per quanto riguarda i metodi Java di Android, si possono classificare in
+ tre modi:
+\end_layout
+
+\begin_layout Enumerate
+
+\series bold
+esposti
+\series default
+ ed accessibili agli sviluppatori;
+\end_layout
+
+\begin_layout Enumerate
+
+\series bold
+nascosti
+\series default
+ tramite l'
+\emph on
+annotation
+\emph default
+
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Una annotazione Java è un modo per aggiungere metadati nel codice sorgente
+ Java, che possono essere disponibili al programmatore durante l'esecuzione.
+ Per maggiori informazioni vedi 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://it.wikipedia.org/wiki/Annotazione_(Java)
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\emph on
+ 
+\family sans
+\series bold
+\emph default
+@hide
+\family default
+\series default
+, utilizzati solo nel sorgente di Android;
+\end_layout
+
+\begin_layout Enumerate
+
+\emph on
+interni
+\emph default
+, cioè nel package 
+\family sans
+com.android.internal
+\family default
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "android_internal_package"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+I primi sono quelli accessibili e documentati ufficialmente da Google, i
+ secondi sono utilizzati per svolgere funzioni interne ad altri metodi e
+ non sono invocabili direttamente, mentre gli ultimi sono interni, cioè
+ usati dal sistema operativo.
+ L'uso dell'
+\emph on
+annotation
+\emph default
+ 
+\family sans
+@hide
+\family default
+ è una particolarità di Android, infatti in Java non esiste.
+ Essa è usata da Google per compilare l'SDK esponendo solo alcune delle
+ funzioni agli sviluppatori.
+ Quindi può essere considerata come un sistema per gestire la visibilità
+ agli sviluppatori, senza modificarla nel codice sorgente di Android.
+\end_layout
+
+\begin_layout Standard
+Ricordo brevemente che i metodi 
+\emph on
+private
+\emph default
+ di Java non sono inclusi nel 
+\emph on
+Javadoc
+\emph default
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "javadoc"
+
+\end_inset
+
+ e allo stesso tempo sono accessibili solo dalla classe stessa.
+ Al contrario, per esempio, i 
+\emph on
+public
+\emph default
+ sono accessibili ovunque e sono inclusi nella documentazione.
+ Google ha deciso di utilizzare la visibilità esattamente come in Java,
+ ma nascondere alcuni di questi metodi 
+\emph on
+public
+\emph default
+ (e non solo) nella documentazione e nell'SDK.
+ L'alternativa sarebbe stata usare quelli 
+\emph on
+private
+\emph default
+, ma ciò avrebbe potuto creare problemi nell'invocazione dei metodi all'interno
+ del sorgente di Android.
+\end_layout
+
+\begin_layout Standard
+Quindi, l'
+\emph on
+annotation
+\emph default
+ 
+\family sans
+@hide,
+\family default
+ al di sopra di un metodo 
+\emph on
+public
+\emph default
+, lo nasconde allo sviluppatore di app, ma fa si che Google possa invocarlo
+ liberamente da ogni package e classe.
+ Infatti, 
+\family sans
+@hide
+\family default
+ ottiene la massima priorità nello stabilire se tale metodo/attributo/classe
+ debba essere incluso nella documentazione ed essere accessibile.
+ Detto ciò 
+\series bold
+è facilmente intuibile che
+\series default
+ 
+\series bold
+uno sviluppatore non possa invocare metodi 
+\family sans
+@hide
+\family default
+\emph on
+ 
+\emph default
+in quanto nascosti, mentre il sistema operativo sì.
+\end_layout
+
+\begin_layout Standard
+In realtà, esistono alcune 
+\series bold
+tecniche che ho sperimentato per poter invocare metodi di qualunque tipo.
+\end_layout
+
+\begin_layout Enumerate
+Modificare il file 
+\begin_inset Quotes eld
+\end_inset
+
+.jar
+\begin_inset Quotes erd
+\end_inset
+
+ dell'SDK di Android per rendere accessibili i metodi 
+\family sans
+@hide
+\family default
+.
+ Per ottenere ciò non è richiesta la modifica del codice sorgente del sistema
+ operativo, perché questi metodi Java sono rimossi solamente nell'SDK e
+ non in Android.
+ Quindi, è sufficiente ottenere il file 
+\begin_inset Quotes eld
+\end_inset
+
+.jar
+\begin_inset Quotes erd
+\end_inset
+
+ che contiene tutte le API usate in Android e sostituirlo con quello nell'SDK
+ sul proprio PC/MAC.
+ Per fare ciò, è sufficiente compilare il codice sorgente di Android (procedura
+ che descriverò nel dettaglio nel Capitolo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:terzo-capitolo"
+
+\end_inset
+
+) e importare, come libreria esterna in Eclipse o in un IDE equivalente,
+ il file
+\family sans
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+seqsplit{out/target/common/obj/JAVA
+\backslash
+_LIBRARIES/framework
+\backslash
+_intermediates/classes.jar}
+\end_layout
+
+\end_inset
+
+
+\family default
+.
+ Questo permette di far riconoscere all'IDE i metodi 
+\family sans
+@hide
+\family default
+ e compilare il progetto.
+ Perché ciò funzioni, bisogna far si che
+\family sans
+ classes.jar
+\family default
+ abbia priorità maggiore di 
+\family sans
+android.jar
+\family default
+ (file di default), cioè per esempio in Eclipse si deve trovare più in alto
+ nella scheda 
+\begin_inset Quotes eld
+\end_inset
+
+Order and Export
+\begin_inset Quotes erd
+\end_inset
+
+, come in Figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Order-and-Export-eclipse-sdk-modificato"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Enumerate
+
+\series bold
+\emph on
+Java reflection
+\emph default
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "java_reflection"
+
+\end_inset
+
+:
+\series default
+ si tratta della 
+\series bold
+soluzione migliore
+\series default
+, perché permette di invocare sia i metodi 
+\emph on
+interni
+\emph default
+ sia quelli 
+\family sans
+@hide
+\family default
+, senza modificare l'SDK, ma soprattutto senza creare problemi di compatibilità,
+ legati alla versione di Android da cui è stato estratto il file 
+\family sans
+classes.jar.
+
+\family default
+ Utilizzerò questa metodologia anche nel Capitolo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:sesto-capitolo"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/order-export-eclipse.tiff
+	lyxscale 40
+	width 100col%
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Order-and-Export-eclipse-sdk-modificato"
+
+\end_inset
+
+Order and Export di Eclipse con SDK modificato
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Estendere il package android.net.wifi.p2p
+\end_layout
+
+\begin_layout Standard
+Per raggiungere gli obiettivi ho studiato il codice sorgente di Android,
+ in particolare quello del package 
+\family sans
+android.net.wifi.p2p
+\family default
+.
+ Tale operazione ha messo in evidenza una situazione molto preoccupate,
+ poiché nessuna delle funzioni a me necessarie è stata implementata.
+ Il primo approccio al problema è stato quello di estendere il package per
+ implementare le funzionalità mancanti.
+ Ma anche ipotizzando di usare la 
+\emph on
+Java reflection
+\emph default
+ per re-implementare metodi 
+\emph on
+interni
+\emph default
+ o 
+\family sans
+@hide
+\family default
+, Android continuerebbe ad usare la versione originale e non quella creata
+ da me.
+ Inoltre, il codice di questo package risulta difficilmente estendibile,
+ come mostrerò nella Sezione 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Modificare-il-package"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Un altro fatto da considerare è che spesso questi metodi sono 
+\emph on
+nativi
+\emph default
+, cioè sono solo le dichiarazioni di metodi Java, che tramite JNI chiamano
+ funzioni C++ e ciò richiede di cambiare dei file C++ di sistema, non modificabi
+li tramite 
+\emph on
+Java reflection
+\emph default
+.
+ 
+\emph on
+Java Native Interface (JNI)
+\emph default
+ è un framework che permette di richiamare da Java metodi 
+\emph on
+nativi
+\emph default
+, cioè scritti in altri linguaggi di programmazione, come per esempio C,
+ C++ e assembly.
+ Principalmente serve per chiamare funzionalità intrinsecamente non portabili
+ e che pertanto non posso esse scritte in Java
+\begin_inset CommandInset citation
+LatexCommand cite
+key "jni"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Il secondo approccio è stato quello di estendere completamente 
+\family sans
+android.net.wifi.p2p
+\family default
+, importando il sorgente nel progetto, rinominando i package e le classi
+ in modo da avere una propria implementazione, ma ciò richiede troppe modifiche,
+ tant'è che bisogna addirittura personalizzare la classe 
+\family sans
+Activity
+\family default
+ per poter estendere 
+\family sans
+android.net.wifi.p2p
+\family default
+.
+ Questo perché tali classi sono tutte legate tra loro e non sono pensate
+ per essere modificate così.
+\end_layout
+
+\begin_layout Standard
+Per i motivi descritti in questa sezione, ho deciso di cambiare approccio
+ e tentare di modificare il sorgente di Android e di conseguenza ricompilare
+ l'intero sistema operativo, creando cioè una 
+\emph on
+Custom ROM di Android
+\emph default
+ o 
+\emph on
+Custom Firmware
+\emph default
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "custom_rom_androd"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+Modificare il package android.net.p2p
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Modificare-il-package"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Il codice sorgente di Android è opensource
+\begin_inset CommandInset citation
+LatexCommand cite
+key "repositoryandroid"
+
+\end_inset
+
+ e 
+\family sans
+android.net.wifi.p2p
+\family default
+ si trova in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "package_net_p2p_dove_si_trova"
+
+\end_inset
+
+.
+ Analizzando il package ho notato che la classe principale che si occupa
+ di gestire le interfacce di rete è chiamata 
+\family sans
+WiFiNative.java
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Per fare ricerche nel sorgente di Android si è rivelato molto utile il comando
+ 
+\family sans
+grep -r 
+\family default
+di Linux, ma ancora di più il sito web 
+\emph on
+Grepcode
+\emph default
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "grepcode_website"
+
+\end_inset
+
+.
+ Infatti, con quest'ultimo mi sono accorto che da Android KitKat a Lollipop
+ molte classi interne sono state spostate, per esempio 
+\family sans
+WiFiNative.java
+\family default
+ in KitKat era in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "grepcode_wifinative_kitkat"
+
+\end_inset
+
+, ora si trova in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "grepcode_wifinative_lollipop"
+
+\end_inset
+
+.
+ Analizzando attentamente questa classe di Lollipop, perché più aggiornata,
+ ho notato che: 
+\end_layout
+
+\begin_layout Itemize
+non c'è un 
+\emph on
+ArrayList
+\emph default
+ di interfacce di rete, infatti il nome dell'interfaccia è nella variabile
+ 
+\emph on
+interfaceNam
+\emph default
+e;
+\end_layout
+
+\begin_layout Itemize
+contiene molti metodi dichiarati come 
+\emph on
+nativi
+\emph default
+, cioè usa 
+\emph on
+JNI
+\emph default
+ per chiamare funzioni C/C++.
+ Infatti, è definito il caricamento della libreria 
+\emph on
+nativa
+\emph default
+ 
+\family sans
+libwifi-service.so
+\family default
+ in un blocco di codice statico (vedi Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:loadLibrary-libwifi-service.so"
+
+\end_inset
+
+), prima dell'
+\emph on
+onCreate
+\emph default
+ della classe 
+\family sans
+Activity
+\family default
+.
+ Questa libreria contiene codice 
+\emph on
+nativo
+\emph default
+ C/C++ (parlerò più nel dettaglio di questi concetti nella Sezione 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Utilizzare-wpa_supplicant-con-ndk"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+/* Register native functions */
+\end_layout
+
+\begin_layout LyX-Code
+static {
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+/* Native functions are defined in libwifi-service.so */
+\end_layout
+
+\begin_layout LyX-Code
+System.loadLibrary("wifi-service");
+\end_layout
+
+\begin_layout LyX-Code
+registerNatives();
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+}
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:loadLibrary-libwifi-service.so"
+
+\end_inset
+
+Blocco di codice statico per caricare con NDK le librerie native
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Nell'Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:WiFiNative_constructor"
+
+\end_inset
+
+ ho riportato il costruttore di 
+\family sans
+WiFiNative.java
+\family default
+, in cui il nome dell'interfaccia è passato come parametro.
+ Tramite la funzionalità 
+\begin_inset Quotes eld
+\end_inset
+
+Find Usage
+\begin_inset Quotes erd
+\end_inset
+
+ di 
+\emph on
+Grepcode
+\emph default
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "package_net_p2p_grepcode_find_usage"
+
+\end_inset
+
+, si può vedere che questa classe è istanziata in
+\family sans
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+seqsplit{com.android.server.wifi.WifiStateMachine}
+\end_layout
+
+\end_inset
+
+
+\family default
+ e
+\family sans
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+seqsplit{com.android.server.wifi.p2p.WifiP2pServiceImpl.P2pStateMachine}
+\end_layout
+
+\end_inset
+
+
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+public WifiNative(String interfaceName) {
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+mInterfaceName = interfaceName;
+\end_layout
+
+\begin_layout LyX-Code
+mTAG = "WifiNative-" + interfaceName;
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+if (!interfaceName.equals("p2p0")) { 
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+mInterfacePrefix = "IFNAME=" + interfaceName + " ";
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+} else {
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+// commands for p2p0 interface don't need prefix
+\end_layout
+
+\begin_layout LyX-Code
+mInterfacePrefix = "";
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+}
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+}
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:WiFiNative_constructor"
+
+\end_inset
+
+Costruttore della classe WiFiNative
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A sua volta 
+\family sans
+WifiStateMachine.java
+\family default
+ è istanziata in
+\family sans
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+seqsplit{com.android.server.wifi.WifiServiceImpl.java}
+\end_layout
+
+\end_inset
+
+
+\family default
+.
+ In essa si trova la variabile 
+\family sans
+interfaceName
+\family default
+ che è inizializzata con 
+\family sans
+mInterfaceName = SystemProperties.get("wifi.interface", "wlan0").
+ 
+\family default
+Analizzare il funzionamento di questa classe non è il mio obiettivo, perché
+ mi sto concentrando su Wi-Fi Direct e non sul classico Wi-Fi.
+ Infatti, mi interessa l'interfaccia P2P chiamata 
+\emph on
+p2p0 
+\emph default
+e non 
+\emph on
+wlan0
+\change_inserted -396080294 1426086605
+
+\emph default
+.
+\change_deleted -396080294 1426086605
+.
+
+\change_unchanged
+ La classe rilevante è 
+\family sans
+P2pStateMachine
+\family default
+, il cui costruttore è nell'Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:WifiP2pServiceImpl_constructor"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+public WifiP2pServiceImpl(Context context) {
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+mContext = context;
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+
+\series bold
+//STOPSHIP: get this from native side
+\end_layout
+
+\begin_layout LyX-Code
+
+\series bold
+mInterface = "p2p0";
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+mNetworkInfo = new NetworkInfo( 
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+ConnectivityManager.TYPE_WIFI_P2P, 0, NETWORKTYPE, "");
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+mP2pSupported = mContext.getPackageManager().
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+hasSystemFeature(PackageManager.FEATURE_WIFI_DIRECT);
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+mThisDevice.primaryDeviceType = mContext.getResources().
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+getString(
+\end_layout
+
+\begin_layout LyX-Code
+com.android.internal.R.string.config_wifi_p2p_device_type);
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+HandlerThread wifiP2pThread = new 
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+HandlerThread("WifiP2pService");
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+wifiP2pThread.start();
+\end_layout
+
+\begin_layout LyX-Code
+mClientHandler = new ClientHandler(wifiP2pThread.getLooper());
+\end_layout
+
+\begin_layout LyX-Code
+mP2pStateMachine = new P2pStateMachine(TAG, 
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+wifiP2pThread.getLooper(), mP2pSupported);
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+mP2pStateMachine.start();
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+}
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:WifiP2pServiceImpl_constructor"
+
+\end_inset
+
+Costruttore della classe WifiP2pServiceImpl
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Come si può notare, Google inizializza la variabile 
+\emph on
+mInterface
+\emph default
+ con il valore costante 
+\emph on
+
+\begin_inset Quotes eld
+\end_inset
+
+p2p0
+\begin_inset Quotes erd
+\end_inset
+
+
+\emph default
+.
+ Però dal commento subito sopra, si capisce che è solo temporanea e che
+ deve essere ottenuta tramite apposite chiamate alla parte nativa in C/C++.
+ Ciò dimostra come l'implementazione di 
+\emph on
+Wi-Fi Direct
+\emph default
+ in Android sia ancora in corso ed incompleta.
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace smallskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Quello che ho detto fino a questo punto mostra un grosso problema, cioè
+ che le classi per gestire le interfacce di rete sono estremamente specifiche
+ e legate ai limiti riscontrati nel Capitolo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:primo-capitolo"
+
+\end_inset
+
+.
+ Se in più si analizza la classe in cui queste interfacce vengono utilizzate
+ realmente, cioè si ritorna a studiare 
+\family sans
+WifiNative.java,
+\family default
+ si può notare come in tutto il codice sorgente i nomi delle interfacce
+ siano inseriti direttamente nelle condizioni degli
+\emph on
+ if-else
+\emph default
+.
+ Questa situazione mostra quanto sia difficile estendere il package e la
+ necessità di modificare direttamente il codice di Android.
+ E' bene precisare che la situazione è migliorata rispetto a KitKat, infatti
+ nelle versioni precedenti, vi era un uso ancora più massiccio di costanti
+ 
+\begin_inset Quotes eld
+\end_inset
+
+
+\emph on
+wlan0
+\emph default
+
+\begin_inset Quotes erd
+\end_inset
+
+ e 
+\begin_inset Quotes eld
+\end_inset
+
+
+\emph on
+p2p0
+\emph default
+
+\begin_inset Quotes erd
+\end_inset
+
+ all'interno del codice.
+ Per esempio, si può notare che in Lollipop sono stati aggiunti i metodi
+ negli algoritmi 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:P2pStateMachine_getInterface"
+
+\end_inset
+
+ e 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:P2pStateMachine_getInterfaceName"
+
+\end_inset
+
+, che mostra come Google sia effettivamente interessata ad estendere queste
+ funzionalità, anche se ciò sta richiedendo veramente molto tempo.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+private static native int getInterfacesNative();
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+synchronized public static int getInterfaces() {
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+synchronized (mLock) {
+\end_layout
+
+\begin_layout LyX-Code
+if (sWifiIfaceHandles == null) {
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+int num = getInterfacesNative();
+\end_layout
+
+\begin_layout LyX-Code
+int wifi_num = 0;
+\end_layout
+
+\begin_layout LyX-Code
+for (int i = 0; i < num; i++) {
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+String name = getInterfaceNameNative(i);
+\end_layout
+
+\begin_layout LyX-Code
+Log.i(TAG, "interface[" + i + "] = " + name);
+\end_layout
+
+\begin_layout LyX-Code
+if (name.equals("wlan0")) {
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+sWlan0Index = i;
+\end_layout
+
+\begin_layout LyX-Code
+wifi_num++;
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+} else if (name.equals("p2p0")) {
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+sP2p0Index = i;
+\end_layout
+
+\begin_layout LyX-Code
+wifi_num++;
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+}
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+}
+\end_layout
+
+\begin_layout LyX-Code
+return wifi_num;
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+} else {
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+return sWifiIfaceHandles.length;
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+}
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+}
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:P2pStateMachine_getInterface"
+
+\end_inset
+
+Metodo che scansiona le interfacce di rete disponibili
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+private static native String 
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+getInterfaceNameNative(int index);
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+synchronized public static String 
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+getInterfaceName(int index) {
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+return getInterfaceNameNative(index);
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+}
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:P2pStateMachine_getInterfaceName"
+
+\end_inset
+
+Metodi per ottenere i nomi delle interfacce, specificandone l'indice
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+Per completezza riporto negli algoritmi 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:com_android_server_wifi_WifiNative_c++_classe"
+
+\end_inset
+
+ e 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:getInterfaceNameNative_c++"
+
+\end_inset
+
+ anche il metodo 
+\emph on
+nativo
+\emph default
+ 
+\family sans
+getInterfaceNameNative(int index).
+
+\family default
+ L'implementazione in C++ per ottenere i nomi delle interfacce di rete,
+ chiamato dalla classi Java con JNI, si trova nel codice sorgente di Android
+ in
+\family sans
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+seqsplit{/frameworks/opt/net/wifi/service}
+\end_layout
+
+\end_inset
+
+
+\family default
+, nel file 
+\family sans
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+seqsplit{com
+\backslash
+_android
+\backslash
+_server
+\backslash
+_wifi
+\backslash
+_WifiNative.cpp}
+\end_layout
+
+\end_inset
+
+
+\family default
+.
+ Essendo una classe C++ è necessario eseguire le registrazioni JNI dei metodi,
+ come mostrato nell'Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:com_android_server_wifi_WifiNative_c++_classe"
+
+\end_inset
+
+.
+ Per brevità ho rimosso alcune righe codice, sostituendole con 
+\begin_inset Quotes eld
+\end_inset
+
+(...)
+\begin_inset Quotes erd
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+/*
+\end_layout
+
+\begin_layout LyX-Code
+ * JNI registration.
+\end_layout
+
+\begin_layout LyX-Code
+ */
+\end_layout
+
+\begin_layout LyX-Code
+static JNINativeMethod gWifiMethods[] = {
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+/* name, signature, funcPtr */
+\end_layout
+
+\begin_layout LyX-Code
+{ "loadDriver", "()Z", (void *)
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+android_net_wifi_loadDriver },
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+(...)
+\end_layout
+
+\begin_layout LyX-Code
+{ "getInterfacesNative", "()I", (void*)
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+android_net_wifi_getInterfaces},
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+{ "getInterfaceNameNative", "(I)Ljava/lang/String;", 
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+(void*) android_net_wifi_getInterfaceName},
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+(...)
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+}
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+int register_android_net_wifi_WifiNative(JNIEnv* env) {
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+return AndroidRuntime::registerNativeMethods(env,
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+"com/android/server/wifi/WifiNative", 
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+gWifiMethods, NELEM(gWifiMethods));
+\end_layout
+
+\end_deeper
+\end_deeper
+\end_deeper
+\begin_layout LyX-Code
+}
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+/* User to register native functions */
+\end_layout
+
+\begin_layout LyX-Code
+extern "C"
+\end_layout
+
+\begin_layout LyX-Code
+jint Java_com_android_server_wifi_WifiNative_registerNatives
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+(JNIEnv* env, jclass clazz) {
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+return AndroidRuntime::registerNativeMethods(env,
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+"com/android/server/wifi/WifiNative", gWifiMethods,
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+NELEM(gWifiMethods));
+\end_layout
+
+\end_deeper
+\end_deeper
+\end_deeper
+\begin_layout LyX-Code
+}
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:com_android_server_wifi_WifiNative_c++_classe"
+
+\end_inset
+
+Classe com_android_server_wifi_WifiNative.cpp 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+static jstring android_net_wifi_getInterfaceName(JNIEnv 
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+*env, jclass cls, jint i) {
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+char buf[EVENT_BUF_SIZE];
+\end_layout
+
+\begin_layout LyX-Code
+jlong value = getStaticLongArrayField(env, cls, 
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+WifiIfaceHandleVarName, i);
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+wifi_interface_handle handle = 
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+(wifi_interface_handle) value;
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+int result = ::wifi_get_iface_name(handle, buf, 
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+sizeof(buf));
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+if (result < 0) {
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+return NULL;
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+} else {
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+return env->NewStringUTF(buf);
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+}
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+}
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:getInterfaceNameNative_c++"
+
+\end_inset
+
+Metodo in C++ per ottenere i nomi delle interfacce, specificandone l'indice
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Nonostante non faccia espressamente parte di questo lavoro di tesi, analizzando
+ la classe 
+\family sans
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+seqsplit{
+\backslash
+texttt{com
+\backslash
+_android
+\backslash
+_server
+\backslash
+_wifi
+\backslash
+_WifiNative.cpp}}
+\end_layout
+
+\end_inset
+
+,
+\family default
+ mi sono accorto che Google ha introdotto le funzionalità per ottenere informazi
+oni sul 
+\emph on
+Received Signal Strength Indication
+\emph default
+ (RSSI), questo può essere molto utile per la localizzazione di dispositivi
+ in ambienti chiusi, ottenendo la distanza precisa tra il router e il dispositiv
+o stesso.
+ E' importante perché in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "wd2_improved_wifidirect_group_formation_protocol"
+
+\end_inset
+
+ era stato messo in evidenza il fatto che Google avesse forzato il parametro
+ dell'RSSI a un valore costante, lasciando un commento per indicare che
+ dovesse ancora essere implementato, cioè una situazione molto simile a
+ quella dell'Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:WifiP2pServiceImpl_constructor"
+
+\end_inset
+
+.
+ Il metodo in questione, realizzato completamente in C++ è nell'Algoritmo
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:onRttResults"
+
+\end_inset
+
+.
+ Purtroppo, ciò non è disponibile per quanto riguarda la parte di 
+\emph on
+Wi-Fi Direct
+\emph default
+, infatti, invece di chiamare l'apposito metodo per ottenere il corretto
+ valore di RSSI, Google ha lasciato la stessa inizializzazione ad una costante
+ con il commento 
+\emph on
+TODO
+\emph default
+, già descritta in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "wd2_improved_wifidirect_group_formation_protocol"
+
+\end_inset
+
+, come si può vedere nell'Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Inizializzazione-RSSI-per-wifip2p"
+
+\end_inset
+
+.
+ Quindi, non vi è stato nessun miglioramento per quanto riguarda la parte
+ di 
+\emph on
+Wi-Fi Direct
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+static void onRttResults(wifi_request_id id, unsigned 
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+num_results, wifi_rtt_result results[]) {
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+JNIEnv *env = NULL;
+\end_layout
+
+\begin_layout LyX-Code
+mVM->AttachCurrentThread(&env, NULL);
+\end_layout
+
+\begin_layout LyX-Code
+(...)
+\end_layout
+
+\begin_layout LyX-Code
+for (unsigned i = 0; i < num_results; i++) {
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+wifi_rtt_result& result = results[i];
+\end_layout
+
+\begin_layout LyX-Code
+jobject rttResult = createObject(env,
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+"android/net/wifi/RttManager$RttResult");
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+(...)
+\end_layout
+
+\begin_layout LyX-Code
+setIntField(env, rttResult,"rssi",result.rssi);
+\end_layout
+
+\begin_layout LyX-Code
+setIntField(env, rttResult,"rssi_spread",
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+result.rssi_spread);
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+setIntField(env, rttResult,"tx_rate",
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+result.tx_rate.bitrate);
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+(...)
+\end_layout
+
+\begin_layout LyX-Code
+setIntField(env, rttResult,"distance_cm",
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+result.distance);
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+setIntField(env, rttResult,"distance_sd_cm",
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+result.distance_sd);
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+(...)
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+env->SetObjectArrayElement(rttResults, i, rttResult);
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+}
+\end_layout
+
+\end_deeper
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:onRttResults"
+
+\end_inset
+
+Funzione C++ per ottenere i dati su RSSI
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout LyX-Code
+public WifiP2pPeer(Context context, WifiP2pDevice dev) {
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+super(context);
+\end_layout
+
+\begin_layout LyX-Code
+device = dev;
+\end_layout
+
+\begin_layout LyX-Code
+setWidgetLayoutResource(R.layout.preference_widget_wifi_signal);
+\end_layout
+
+\begin_layout LyX-Code
+
+\series bold
+mRssi = 60; //TODO: fix
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+}
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:Inizializzazione-RSSI-per-wifip2p"
+
+\end_inset
+
+Inizializzazione RSSI per un dispositivo Wi-Fi Direct
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Utilizzare NDK 
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Utilizzare-wpa_supplicant-con-ndk"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Oltre ai metodi Java e le funzioni C/C++, Android è costituito da un programma
+ chiamato 
+\emph on
+wpa_supplicant
+\emph default
+ a cui si appoggia totalmente per quanto riguarda ogni operazione che deve
+ svolgere il chip Wi-Fi del dispositivo.
+ Questo vuol dire che tutto quello che ho mostrato, ad un certo punto, sfrutterà
+ la comunicazione tra processi di Linux per 
+\begin_inset Quotes eld
+\end_inset
+
+parlare
+\begin_inset Quotes erd
+\end_inset
+
+ con 
+\emph on
+wpa_supplicant
+\emph default
+.
+ In questa sezione non descriverò cos'è nel dettaglio o come funziona, poiché
+ lo farò nel Capitolo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:quarto-capitolo"
+
+\end_inset
+
+, ma mi concentrerò su un esempio di come utilizzare NDK per chiamare le
+ funzioni di 
+\emph on
+wpa_supplicant
+\emph default
+.
+ Infine, valuterò se questa alternativa sia adegua per raggiungere gli obiettivi
+ prefissati, oppure no.
+ Anticipo subito che c'è un problema, infatti non tutte le funzioni C di
+ 
+\emph on
+wpa_supplicant
+\emph default
+ sono invocabili tramite Android NDK.
+ Per capire ciò, faccio un esempio creando un'app con NDK in Eclipse.
+ 
+\end_layout
+
+\begin_layout Subsection
+Esempio di app NDK per wpa_supplicant
+\end_layout
+
+\begin_layout Standard
+Ho creato un nuovo progetto NDK in Eclipse e ho usato i 
+\emph on
+makefile
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+GNU Make è un programma per generare eseguibili dal codice sorgente.
+ Make capisce come compilare questo codice usando file chiamati 
+\begin_inset Quotes eld
+\end_inset
+
+.makefile
+\begin_inset Quotes erd
+\end_inset
+
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "make_gnu"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\emph default
+ degli algoritmi 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Android.mk"
+
+\end_inset
+
+ e 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Application.mk"
+
+\end_inset
+
+ nella cartella 
+\emph on
+jni
+\emph default
+ del progetto.
+ Nel primo algoritmo sono definiti i 
+\emph on
+moduli
+\emph default
+ da compilare, nel secondo le architetture verso cui 
+\emph on
+cross-compilare
+\emph default
+.
+ I dettagli specifici dei termini 
+\emph on
+cross-compilare
+\emph default
+, 
+\emph on
+modulo
+\emph default
+ e 
+\emph on
+makefile
+\emph default
+ saranno spiegati in dettaglio nel Capitolo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:terzo-capitolo"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+LOCAL_PATH := $(call my-dir)
+\end_layout
+
+\begin_layout LyX-Code
+include $(CLEAR_VARS)
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+#il nome local_module che dico qui è quello che poi chiamerò 
+\end_layout
+
+\begin_layout LyX-Code
+#in java   System.loadLibrary("hello-jni");
+\end_layout
+
+\begin_layout LyX-Code
+LOCAL_MODULE    := hello-jni
+\end_layout
+
+\begin_layout LyX-Code
+LOCAL_SRC_FILES := hello-jni.c
+\end_layout
+
+\begin_layout LyX-Code
+LOCAL_SHARED_LIBRARIES := wpa_client
+\end_layout
+
+\begin_layout LyX-Code
+include $(BUILD_SHARED_LIBRARY)
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+include $(CLEAR_VARS)
+\end_layout
+
+\begin_layout LyX-Code
+LOCAL_MODULE := wpa_client
+\end_layout
+
+\begin_layout LyX-Code
+LOCAL_SRC_FILES := libwpa_client_k.so
+\end_layout
+
+\begin_layout LyX-Code
+include $(PREBUILT_SHARED_LIBRARY)
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:Android.mk"
+
+\end_inset
+
+Android.mk in Eclipse
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+APP_ABI := armeabi armeabi-v7a
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:Application.mk"
+
+\end_inset
+
+Application.mk in Eclipse
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+Per ora, mi voglio concentrare solo sul fatto che l'Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Android.mk"
+
+\end_inset
+
+ definisce due moduli, il primo, chiamato 
+\emph on
+hello-jni
+\emph default
+, è quello principale che ne include un secondo col nome 
+\emph on
+wpa_client
+\emph default
+.
+ Quest'ultimo usa il 
+\emph on
+
+\begin_inset Quotes eld
+\end_inset
+
+template
+\emph default
+ 
+\emph on
+PREBUILT
+\emph default
+
+\begin_inset Quotes erd
+\end_inset
+
+, cioè si tratta di un modulo già compilato ed incluso nel progetto.
+ Più semplicemente, lo si può pensare come ad una libreria esterna 
+\begin_inset Quotes eld
+\end_inset
+
+.jar
+\emph on
+
+\begin_inset Quotes erd
+\end_inset
+
+,
+\emph default
+ che ho importato nel progetto NDK, di cui voglio utilizzarne le funzioni.
+ Infatti, si tratta di quella collegata a 
+\emph on
+wpa_supplicant
+\emph default
+.
+ Invece, il primo modulo è quello principale che usa il
+\emph on
+ 
+\begin_inset Quotes eld
+\end_inset
+
+template
+\emph default
+ 
+\emph on
+BUILD
+\begin_inset Quotes erd
+\end_inset
+
+
+\emph default
+ ed implementa metodi 
+\emph on
+nativi
+\emph default
+, che nel mio caso è uno solo e si chiama 
+\begin_inset Quotes eld
+\end_inset
+
+
+\emph on
+provawpa
+\emph default
+
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Essi sono definiti nel file Java nell'Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:activityConJni"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Parlerò più avanti del concetto di 
+\emph on
+
+\begin_inset Quotes eld
+\end_inset
+
+template di un Android.mk
+\emph default
+
+\begin_inset Quotes erd
+\end_inset
+
+, poichè ora non è particolarmente rilevante, quindi rimando questo argomento
+ al Capitolo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:terzo-capitolo"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+public class HelloJni extends Activity {
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+private String instanceField = "Instance Field";
+\end_layout
+
+\begin_layout LyX-Code
+private static String staticField = "Static Field";
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+@Override
+\end_layout
+
+\begin_layout LyX-Code
+public void onCreate(Bundle savedInstanceState) {
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+super.onCreate(savedInstanceState);
+\end_layout
+
+\begin_layout LyX-Code
+Log.d(TAG, "calling jni method");
+\end_layout
+
+\begin_layout LyX-Code
+this.provawpa()
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+}
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+public native String provawpa();
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+private String instanceMethod() {
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+return "Instance Method";
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+}
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+private static String staticMethod() {
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+return "Static Method";
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+}
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+static {
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+System.loadLibrary("wpa_client");
+\end_layout
+
+\begin_layout LyX-Code
+System.loadLibrary("hello-jni");
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+}
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+}
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:activityConJni"
+
+\end_inset
+
+Esempio Activity di un'app con NDK
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A questo punto devo generare prima i file 
+\begin_inset Quotes eld
+\end_inset
+
+.h
+\begin_inset Quotes erd
+\end_inset
+
+ nella cartella 
+\emph on
+jn
+\emph default
+i, ma ciò non è un problema perché possono essere creati tramite 
+\emph on
+javah
+\emph default
+ in modo automatico, addirittura configurando Eclipse per eseguire i corretti
+ comandi come un profilo di 
+\begin_inset Quotes eld
+\end_inset
+
+External Tools Configurations
+\begin_inset Quotes erd
+\end_inset
+
+.
+ La configurazione in MAC OS X 10.10 che ho utilizzato è nell'Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:External-Tools-Configurations-javah"
+
+\end_inset
+
+.
+ In 
+\emph on
+Location 
+\emph default
+ho specificato il percorso completo di 
+\emph on
+javah
+\emph default
+, che si trova nell'SDK.
+ In
+\emph on
+ Working Directory
+\emph default
+ ho specificato la cartella con i file 
+\begin_inset Quotes eld
+\end_inset
+
+.class
+\begin_inset Quotes erd
+\end_inset
+
+ del progetto ed infine, in 
+\emph on
+Arguments
+\emph default
+ i parametri da passare a 
+\emph on
+javah
+\emph default
+ per poter creare i file 
+\begin_inset Quotes eld
+\end_inset
+
+.h
+\begin_inset Quotes erd
+\end_inset
+
+ associati ai 
+\begin_inset Quotes eld
+\end_inset
+
+.c
+\begin_inset Quotes erd
+\end_inset
+
+ nella cartella 
+\emph on
+jni
+\emph default
+.
+ Ho citato questa configurazione poiché le versioni sui libri di riferimento
+ non sono risultate funzionanti.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+Location: /Library/Java/JavaVirtualMachines/
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+jdk1.7.0_71.jdk/Contents/Home/bin/javah
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+Working Directory: 
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+${workspace_loc:/HelloJni/bin/classes}
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+Arguments: -verbose -jni -o ${workspace
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+ loc:/HelloJni/jni}/hellojni.h -classpath
+\end_layout
+
+\begin_layout LyX-Code
+ /Users/Ks89/android-sdk-macosx/platforms
+\end_layout
+
+\begin_layout LyX-Code
+/android-19/android.jar:${workspace_loc:
+\end_layout
+
+\begin_layout LyX-Code
+/HelloJni/bin/classes} com.example.hellojni.HelloJni
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:External-Tools-Configurations-javah"
+
+\end_inset
+
+External Tools Configurations di Eclipse per eseguire javah
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+L'unico elemento che non ho ancora mostrato è la parte in C, cioè la funzione
+ che l'
+\family sans
+Activity 
+\family default
+chiama tramite il metodo 
+\family sans
+public native String provawpa().
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+(...)
+\end_layout
+
+\begin_layout LyX-Code
+//extern perche' e' una funzione chiamata nel file 
+\end_layout
+
+\begin_layout LyX-Code
+//libwpa_client_k.so 
+\end_layout
+
+\begin_layout LyX-Code
+//specificato da noi in Android.mk
+\end_layout
+
+\begin_layout LyX-Code
+extern struct wpa_ctrl * wpa_ctrl_open(
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+const char *ctrl_path);
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+//metodo jni in c che corrisponde a provawpa in 
+\end_layout
+
+\begin_layout LyX-Code
+//java, nel package 
+\end_layout
+
+\begin_layout LyX-Code
+//com.example.hellojni.HelloJni.java.
+ Perché
+\end_layout
+
+\begin_layout LyX-Code
+//funzioni deve avere
+\end_layout
+
+\begin_layout LyX-Code
+//il nome seguendo questo specifico formato.
+\end_layout
+
+\begin_layout LyX-Code
+//jstring è il tipo string di JNI, mentre
+\end_layout
+
+\begin_layout LyX-Code
+//thiz e' l'instance (sui libri di riferimento,
+\end_layout
+
+\begin_layout LyX-Code
+//non si usa this, ma in genere 
+\end_layout
+
+\begin_layout LyX-Code
+//la parola "thiz" nel codice C, per indicare il
+\end_layout
+
+\begin_layout LyX-Code
+//riferimento all'oggetto che ha chiamato il
+\end_layout
+
+\begin_layout LyX-Code
+//metodo in questione)
+\end_layout
+
+\begin_layout LyX-Code
+jstring Java_com_example_hellojni_HelloJni_provawpa(
+\end_layout
+
+\begin_layout LyX-Code
+JNIEnv* env, jobject thiz ) { 
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+//esempio di chiamata di una funzione in un
+\end_layout
+
+\begin_layout LyX-Code
+//file .so importato
+\end_layout
+
+\begin_layout LyX-Code
+//ovviamente, in questo esempio non fa nulla,
+\end_layout
+
+\begin_layout LyX-Code
+//in quanto vengono passati dati casuali ed
+\end_layout
+
+\begin_layout LyX-Code
+//insignificanti
+\end_layout
+
+\begin_layout LyX-Code
+wpa_ctrl_open((*env)->NewCharArray(env,3));
+\end_layout
+
+\begin_layout LyX-Code
+return (*env)->NewStringUTF(env, "metodo");
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+}
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:activityConJni-1"
+
+\end_inset
+
+Metodo 
+\emph on
+nativo
+\emph default
+ 
+\emph on
+provawpa
+\emph default
+ implementato in C con JNI
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Per una questione di completezza ho deciso di aggiungere anche l'Algoritmo
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:jniNdkChiamataMetodiJavaDaC"
+
+\end_inset
+
+ in coda a questo capitolo.
+ Sebbene non sia parte dell'app per 
+\emph on
+wpa_supplicant
+\emph default
+, mostra alcuni esempi interessanti d'invocazioni di metodi Java dal codice
+ C.
+ Infatti, una volta ottenuto il riferimento alla classe Java nella variabile
+ JNI chiamata 
+\begin_inset Quotes eld
+\end_inset
+
+
+\emph on
+clazz
+\emph default
+
+\begin_inset Quotes erd
+\end_inset
+
+, posso ottenere gli attributi statici e non statici della classe.
+ Nella parte restante dell'algoritmo, faccio lo stesso ma questa volta con
+ due metodi, uno statico e uno non statico ed infine, restituisco una stringa
+ alla classe Java.
+ Per i dettagli ed approfondimenti di un così vasto argomento rimando ai
+ seguenti libri 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "JNI_book,android_ndk_apress,android_ndk_ratabouil_beginner_guide"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace smallskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Tornando all'esempio, mi sono accorto che con questo metodo posso invocare
+ solo le funzioni esposte nel file 
+\family sans
+libwpa_client.so
+\family default
+ legato a 
+\emph on
+wpa_supplicant
+\emph default
+.
+ Quindi, quante e quali sono le funzioni esposte? E' sufficiente utilizzare
+ il comando del terminale Linux: 
+\family sans
+readelf -a libwpa_client.so | grep 
+\begin_inset Quotes eld
+\end_inset
+
+func
+\begin_inset Quotes erd
+\end_inset
+
+ libwpa_client.so,
+\family default
+ usando il file 
+\family sans
+libwpa_client.so
+\family default
+ del proprio dispositivo (oppure compilare Android seguendo la procedura
+ del Capitolo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:terzo-capitolo"
+
+\end_inset
+
+ ed estrarlo dalla cartella 
+\begin_inset Quotes eld
+\end_inset
+
+
+\emph on
+out
+\emph default
+
+\begin_inset Quotes erd
+\end_inset
+
+).
+ La lista di funzioni in 
+\family sans
+libwpa_client.so
+\family default
+ di Android Lollipop 5.0.1 è nell'Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:readELF_libwpa_client.so"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+(...)
+\end_layout
+
+\begin_layout LyX-Code
+3: 00001491   440 FUNC  GLOBAL DEFAULT  8 wpa_ctrl_open
+\end_layout
+
+\begin_layout LyX-Code
+(...)
+\end_layout
+
+\begin_layout LyX-Code
+25: 00001649   34 FUNC  GLOBAL DEFAULT  8 wpa_ctrl_close
+\end_layout
+
+\begin_layout LyX-Code
+26: 0000166d  176 FUNC  GLOBAL DEFAULT  8 wpa_ctrl_cleanup
+\end_layout
+
+\begin_layout LyX-Code
+(...)
+\end_layout
+
+\begin_layout LyX-Code
+31: 0000171d  290 FUNC  GLOBAL DEFAULT  8 wpa_ctrl_request
+\end_layout
+
+\begin_layout LyX-Code
+(...)
+\end_layout
+
+\begin_layout LyX-Code
+40: 000018bd    6 FUNC  GLOBAL DEFAULT  8 wpa_ctrl_attach
+\end_layout
+
+\begin_layout LyX-Code
+41: 000018c3    6 FUNC  GLOBAL DEFAULT  8 wpa_ctrl_detach
+\end_layout
+
+\begin_layout LyX-Code
+42: 000018c9   32 FUNC  GLOBAL DEFAULT  8 wpa_ctrl_recv
+\end_layout
+
+\begin_layout LyX-Code
+43: 000018e9   68 FUNC  GLOBAL DEFAULT  8 wpa_ctrl_pending
+\end_layout
+
+\begin_layout LyX-Code
+44: 0000192d    4 FUNC  GLOBAL DEFAULT  8 wpa_ctrl_get_fd
+\end_layout
+
+\begin_layout LyX-Code
+(...)
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:readELF_libwpa_client.so"
+
+\end_inset
+
+Risultato di readelf di libwpa_client.so
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Come si può notare, 
+\series bold
+sono davvero poche quelle esposte e soprattutto non riguardano le interfacce
+ di rete.
+ Per tale motivo, questa soluzione non si è rivelata efficace.
+ Così ho deciso di cambiare totalmente approccio.
+ 
+\end_layout
+
+\begin_layout Standard
+Prima di spiegare ciò, è necessario acquisire alcuni concetti importanti
+ riguardo le procedure di compilazione di Android e del suo kernel nel Capitolo
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:terzo-capitolo"
+
+\end_inset
+
+, in modo da avere tutti gli elementi per procedere con lo studio di 
+\emph on
+wpa_supplicant
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+(...)
+\end_layout
+
+\begin_layout LyX-Code
+//esempio chiamata metodo di una classe java
+\end_layout
+
+\begin_layout LyX-Code
+//se non vengono trovati Call<Class>Method verificare il 
+\end_layout
+
+\begin_layout LyX-Code
+//build path e le import
+\end_layout
+
+\begin_layout LyX-Code
+jstring Java_com_example_hellojni_HelloJni_stringFromJNI(
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+JNIEnv* env, jobject thiz ) {
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+jclass clazz;
+\end_layout
+
+\begin_layout LyX-Code
+clazz = (*env)->GetObjectClass(env, thiz);
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+jfieldID instanceFieldId;
+\end_layout
+
+\begin_layout LyX-Code
+instanceFieldId = (*env)->GetFieldID(env, clazz, 
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+"instanceField", "Ljava/lang/String;");
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+jfieldID staticFieldId;
+\end_layout
+
+\begin_layout LyX-Code
+staticFieldId = (*env)->GetStaticFieldID(env, clazz, 
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+"staticField", "Ljava/lang/String;");
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+jstring instanceField;
+\end_layout
+
+\begin_layout LyX-Code
+instanceField = (*env)->GetObjectField(env, thiz,
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+instanceFieldId);
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+jstring staticField;
+\end_layout
+
+\begin_layout LyX-Code
+staticField = (*env)->GetStaticObjectField(env, 
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+clazz, staticFieldId);
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+jmethodID instanceMethodId;
+\end_layout
+
+\begin_layout LyX-Code
+instanceMethodId = (*env)->GetMethodID(env, clazz, 
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+"instanceMethod", "()Ljava/lang/String;");
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+jmethodID staticMethodId;
+\end_layout
+
+\begin_layout LyX-Code
+staticMethodId = (*env)->GetStaticMethodID(env, clazz,
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+"staticMethod", "()Ljava/lang/String;");
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+jstring instanceMethodResult; 	
+\end_layout
+
+\begin_layout LyX-Code
+instanceMethodResult = (*env)->CallStringMethod(env,
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+thiz, instanceMethodId);
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+jstring staticMethodResult; 	
+\end_layout
+
+\begin_layout LyX-Code
+staticMethodResult = (*env)->CallStaticStringMethod(
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+env, clazz, staticMethodId);
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+return (*env)->NewStringUTF(env, "Hello from JNI");
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+}
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:jniNdkChiamataMetodiJavaDaC"
+
+\end_inset
+
+Esempio chiamate da C/C++ a Java
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

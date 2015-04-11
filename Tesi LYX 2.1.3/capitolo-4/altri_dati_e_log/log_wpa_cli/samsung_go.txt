@@ -1,0 +1,46 @@
+Last login: Mon Mar 16 13:58:30 on ttys000
+MacBook-Pro:~ Ks89$ adb -s 59d02d55 shell
+shell@jflte:/ $ su
+root@jflte:/ # killall -SIGKILL wpa_supplicant
+nf -dd -N -B -ip2p0 -Dnl80211 -c/data/misc/wifi/p2p_supplicant.conf -dd       <
+root@jflte:/ # wpa_cli -ip2p0 -p/data/misc/wifi/sockets
+wpa_cli v2.1-devel-4.4.4
+Copyright (c) 2004-2013, Jouni Malinen <j@w1.fi> and contributors
+
+This software may be distributed under the terms of the BSD license.
+See README for more details.
+
+
+
+Interactive mode
+
+> p2p_find
+OK
+<3>P2P-DEVICE-FOUND fa:a9:d0:0c:e4:81 p2p_dev_addr=fa:a9:d0:0c:e4:81 pri_dev_type=10-0050F204-5 name='Nexus5-poli3' config_methods=0x188 dev_capab=0x25 group_capab=0x0
+<3>P2P-DEVICE-FOUND fa:a9:d0:0c:e5:30 p2p_dev_addr=fa:a9:d0:0c:e5:30 pri_dev_type=10-0050F204-5 name='Nexus5-poli4' config_methods=0x188 dev_capab=0x25 group_capab=0x0
+<3>CTRL-EVENT-SCAN-RESULTS 
+<3>CTRL-EVENT-SCAN-RESULTS 
+<3>CTRL-EVENT-SCAN-RESULTS 
+<3>CTRL-EVENT-SCAN-RESULTS 
+<3>P2P: Received GO Negotiation Request from fa:a9:d0:0c:e4:81(freq=2412)
+<3>P2P: Not ready for GO negotiation with fa:a9:d0:0c:e4:81
+<3>P2P-GO-NEG-REQUEST fa:a9:d0:0c:e4:81 dev_passwd_id=4
+<3>P2P: Building GO Negotiation Response
+<3>P2P: Sending GO Negotiation Response
+> p2p_connect fa:a9:d0:0c:e4:81 pbc
+OK
+<3>P2P-FIND-STOPPED 
+<3>P2P: Sending GO Negotiation Request
+<3>P2P: GO Negotiation Request TX callback: success=1
+<3>P2P: Received GO Negotiation Response from fa:a9:d0:0c:e4:81 (freq=2437)
+<3>P2P: Sending GO Negotiation Confirm
+<3>P2P: GO Negotiation Confirm TX callback: result=0
+<3>P2P-GO-NEG-SUCCESS role=GO freq=2412 ht40=0 peer_dev=fa:a9:d0:0c:e4:81 peer_iface=fa:a9:d0:0c:64:81 wps_method=PBC
+<3>P2P-GROUP-FORMATION-SUCCESS 
+<3>P2P-GROUP-STARTED p2p-wlan0-0 GO ssid="DIRECT-ED-Galaxy_02" freq=2412 passphrase="mt3VSzHZ" go_dev_addr=42:0e:85:4a:3e:0f
+<3>AP-STA-CONNECTED fa:a9:d0:0c:64:81 p2p_dev_addr=fa:a9:d0:0c:e4:81
+<3>CTRL-EVENT-SCAN-RESULTS 
+<3>P2P-PROV-DISC-PBC-REQ fa:a9:d0:0c:e5:30 p2p_dev_addr=fa:a9:d0:0c:e5:30 pri_dev_type=10-0050F204-5 name='Nexus5-poli4' config_methods=0x188 dev_capab=0x25 group_capab=0x0 group=p2p-wlan0-0
+<3>AP-STA-CONNECTED fa:a9:d0:0c:65:30 p2p_dev_addr=fa:a9:d0:0c:e5:30
+> 
+	

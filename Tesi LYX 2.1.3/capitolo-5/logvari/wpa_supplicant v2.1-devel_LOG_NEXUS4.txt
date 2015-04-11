@@ -1,0 +1,116 @@
+wpa_supplicant v2.1-devel-4.4.4
+random: Trying to read entropy from /dev/random
+I/wpa_supplicant( 2853): Successfully initialized wpa_supplicant
+Initializing interface 'p2p0' conf '/data/misc/wifi/p2p_supplicant.conf' driver 'nl80211' ctrl_interface 'N/A' bridge 'N/A'
+Configuration file '/data/misc/wifi/p2p_supplicant.conf' -> '/data/misc/wifi/p2p_supplicant.conf'
+Reading configuration file '/data/misc/wifi/p2p_supplicant.conf'
+ctrl_interface='/data/misc/wifi/sockets'
+driver_param='use_p2p_group_interface=1'
+disable_scan_offload=1
+update_config=1
+device_name='Nexus 4'
+config_methods='virtual_push_button physical_display keypad'
+p2p_ssid_postfix='-Nexus 4'
+persistent_reconnect=1
+pmf=1
+
+
+Priority group 0
+   id=0 ssid='DIRECT-M2-Nexus5-poli4'
+   id=1 ssid='DIRECT-X2-Android_cdec'
+   id=2 ssid='DIRECT-EP-Nexus 4'
+   id=3 ssid='DIRECT-Ij-Nexus5-poli3'
+   id=4 ssid='DIRECT-h2-Nexus 4'
+   id=5 ssid='DIRECT-yk-Nexus 4'
+   id=6 ssid='DIRECT-Bv-Nexus 4'
+   id=7 ssid='DIRECT-n9-Nexus 4'
+   id=8 ssid='DIRECT-9I-Nexus5-lollipop'
+   id=9 ssid='DIRECT-fG-Nexus 4'
+
+nl80211: Use separate P2P group interface (driver advertised support)
+nl80211: Enable multi-channel concurrent (driver advertised support)
+nl80211: Driver is new enough to support monitor-less mode
+nl80211: interface p2p0 in phy phy0
+nl80211: Set mode ifindex 27 iftype 2 (STATION)
+
+
+nl80211: driver param='use_p2p_group_interface=1'
+nl80211: Use separate P2P group interface
+
+nl80211: Added 802.11b mode based on 802.11g information
+p2p0: Own MAC address: 12:68:3f:43:92:ab
+
+p2p0: Control interface command 'P2P_GROUP_ADD'
+P2P: Stop any on-going P2P FIND
+P2P: Stopping find
+
+P2P: Set GO freq based on configured frequency 2412 MHz
+P2P: Cannot force GO on any of the channels we are already using. Use one of the free channels
+P2P: Create a new interface p2p-p2p0-0 for the group
+nl80211: Create interface iftype 9 (P2P_GO)
+nl80211: New interface p2p-p2p0-0 created: ifindex=32
+
+P2P: Created pending virtual interface p2p-p2p0-0 addr 12:68:3f:43:12:ab
+Initializing interface 'p2p-p2p0-0' conf 'N/A' driver 'nl80211' ctrl_interface '/data/misc/wifi/sockets' bridge 'N/A'
+
+nl80211: Use separate P2P group interface (driver advertised support)
+nl80211: Enable multi-channel concurrent (driver advertised support)
+nl80211: Driver is new enough to support monitor-less mode
+nl80211: interface p2p-p2p0-0 in phy phy0
+nl80211: Set mode ifindex 32 iftype 9 (P2P_GO)
+
+nl80211: driver param='use_p2p_group_interface=1'
+nl80211: Use separate P2P group interface
+
+nl80211: Added 802.11b mode based on 802.11g information
+p2p-p2p0-0: Own MAC address: 12:68:3f:43:12:ab
+
+p2p-p2p0-0: Added interface p2p-p2p0-0
+
+p2p0: P2P: Use separate group interface p2p-p2p0-0
+p2p-p2p0-0: P2P: Starting GO
+
+Setting up AP (SSID='DIRECT-aV-Nexus 4')
+nl80211: Setup AP operations for P2P group (GO)
+nl80211: Set mode ifindex 32 iftype 9 (P2P_GO)
+
+nl80211: Added 802.11b mode based on 802.11g information
+Allowed channel: mode=1 chan=1 freq=2412 MHz max_tx_power=20 dBm
+(ecc tutti gli altri canali supportati)
+
+Completing interface initialization
+Mode: IEEE 802.11g  Channel: 1  Frequency: 2412 MHz
+nl80211: Set freq 2412 (ht_enabled=1, vht_enabled=0, bandwidth=20 MHz, cf1=2412 MHz, cf2=0 MHz)
+
+E/wpa_supplicant( 2854): Using interface p2p-p2p0-0 with hwaddr 12:68:3f:43:12:ab and ssid "DIRECT-aV-Nexus 4"
+
+WPA: Start group state machine to set initial keys
+WPA: group state machine entering state GTK_INIT (VLAN-ID 0)
+
+I/wpa_supplicant( 2854): P2P-GROUP-STARTED p2p-p2p0-0 GO ssid="DIRECT-aV-Nexus 4" freq=2412 passphrase="IVX60ZPg" go_dev_addr=12:68:3f:43:92:ab
+
+p2p-p2p0-0: Setup of interface done.
+
+
+
+
+
+
+p2p0: Control interface command 'P2P_GROUP_ADD'
+P2P: Stop any on-going P2P FIND
+P2P: Stopping find
+
+P2P: Set GO freq based on configured frequency 2412 MHz
+P2P: Force GO on a channel we are already using (2412 MHz)
+P2P: Create a new interface p2p-p2p0-1 for the group
+nl80211: Create interface iftype 9 (P2P_GO)
+nl80211: New interface p2p-p2p0-1 created: ifindex=0
+E/wpa_supplicant( 2854): P2P: Failed to create new group interface
+E/wpa_supplicant( 2854): P2P: Failed to add group interface
+
+RTM_NEWLINK, IFLA_IFNAME: Interface 'p2p-p2p0-0' added
+nl80211: if_removed already cleared - ignore event
+RTM_NEWLINK: operstate=1 ifi_flags=0x11043 ([UP][RUNNING][LOWER_UP])
+RTM_NEWLINK, IFLA_IFNAME: Interface 'p2p-p2p0-0' added
+nl80211: if_removed already cleared - ignore event
+

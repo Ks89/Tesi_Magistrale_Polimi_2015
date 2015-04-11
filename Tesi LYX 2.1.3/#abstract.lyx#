@@ -1,0 +1,172 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass book
+\options openright
+\use_default_options false
+\master tesi.lyx
+\maintain_unincluded_children false
+\language italian
+\language_package default
+\inputencoding auto
+\fontencoding T1
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 11
+\spacing single
+\use_hyperref false
+\papersize a4paper
+\use_geometry false
+\use_package amsmath 2
+\use_package amssymb 2
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 0
+\use_package mathtools 1
+\use_package mhchem 0
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 0
+\index Indice
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 2
+\paperpagestyle fancy
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+
+\emph on
+Abstract
+\emph default
+
+\begin_inset Newline newline
+\end_inset
+
+Sommario in lingua inglese
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+I dispositivi mobili come Smartphone e Tablet hanno rivoluzionato il concetto
+ di mobilità, dando vita a nuovi scenari di utilizzo.
+ Uno tra i più interessanti ed ampi è quello delle 
+\emph on
+Opportunistic Networks
+\emph default
+, cioè reti che non richiedo un'infrastruttura preesistente, ma permettono
+ la nascita di comunicazioni spontanee e caratterizzate da una forte dinamicità.
+\end_layout
+
+\begin_layout Standard
+Il problema problema principale è che i protocolli di comunicazione disponibili
+ sono troppo giovani ed ancora da perfezionare.
+ Questo lavoro di tesi tratta nello specifico uno di essi, cioè 
+\emph on
+Wi-Fi Direct
+\emph default
+.
+ Esso non è stato pensato per scenari di questo tipo e soprattutto è stato
+ implementato in Android con forti limiti.
+ 
+\end_layout
+
+\begin_layout Standard
+L'obiettivo di questa tesi è quello di studiare tali limiti nei dettagli
+ e proporre una soluzione per estendere il protocollo in questione.
+\end_layout
+
+\begin_layout Standard
+L'approccio adottato sarà progettazione di tale soluzione ed un'analisi
+ che inizierà dall'alto livello dell'architettura del sistema operativo,
+ fino a raggiungere i livelli più bassi e mostrare 
+\end_layout
+
+\begin_layout Standard
+Il principale ostacolo nella creazione di Opportunistic Networks con dispostivi
+ Android è un limite nel sistema operativo, su cui le specifiche non impongono
+ vincoli.
+ A causa di questa scelta di implementazione, 
+\end_layout
+
+\begin_layout Standard
+One common problem in applying formal methods to the analysis of realistic
+ industrial-size systems is that these methods often do not scale well.
+ In order to overcome such difficulty, formal languages and tools supporting
+ modularization and compositionality must be realized and used.
+\end_layout
+
+\begin_layout Standard
+Under this respect, this thesis addresses the problem of designing techniques
+ and tools to support the formal specification and verification of large
+ modular real-time systems.
+ The reference specification language for this analysis is the temporal
+ metric TRIO.
+\end_layout
+
+\begin_layout Standard
+First, a mapping of the modular features of the TRIO language onto the language
+ of the theorem prover PVS is designed.
+ In connection with this, a number of automated proof strategies are designed
+ to support the conduction of TRIO proofs in the PVS environment.
+\end_layout
+
+\begin_layout Standard
+Second, a rely/guarantee compositional framework for the language TRIO is
+ discussed and a compositional proof rule is derived.
+ This framework is also encoded in the PVS environment, so that it is practicall
+y usable.
+\end_layout
+
+\begin_layout Standard
+Finally, the benefits of adopting the proposed rely/guarantee compositional
+ framework are discussed with the aid of working examples.
+\end_layout
+
+\end_body
+\end_document

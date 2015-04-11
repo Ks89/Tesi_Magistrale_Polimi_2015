@@ -1,0 +1,3104 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass book
+\options openright
+\use_default_options false
+\master ../tesi.lyx
+\maintain_unincluded_children false
+\language italian
+\language_package default
+\inputencoding auto
+\fontencoding T1
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 11
+\spacing single
+\use_hyperref false
+\papersize a4paper
+\use_geometry false
+\use_package amsmath 2
+\use_package amssymb 2
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 0
+\use_package mathtools 1
+\use_package mhchem 0
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 0
+\index Indice
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 2
+\paperpagestyle fancy
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+Nel Capitolo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:quarto-capitolo"
+
+\end_inset
+
+, dopo aver parlato di 
+\emph on
+wpa_supplicant
+\emph default
+ ed 
+\emph on
+iw,
+\emph default
+ ho accennato a possibili problemi nei driver Wi-Fi nel kernel di Android.
+ Ora li analizzerò in modo graduale fino a svelare perché 
+\emph on
+wpa_supplicant
+\emph default
+ non riesce a creare due o più interfacce di rete virtuali, nel caso specifico
+ di Smartphone/Tablet Android.
+ Anticipo subito che queste osservazioni e studi si basano sui dispositivi
+ in possesso durante questo lavoro di tesi e con chip Wi-Fi prodotti tutti
+ dalla stessa società chiamata Broadcom 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "broadcom"
+
+\end_inset
+
+.
+ Non sono a conoscenza della situazione su Smartphone/Tablet con chip Qualcomm
+ Atheros 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "qualcomm"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+I Driver Wi-Fi in Linux
+\end_layout
+
+\begin_layout Standard
+In Android l'utente può connettersi o disconnettersi da una rete wireless
+ e modificarne le impostazioni, quindi c'è un meccanismo che permette una
+ comunicazione attraverso i livelli dell'architettura del sistema operativo.
+ Cioè le funzionalità presenti nel livello più basso, detto 
+\emph on
+Kernel space,
+\emph default
+ sono esposte ad alto livello, detto 
+\emph on
+User spac
+\emph default
+e o 
+\emph on
+Userland.
+\emph default
+
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Il termine 
+\begin_inset Quotes eld
+\end_inset
+
+Userland
+\begin_inset Quotes erd
+\end_inset
+
+ o 
+\begin_inset Quotes eld
+\end_inset
+
+User space
+\begin_inset Quotes erd
+\end_inset
+
+ si riferisce a tutto il codice che è eseguito al di fuori del kernel.
+ Di solito sono programmi e librerie che il sistema operativo usa per interagire
+ col kernel.
+ Ogni processo nello Userspace è eseguito normalmente con una sua memoria
+ virtuale e a meno che non sia permesso in modo esplicito, non può accedere
+ alla memoria di altri processi.
+ Questo concetto è alla base dei sistemi di protezione per la memoria nei
+ moderni sistemi operativi ed è la base della separazione dei privilegi
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "userspace"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\end_inset
+
+ Inoltre, lo stesso kernel deve essere in grado di comunicare con l'hardware,
+ per esempio con il chip Wi-Fi, perché le richieste dall'utente possano
+ essere soddisfatte.
+ Tutte queste caratteristiche sono implementate tramite diversi livelli
+ software che ora descriverò.
+\end_layout
+
+\begin_layout Subsection
+Il passato: WE
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+Wireless Extensions 
+\emph default
+(WE o WEXT) è un progetto sponsorizzato da HP e dedicato alla tecnologia
+ Wi-Fi in Linux, creato da Jen Tourrilhes nel 1997.
+ 
+\emph on
+WE
+\emph default
+ è costituito da API generiche che permettono ai driver di esporre la configuraz
+ione allo
+\emph on
+ User space
+\emph default
+.
+ Inoltre, è affiancato da programmi chiamati 
+\emph on
+Wireless Tools
+\emph default
+ (WT) come per esempio 
+\emph on
+iwconfig
+\emph default
+, 
+\emph on
+iwlist
+\emph default
+ e 
+\emph on
+ifrename
+\emph default
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "wext_hp"
+
+\end_inset
+
+.
+ 
+\emph on
+WE
+\emph default
+ si basa su 
+\emph on
+Input/Output control
+\emph default
+ (ioctl), cioè una chiamata di sistema che riceve una costante numerica,
+ la quale identifica un comando da eseguire.
+ Si tratta di un'alternativa all'uso che ho già accennato nel Capitolo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:terzo-capitolo"
+
+\end_inset
+
+ di come il kernel può comunicare con lo
+\emph on
+ User space,
+\emph default
+ scrivendo file nella partizione 
+\emph on
+/proc
+\emph default
+.
+ Il vantaggio principale di 
+\emph on
+ioctl
+\emph default
+ è che non richiede la lettura di file in 
+\emph on
+/proc
+\emph default
+ e quindi risulta più veloce, perché ottenere dati binari è più efficiente
+ della lettura di file di testo.
+ 
+\emph on
+Ioctl
+\emph default
+ non serve solo per il trasferimento di dati o per le funzionalità wireless,
+ ma anche per svolgere operazioni in altri ambiti, come per esempio l'espulsione
+ di un disco da un Lettore CD 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "linuxdevicedriver_libro"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Il codice di 
+\emph on
+WE
+\emph default
+ è principalmente in 
+\family sans
+net/wireless/wext.c
+\family default
+ nel kernel Linux, ma basandosi su 
+\emph on
+ioctl
+\emph default
+, lo sviluppatore ha dovuto definire nuove costanti.
+ Per esempio, se voglio cambiare l'IP su un dispositivo posso usare 
+\emph on
+ifconfig
+\emph default
+,
+\emph on
+ 
+\emph default
+il quale può usare una chiamata 
+\emph on
+ioctl
+\emph default
+ specificando il nome dell'interfaccia, l'indirizzo e la costante 
+\emph on
+SIOCSIFADDR
+\emph default
+ creata per tale scopo
+\emph on
+,
+\emph default
+ definita in 
+\family sans
+/usr/include/linux/sockios.h
+\family default
+.
+ Purtroppo 
+\emph on
+WE
+\emph default
+ ha alcuni difetti:
+\end_layout
+
+\begin_layout Itemize
+molte funzioni devono essere re-implementate dai driver;
+\end_layout
+
+\begin_layout Itemize
+specifiche sul comportamento nel dettaglio troppo vaghe;
+\end_layout
+
+\begin_layout Itemize
+la semantica si basa su attributi individuali invece di specifiche azioni.
+\end_layout
+
+\begin_layout Standard
+Questo progetto è stato abbandonato, perché 
+\emph on
+cfg80211
+\emph default
+, che mostrerò tra poco, permette di emulare 
+\emph on
+WE
+\emph default
+ mantenendo la retrocompatibilità 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "johannesberg_presentation_linux,wext_hp"
+
+\end_inset
+
+ aggiungendo anche nuove funzionalità.
+\end_layout
+
+\begin_layout Subsection
+Il presente: nl80211, cfg8011 e mac80211
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Il-presente:-nl80211,cfg80211,mac80211"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+Libnl
+\emph default
+ è un insieme di librerie che forniscono API per il protocollo 
+\emph on
+Netlink
+\emph default
+ in Linux, cioè un meccanismo 
+\emph on
+IPC
+\emph default
+ principalmente tra 
+\emph on
+Kernel space
+\emph default
+ e 
+\emph on
+User space
+\emph default
+.
+ 
+\emph on
+Netlink
+\emph default
+ è stato realizzato come successore di 
+\emph on
+ioctl
+\emph default
+ per essere più flessibile e fornire interfacce di monitoraggio, ma principalmen
+te per la configurazione di rete per il kernel.
+ Per maggiori informazioni su 
+\emph on
+libnl
+\emph default
+ vedere 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "libnl"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/libnl_layer_diagram.png
+	lyxscale 70
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Architettura-libnl"
+
+\end_inset
+
+Architettura libnl
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\emph on
+Nl80211
+\emph default
+ e 
+\emph on
+cfg80211
+\emph default
+ non utilizzano più 
+\emph on
+ioctl
+\emph default
+, ma i 
+\emph on
+Netlink socket 
+\emph default
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "stackoverflow_nl80211_cfg80211_howwork"
+
+\end_inset
+
+.
+ Prima di procedere e vedere nel dettaglio cosa sono 
+\emph on
+nl80211
+\emph default
+ e 
+\emph on
+cfg80211
+\emph default
+ devo spiegare il significato di concetti importanti che utilizzerò tra
+ poco, cioè:
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+\emph on
+Full MAC
+\emph default
+ hardware
+\series default
+: dispositivo il cui comportamento è determinato solo dal produttore, ha
+ un 
+\emph on
+firmware
+\emph default
+ più grande e complesso, richiede memoria e capacità di elaborazione elevata
+ ed è più costoso.
+ Quindi, richiede un hardware in grado di gestire operazioni complesse ed
+ è il 
+\emph on
+firmware
+\emph default
+ ad implementare lo
+\emph on
+ stack di rete
+\emph default
+;
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+\emph on
+\begin_inset Quotes eld
+\end_inset
+
+Soft
+\begin_inset Quotes erd
+\end_inset
+
+ MAC
+\emph default
+ hardware
+\series default
+: dispositivo con un 
+\emph on
+firmware
+\emph default
+ più piccolo, più economico e il produttore ha meno controllo.
+\end_layout
+
+\begin_layout Subsection*
+nl80211
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+Nl80211
+\emph default
+ è un interfaccia 
+\emph on
+Netlink
+\emph default
+ nello 
+\emph on
+User space
+\emph default
+ creata da Johannes Martin Berg nel 2006, basata su 
+\emph on
+Netlink socket
+\emph default
+ e di conseguenza dipende da 
+\emph on
+libnl
+\emph default
+.
+ Insieme a 
+\emph on
+cfg80211
+\emph default
+ ha sostituito 
+\emph on
+WE
+\emph default
+, infatti 
+\emph on
+nl80211
+\emph default
+ è il lato 
+\emph on
+User space
+\emph default
+, mentre 
+\emph on
+cfg80211
+\emph default
+ è il lato
+\emph on
+ Kernel space
+\emph default
+, che insieme costituiscono i moderni strumenti per configurazione di dispositiv
+i wireless in Linux.
+\end_layout
+
+\begin_layout Subsection*
+cfg80211
+\end_layout
+
+\begin_layout Standard
+Quando dallo 
+\emph on
+User space
+\emph default
+ si manda un comando a 
+\emph on
+nl80211
+\emph default
+, prima di raggiungere l'hardware, viene gestito dal modulo del kernel 
+\emph on
+cfg80211
+\emph default
+ (il codice è in 
+\emph on
+net/wireless
+\emph default
+, 
+\family sans
+net/wireless/nl80211.c
+\family default
+ e 
+\family sans
+include/net/wireless.h
+\family default
+).
+ Nel caso di hardware 
+\emph on
+Full MAC,
+\emph default
+ lo specifico driver hardware si trova subito sotto a 
+\emph on
+cfg80211
+\emph default
+, quindi quest'ultimo dovrà chiamare direttamente il primo.
+ Invece, per hardware
+\emph on
+ Soft MAC
+\emph default
+ c'è anche 
+\emph on
+mac80211
+\emph default
+, che è un altro modulo del kernel che implementa il livello 802.11 MAC dello
+ 
+\emph on
+stack di rete
+\emph default
+.
+ Quindi, in questo caso 
+\emph on
+cfg80211
+\emph default
+ 
+\begin_inset Quotes eld
+\end_inset
+
+parlerà
+\begin_inset Quotes erd
+\end_inset
+
+ con 
+\emph on
+mac80211,
+\emph default
+ il quale si occuperà di comunicare con il driver hardware.
+ Per comprendere meglio questi concetti vedere la Figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:linux-wireless-kernel-stack"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/linux_wireless-network.png
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:linux-wireless-kernel-stack"
+
+\end_inset
+
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+Architettura generale dei driver Wi-Fi nel kernel Linux
+\end_layout
+
+\end_inset
+
+Architettura generale dei driver Wi-Fi nel kernel Linux.
+ A sinistra per hardware Full MAC e a destra per Soft MAC.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/Linux_wireless.Network_stack_detailed_version.png
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Architettura-nel-dettaglio-wifi-driver-linux"
+
+\end_inset
+
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+Architettura nel dettaglio dei driver Wi-Fi nel kernel Linux
+\end_layout
+
+\end_inset
+
+Architettura nel dettaglio dei driver Wi-Fi nel kernel Linux 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "linux-wireless-driver-architecture-blog-schema-dettagliato"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+Cfg80211
+\emph default
+ è un livello sopra a 
+\emph on
+mac80211
+\emph default
+ che si occupa della registrazione del dispositivo (tenendo conto delle
+ sue capacità come i canali, la banda, il bit-rate, la modalità dell'interfaccia
+), della gestione di stazioni AP, chiavi, 
+\emph on
+VIF
+\emph default
+ e infine della scansione.
+ 
+\emph on
+Cfg80211
+\emph default
+ si occupa di creare interfacce di rete, cambiarne il tipo (IBSS, managed,
+ AP e AP_VLAN, Mesh Point, monitor 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "modalitarete_linuxwireless"
+
+\end_inset
+
+), tenere traccia di quelle associate ad un dispositivo e permettere di
+ usare più interfacce di tipo differente contemporaneamente.
+ 
+\end_layout
+
+\begin_layout Standard
+Per quanto riguarda la scansione, vi sono funzioni in più rispetto a 
+\emph on
+WE
+\emph default
+, come la gestione di SSID multipli e la possibilità di specificare il canale
+\begin_inset CommandInset citation
+LatexCommand cite
+key "johannesberg_presentation_linux,wext_hp"
+
+\end_inset
+
+.
+ I vantaggi principali di 
+\emph on
+cfg80211
+\emph default
+ sono che:
+\end_layout
+
+\begin_layout Itemize
+utilizza i 
+\emph on
+Netlink
+\emph default
+ 
+\emph on
+socket
+\emph default
+ e non più 
+\emph on
+ioctl
+\emph default
+;
+\end_layout
+
+\begin_layout Itemize
+i driver devono implementare solo alcuni metodi di configurazione;
+\end_layout
+
+\begin_layout Itemize
+il comportamento è definito nel dettaglio;
+\end_layout
+
+\begin_layout Itemize
+la semantica si basa sulle specifiche IEEE 802.11;
+\end_layout
+
+\begin_layout Itemize
+al di sopra di esso vi è un'implementazione di 
+\emph on
+WE
+\emph default
+ per fornire retrocompatibilità (come si vede in Figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:linux-wireless-kernel-stack"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Subsection*
+mac80211
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+Mac80211
+\emph default
+ è un framework creato da Devicescape Software che gli sviluppatori di driver
+ possono usare per dispositivi wireless 
+\emph on
+Soft MAC
+\emph default
+, cioè quelli che permettono una gestione a grana fine (in inglese fine-grained)
+ dell'hardware.
+ 
+\emph on
+Mac80211
+\emph default
+ sostituisce 
+\emph on
+ieee80211softmac
+\emph default
+, un 
+\begin_inset Quotes eld
+\end_inset
+
+add-on
+\begin_inset Quotes erd
+\end_inset
+
+, per supportare 
+\emph on
+Soft MAC, 
+\emph default
+della libreria di supporto 
+\emph on
+ieee80211
+\emph default
+ usata per funzionalità di basso livello dei driver.
+
+\emph on
+ Mac80211
+\emph default
+ dipende da 
+\emph on
+cfg80211
+\emph default
+ per quanto riguarda la registrazione e la configurazione.
+ 
+\end_layout
+
+\begin_layout Standard
+Per una visione ancora più dettagliata dell'architettura dei driver Wi-Fi
+ nel kernel Linux, vedere la Figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Architettura-nel-dettaglio-wifi-driver-linux"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection*
+Architettura Wi-Fi di Nexus 5 e Samsung Galaxy S4
+\end_layout
+
+\begin_layout Standard
+Ho deciso di usare come riferimento i due Smartphone più recenti a disposizione.
+ Essi hanno lo stesso chip Wi-Fi Broadcom.
+ L'architettura è rappresentata in Figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Architettura-dei-driver-wifi-linux"
+
+\end_inset
+
+ con i livelli già descritti poco fa.
+ L'unica eccezione è 
+\emph on
+brcmfmac
+\emph default
+, cioè un driver 
+\emph on
+Open source
+\emph default
+ Broadcom per far comunicare il livello superiore standard 
+\emph on
+cfg80211
+\emph default
+ con il 
+\emph on
+firmware
+\emph default
+ proprietario, facendo una sorta di traduzione.
+ L'intera architettura rappresentata in Figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Architettura-dei-driver-wifi-linux"
+
+\end_inset
+
+ è costituita da codice 
+\emph on
+Open source
+\emph default
+, ad eccezione dell'ultimo livello, cioè il 
+\emph on
+firmware
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/Nexus5_linux_kernel.png
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Architettura-dei-driver-wifi-linux"
+
+\end_inset
+
+Architettura Wi-Fi Nexus 5 e Samsung Galaxy S4
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Visualizzare gli errori di wpa_supplicant
+\end_layout
+
+\begin_layout Standard
+Dopo l'introduzione teorica è il momento di mostrare come si comporta in
+ realtà 
+\emph on
+wpa_supplicant
+\emph default
+ e i messaggi d'errore che mostra, leggendo il 
+\emph on
+Logcat
+\emph default
+ di Android.
+ Il metodo più rapido è usare il comando 
+\emph on
+adb logcat wpa_supplicant:V *:S
+\emph default
+ nel terminale.
+ Questo mostrerà nella console tutti i messaggi 
+\begin_inset Quotes eld
+\end_inset
+
+verbose
+\begin_inset Quotes erd
+\end_inset
+
+ (V) associati a
+\emph on
+ wpa_supplicant
+\emph default
+, cioè di tutti i tipi: 
+\emph on
+verbose, debug, info
+\emph default
+,
+\emph on
+ warning, error
+\emph default
+.
+ Ho deciso di fare ciò per capire:
+\end_layout
+
+\begin_layout Itemize
+perché
+\emph on
+ wpa_supplican
+\emph default
+t mostra il messaggio d'errore 
+\emph on
+<5>P2P: Failed to add group interface
+\emph default
+ e cosa lo causa;
+\end_layout
+
+\begin_layout Itemize
+se il parametro passato ai driver è interpretato in modo corretto.
+\end_layout
+
+\begin_layout Standard
+In questa sezione mostrerò passo passo il log ottenuto su un Nexus 5, mostrando
+ le operazioni che svolge 
+\emph on
+wpa_supplicant
+\emph default
+ dall'avvio fino all'errore in questione.
+ Ove non specificato sono messaggi di 
+\emph on
+debug
+\emph default
+ (D), altrimenti 
+\emph on
+errori
+\emph default
+ (E).
+ Inoltre, per ottenere un log più breve e più interessante per questo lavoro
+ di tesi, oltre a rimuovere le parti superflue, non ho avviato 
+\emph on
+wpa_supplicant
+\emph default
+ su due interfacce, ma solo su 
+\emph on
+p2p0
+\emph default
+, cioè ho usato il comando 
+\emph on
+wpa_supplicant -B -ip2p0 -Dnl80211 -c/data/misc/wifi/p2p_supplicant.conf
+ -dd 
+\emph default
+(
+\begin_inset Quotes eld
+\end_inset
+
+-dd
+\begin_inset Quotes erd
+\end_inset
+
+ per ottenere più informazioni nel log).
+ La versione utilizzata è la 
+\emph on
+2.1-devel-4.4.4
+\emph default
+, cioè quella inclusa in Android KitKat 4.4.4 per Nexus 5.
+\end_layout
+
+\begin_layout LyX-Code
+ 1.
+ wpa_supplicant v2.1-devel-4.4.4
+\end_layout
+
+\begin_layout LyX-Code
+ 2.
+ Successfully initialized wpa_supplicant
+\end_layout
+
+\begin_layout Standard
+Tra le prime operazione svolte c'è l'inizializzazione dell'interfaccia di
+ rete con il driver specificato, cioè i parametri 
+\emph on
+-i<nome interfaccia>
+\emph default
+ e 
+\emph on
+-D<nome driver>
+\emph default
+.
+ Subito dopo viene individuato il file di configurazione, indicato con 
+\emph on
+-c<percorso assoluto file di configurazione>
+\emph default
+.
+\end_layout
+
+\begin_layout LyX-Code
+ 3.
+ Initializing interface 'p2p0' conf
+\end_layout
+
+\begin_layout LyX-Code
+    '/data/misc/wifi/p2p_supplicant.conf' driver 'nl80211'
+\end_layout
+
+\begin_layout LyX-Code
+    ctrl_interface 'N/A' bridge 'N/A'
+\end_layout
+
+\begin_layout LyX-Code
+ 4.
+ Configuration file /data/misc/wifi/p2p_supplicant.conf
+\end_layout
+
+\begin_layout LyX-Code
+    -> '/data/misc/wifi/p2p_supplicant.conf'
+\end_layout
+
+\begin_layout Standard
+A questo punto, 
+\emph on
+wpa_supplicant
+\emph default
+ è pronto per leggere la configurazione facendo il parsing del file.
+ In questa fase sono individuati problemi tra cui, per esempio, errori di
+ battitura, parametri non esistenti ed errori nei valori assegnati.
+ La prima osservazione che devo fare è che il parametro 
+\emph on
+driver_param='use_p2p_group_interface=1'
+\emph default
+ passato al driver è sintatticamente corretto, infatti non è apparso nessun
+ messaggio di errore durante il parsing.
+ 
+\end_layout
+
+\begin_layout LyX-Code
+ 5.
+ Reading configuration file
+\end_layout
+
+\begin_layout LyX-Code
+    '/data/misc/wifi/p2p_supplicant.conf'
+\end_layout
+
+\begin_layout LyX-Code
+ 6.
+ ctrl_interface='/data/misc/wifi/sockets'
+\end_layout
+
+\begin_layout LyX-Code
+ 7.
+ disable_scan_offload=1
+\end_layout
+
+\begin_layout LyX-Code
+ 8.
+ driver_param='use_p2p_group_interface=1'
+\end_layout
+
+\begin_layout LyX-Code
+ 9.
+ update_config=1
+\end_layout
+
+\begin_layout LyX-Code
+10.
+ device_name='Nexus5-poli4'
+\end_layout
+
+\begin_layout LyX-Code
+11.
+ config_methods='virtual_push_button 
+\end_layout
+
+\begin_layout LyX-Code
+    physical_display keypad'
+\end_layout
+
+\begin_layout LyX-Code
+12.
+ p2p_ssid_postfix='-Nexus5-poli4'
+\end_layout
+
+\begin_layout LyX-Code
+13.
+ persistent_reconnect=1
+\end_layout
+
+\begin_layout Standard
+A questo punto sono entrati in gioco i messaggi lanciati direttamente dal
+ driver 
+\emph on
+nl80211
+\emph default
+, già descritto nella Sottosezione 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Il-presente:-nl80211,cfg80211,mac80211"
+
+\end_inset
+
+.
+ La riga 14 dice che il driver 
+\emph on
+nl80211
+\emph default
+ permette l'aggiunta di interfacce virtuali di rete e la 15 che supporta
+ anche le operazioni concorrenti su più canali di comunicazione.
+ Dopodiché, nella riga 16, l'interfaccia 
+\emph on
+p2p0
+\emph default
+ viene creata in 
+\emph on
+phy0
+\emph default
+, cioè sull'unico chip Wi-Fi presente nel Nexus 5 e in quella successiva
+ è impostata come tipo STATION ed indice 20.
+ Nelle righe 18 e 19, 
+\series bold
+\emph on
+nl80211
+\series default
+\emph default
+ 
+\series bold
+ha elaborato correttamente il parametro passato ai driver e ha confermato
+ che saranno usate interfacce P2P di gruppo separate
+\series default
+.
+ Perfetto! Ma se la configurazione e il parametro sono interpretati correttament
+e, dove è il problema? Per scoprirlo bisogna continuare a leggere il log.
+\end_layout
+
+\begin_layout LyX-Code
+14.
+ nl80211: Use separate P2P group interface
+\end_layout
+
+\begin_layout LyX-Code
+    (driver advertised support)
+\end_layout
+
+\begin_layout LyX-Code
+15.
+ nl80211: Enable multi-channel concurrent
+\end_layout
+
+\begin_layout LyX-Code
+    (driver advertised support)
+\end_layout
+
+\begin_layout LyX-Code
+16.
+ nl80211: interface p2p0 in phy phy0
+\end_layout
+
+\begin_layout LyX-Code
+17.
+ nl80211: Set mode ifindex 20 iftype 2 (STATION)
+\end_layout
+
+\begin_layout LyX-Code
+18.
+ nl80211: driver param='use_p2p_group_interface=1'
+\end_layout
+
+\begin_layout LyX-Code
+19.
+ nl80211: Use separate P2P group interface
+\end_layout
+
+\begin_layout Standard
+Infatti, all'interfaccia 
+\emph on
+p2p0
+\emph default
+, prima è assegnato il MAC address e poi è impostato l'UUID per supportare
+ WPS.
+ Quindi, 
+\emph on
+p2p0
+\emph default
+ viene aggiunta e 
+\emph on
+wpa_supplicant
+\emph default
+ diventa un 
+\emph on
+daemon
+\emph default
+ (come specificato dal parametro 
+\begin_inset Quotes eld
+\end_inset
+
+-B
+\begin_inset Quotes erd
+\end_inset
+
+).
+\end_layout
+
+\begin_layout LyX-Code
+20.
+ p2p0: Own MAC address: fa:a9:d0:0c:e5:30
+\end_layout
+
+\begin_layout LyX-Code
+21.
+ WPS: Set UUID for interface p2p0
+\end_layout
+
+\begin_layout LyX-Code
+22.
+ WPS: UUID based on MAC address - hexdump(len=16):
+\end_layout
+
+\begin_layout LyX-Code
+    30 0c 7a b7 38 8f 5f af ae e2 49 d3 5f d4 30 01
+\end_layout
+
+\begin_layout LyX-Code
+23.
+ p2p0: Added interface p2p0
+\end_layout
+
+\begin_layout LyX-Code
+24.
+ Daemonize..
+\end_layout
+
+\begin_layout Standard
+Ora 
+\emph on
+wpa_supplicant
+\emph default
+ è un 
+\emph on
+daemon
+\emph default
+ in background ed è in attesa di comandi, cioè quelli che ho fornito tramite
+ 
+\emph on
+wpa_cli
+\emph default
+ eseguito sull'interfaccia 
+\emph on
+p2p0
+\emph default
+.
+ Infatti, il primo messaggio è 
+\emph on
+P2P_GROUP_ADD
+\emph default
+, generato dal comando 
+\emph on
+p2p_group_add
+\emph default
+ (riga 25).
+ Come già accennato, l'esecuzione di alcuni comandi in 
+\emph on
+wpa_cli
+\emph default
+ ferma forzatamente la 
+\emph on
+fase di Discovery
+\emph default
+ (riga 26).
+\end_layout
+
+\begin_layout LyX-Code
+25.
+ p2p0: Control interface command 'P2P_GROUP_ADD'
+\end_layout
+
+\begin_layout LyX-Code
+26.
+ P2P: Stop any on-going P2P FIND
+\end_layout
+
+\begin_layout Standard
+Ora questo comando è elaborato impostando la frequenza di funzionamento.
+ Ricordo in modo estremamente semplificato che IEEE 802.11 a 2,4 GHz divide
+ lo spettro in 14 sottocanali con larghezza di banda 20 MHz (o 40 nel caso
+ della versione IEEE 802.11n).
+ Frequenza e canale sono associati, cioè ogni canale funziona su una certa
+ frequenza, o più precisamente in una certa banda in frequenza.
+ Nel mio caso, non avendo specificato un canale, il programma ha scelto
+ il primo ed ovviamente il dispositivo diventerà un GO avendo indicato la
+ volontà di usare un gruppo 
+\emph on
+autonomous
+\emph default
+.
+ Questo non è un errore, perché è corretto che il dispositivi usino canali
+ differenti, infatti la 
+\emph on
+fase di Discovery
+\emph default
+ serve proprio per farli trovare sullo stesso canale.
+ Dopodiché, il driver 
+\emph on
+nl80211
+\emph default
+ crea l'interfaccia di gruppo 
+\emph on
+p2p-p2p0-0
+\emph default
+ con modalità 
+\emph on
+P2P_GO
+\emph default
+ e con indice 22 (righe 30 e 31).
+ A questo, 
+\emph on
+wpa_supplicant
+\emph default
+ assegna il MAC address all'interfaccia con il driver 
+\emph on
+nl80211
+\emph default
+ e il socket che sarà creato nella cartella predefinita (righe 32 e 33),
+ come già mostrato nel Capitolo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:terzo-capitolo"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout LyX-Code
+27.
+ P2P: Set GO freq 2412 MHz (no preference known)
+\end_layout
+
+\begin_layout LyX-Code
+28.
+ P2P: Cannot force GO on any of the channels we are
+\end_layout
+
+\begin_layout LyX-Code
+    already using.
+ Use one of the free channels
+\end_layout
+
+\begin_layout LyX-Code
+29.
+ P2P: Create a new interface p2p-p2p0-0 for the group
+\end_layout
+
+\begin_layout LyX-Code
+30.
+ nl80211: Create interface iftype 9 (P2P_GO)
+\end_layout
+
+\begin_layout LyX-Code
+31.
+ nl80211: New interface p2p-p2p0-0 created: ifindex=22
+\end_layout
+
+\begin_layout LyX-Code
+32.
+ P2P: Created pending virtual interface p2p-p2p0-0 
+\end_layout
+
+\begin_layout LyX-Code
+    addr fa:a9:d0:0c:65:30
+\end_layout
+
+\begin_layout LyX-Code
+33.
+ Initializing interface 'p2p-p2p0-0' conf 'N/A' driver
+\end_layout
+
+\begin_layout LyX-Code
+    'nl80211' ctrl_interface '/data/misc/wifi/sockets'
+\end_layout
+
+\begin_layout LyX-Code
+    bridge 'N/A'
+\end_layout
+
+\begin_layout Standard
+Prima di procedere, voglio specificare un fatto che tornerà utile in seguito,
+ cioè l'assegnamento del MAC address.
+ L'interfaccia 
+\emph on
+p2p0
+\emph default
+ usata in precedenza ha MAC address fa:a9:d0:0c:e5:30, mentre quella nuova
+ 
+\emph on
+p2p-p2p0-0
+\emph default
+ ha fa:a9:d0:0c:65:30, cioè sono differenti.
+ Al momento sembrerà un'osservazione inutile, ma è veramente essenziale
+ per comprendere esattamente quale sia il motivo per cui 
+\emph on
+wpa_supplicant
+\emph default
+ non riesce a creare la seconda interfaccia di rete virtuale.
+ Tornerò su tale argomento nella conclusione di questo capitolo.
+\end_layout
+
+\begin_layout Standard
+Tornando all'analisi del log, dopo la creazione di 
+\emph on
+p2p-p2p0-0
+\emph default
+, il driver 
+\emph on
+nl80211
+\emph default
+ ripete le stesse operazioni eseguite in precedenza (righe 14-19), ma questa
+ volta sulla nuova interfaccia.
+ Riporto comunque le operazioni nelle righe 34-39 per una questione di completez
+za.
+\end_layout
+
+\begin_layout LyX-Code
+34.
+ nl80211: Use separate P2P group interface
+\end_layout
+
+\begin_layout LyX-Code
+    (driver advertised support)
+\end_layout
+
+\begin_layout LyX-Code
+35.
+ nl80211: Enable multi-channel concurrent 
+\end_layout
+
+\begin_layout LyX-Code
+    (driver advertised support)
+\end_layout
+
+\begin_layout LyX-Code
+36.
+ nl80211: interface p2p-p2p0-0 in phy phy0
+\end_layout
+
+\begin_layout LyX-Code
+37.
+ nl80211: Set mode ifindex 22 iftype 9 (P2P_GO)
+\end_layout
+
+\begin_layout LyX-Code
+38.
+ nl80211: driver param='use_p2p_group_interface=1'
+\end_layout
+
+\begin_layout LyX-Code
+39.
+ nl80211: Use separate P2P group interface
+\end_layout
+
+\begin_layout Standard
+Dopodiché, una volta che l'interfaccia è aggiunta e disponibile, viene avviato
+ il gruppo 
+\emph on
+Wi-Fi Direct
+\emph default
+, impostando l'AP con SSID scelto in modo pseudo-casuale (rispettando comunque
+ le specifiche del protocollo che richiedono l'uso di 
+\begin_inset Quotes eld
+\end_inset
+
+DIRECT-
+\begin_inset Quotes erd
+\end_inset
+
+ come prefisso).
+\end_layout
+
+\begin_layout LyX-Code
+40.
+ p2p-p2p0-0: Own MAC address: fa:a9:d0:0c:65:30
+\end_layout
+
+\begin_layout LyX-Code
+41.
+ p2p-p2p0-0: Added interface p2p-p2p0-0
+\end_layout
+
+\begin_layout LyX-Code
+42.
+ p2p0: P2P: Use separate group interface p2p-p2p0-0
+\end_layout
+
+\begin_layout LyX-Code
+43.
+ p2p-p2p0-0: P2P: Starting GO
+\end_layout
+
+\begin_layout LyX-Code
+44.
+ Setting up AP (SSID='DIRECT-D9-Nexus5-poli4')
+\end_layout
+
+\begin_layout Standard
+A questo punto anche il driver 
+\emph on
+nl80211
+\emph default
+ è informato dello stato di questa nuova interfaccia avviata e l'inizializzazion
+e termina in modo corretto (righe 45-49).
+\end_layout
+
+\begin_layout LyX-Code
+45.
+ nl80211: Setup AP operations for P2P group (GO)
+\end_layout
+
+\begin_layout LyX-Code
+46.
+ nl80211: Set mode ifindex 22 iftype 9 (P2P_GO)
+\end_layout
+
+\begin_layout LyX-Code
+47.
+ Completing interface initialization
+\end_layout
+
+\begin_layout LyX-Code
+48.
+ Mode: IEEE 802.11g Channel: 1 Frequency: 2412 MHz
+\end_layout
+
+\begin_layout LyX-Code
+49.
+ nl80211: Set freq 2412 (ht_enabled=1, vht_enabled=0,
+\end_layout
+
+\begin_layout LyX-Code
+    bandwidth=20 MHz, cf1=2412 MHz, cf2=0 MHz)
+\end_layout
+
+\begin_layout Standard
+Ora, il gruppo è pronto e anche 
+\emph on
+wpa_supplicant
+\emph default
+ mostra lo stato in 
+\emph on
+wpa_cli
+\emph default
+, tramite 
+\emph on
+P2P-GROUP-STARTED
+\emph default
+.
+\end_layout
+
+\begin_layout LyX-Code
+50.
+ P2P-GROUP-STARTED p2p-p2p0-0 GO 
+\end_layout
+
+\begin_layout LyX-Code
+    ssid="DIRECT-D9-Nexus5-poli4" freq=2412 
+\end_layout
+
+\begin_layout LyX-Code
+    passphrase="MCJLTwVk" go_dev_addr=fa:a9:d0:0c:e5:30
+\end_layout
+
+\begin_layout LyX-Code
+51.
+ p2p-p2p0-0: Setup of interface done.
+\end_layout
+
+\begin_layout Standard
+Fino a questo punto non ci sono stati problemi, anzi, solo aspetti positivi
+ nel capire che in effetti la configurazione è corretta e che i parametri
+ sono interpretati in modo giusto.
+ Il problema nasce con l'aggiunta della seconda 
+\emph on
+VIF
+\emph default
+, tramite 
+\emph on
+p2p_group_add 
+\emph default
+in
+\emph on
+ wpa_cli
+\emph default
+ (righe 52-58).
+\end_layout
+
+\begin_layout LyX-Code
+52.
+ p2p0: Control interface command 'P2P_GROUP_ADD'
+\end_layout
+
+\begin_layout LyX-Code
+53.
+ P2P: Stop any on-going P2P FIND
+\end_layout
+
+\begin_layout LyX-Code
+54.
+ P2P: Stopping find
+\end_layout
+
+\begin_layout LyX-Code
+55.
+ P2P: Set GO freq 2412 MHz (no preference known)
+\end_layout
+
+\begin_layout LyX-Code
+56.
+ P2P: Force GO on a channel we are already using (2412 MHz)
+\end_layout
+
+\begin_layout LyX-Code
+57.
+ P2P: Create a new interface p2p-p2p0-1 for the group
+\end_layout
+
+\begin_layout LyX-Code
+58.
+ nl80211: Create interface iftype 9 (P2P_GO)
+\end_layout
+
+\begin_layout Standard
+Infatti, inizialmente 
+\emph on
+wpa_supplicant
+\emph default
+ esegue tutte le operazioni in modo corretto riuscendo anche a riutilizzare
+ il canale 1 della prima interfaccia di gruppo.
+ Però, nel momento in cui interviene 
+\emph on
+nl80211
+\emph default
+, il quale di fatto espone semplicemente le funzionalità di 
+\emph on
+cfg80211
+\emph default
+, compare l'errore nelle righe 59-61.
+\end_layout
+
+\begin_layout LyX-Code
+59.
+ Failed to create interface p2p-p2p0-1: -12 (Out of memory)
+\end_layout
+
+\begin_layout LyX-Code
+60.
+ Failed to create new group interface
+\end_layout
+
+\begin_layout LyX-Code
+61.
+ Failed to add group interface
+\end_layout
+
+\begin_layout Standard
+Questo è molto importante, perché finalmente sono a conoscenza dello specifico
+ codice dell'errore, cioè 
+\emph on
+-12 (Out of memory)
+\emph default
+.
+ Nell'immediato non è d'aiuto, ma è un punto di inizio per cercare di capire
+ perché i driver Wi-Fi non si comportano nel modo corretto.
+\end_layout
+
+\begin_layout Section
+Studio dei driver Broadcom
+\end_layout
+
+\begin_layout Standard
+Dopo che ho scoperto il codice d'errore, cioè 
+\emph on
+-12 (Out of memory)
+\emph default
+, ho cercato di capire chi lo generasse e l'unica possibilità è 
+\emph on
+wpa_supplicant
+\emph default
+ stesso.
+ Ma chi è che causa un errore in questo programma che in cascata genera
+ 
+\emph on
+-12 (Out of memory)
+\emph default
+? L'unica spiegazione plausibile è che sono i driver.
+ Così, ho preso come riferimento sempre il Nexus 5, Smartphone dotato di
+ 
+\emph on
+Broadcom BCM4339 5G Wi-Fi combo chip
+\emph default
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "ifixit_nexus5_chip_wifi,bcm4339"
+
+\end_inset
+
+.
+ Questo chip usa i driver 
+\emph on
+brcm80211/brcmfmac
+\emph default
+ nel kernel di Android, ma quando ho affrontato questo problema la prima
+ volta, l'ho fatto senza poter conoscere questo dettaglio, poiché la documentazi
+one ufficiale è stata rilasciata da Broadcom solamente durante la scrittura
+ di questo documento ed oltretutto in seguito ad una mia richiesta 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "broadcom_creativecommins_driver"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Quindi, senza conoscenze particolari su questo chip Wi-Fi, ho pensato che
+ è molto probabile che i driver abbiano una sorta di messaggi di debug all'inter
+no.
+ Inoltre, essendo nel kernel di Android è probabile che scrivano tali informazio
+ni direttamente nel log del kernel.
+ Questa si è rivelata un'ottima idea poiché, come mostrerò tra poco, le
+ informazioni nel log del kernel mi hanno permesso di fornire.
+ È importante notare che questo log e 
+\emph on
+Logcat
+\emph default
+ sono cose completamente diverse e si trovano in spazi differenti, infatti
+ dal secondo non si può leggere i messaggi del kernel.
+ Addirittura, 
+\emph on
+Logact
+\emph default
+ è un processo avviato con il sistema operativo, quindi tutte le informazioni
+ dall'avvio del kernel non sarebbero visibili.
+ 
+\end_layout
+
+\begin_layout Standard
+Il metodo più comodo che ho trovato per leggere il log del kernel è usare
+ il comando Linux 
+\emph on
+dmesg
+\emph default
+.
+ Il risultato, opportunamente ridotto, è riportato in questa sezione, incomincia
+ndo dai primi messaggi di log all'avvio del kernel (vedi Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Log-dell'avvio-kernel-linux-comando-dmesg"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+<6>[ 0.000000] Booting Linux on physical CPU 0
+\end_layout
+
+\begin_layout LyX-Code
+<6>[ 0.000000] Initializing cgroup subsys cpu
+\end_layout
+
+\begin_layout LyX-Code
+<5>[ 0.000000] Linux version 3.4.0-gd59db4e 
+\end_layout
+
+\begin_layout LyX-Code
+   (android-build@vpbs1.mtv.corp.google.com) 
+\end_layout
+
+\begin_layout LyX-Code
+   (gcc version 4.7 (GCC) ) #1 SMP PREEMPT 
+\end_layout
+
+\begin_layout LyX-Code
+   Mon Mar 17 15:16:36 PDT 2014
+\end_layout
+
+\begin_layout LyX-Code
+<4>[ 0.000000] CPU: ARMv7 Processor [512f06f0] 
+\end_layout
+
+\begin_layout LyX-Code
+   revision 0 (ARMv7), cr=10c5387d
+\end_layout
+
+\begin_layout LyX-Code
+<4>[ 0.000000] CPU: PIPT / VIPT nonaliasing data 
+\end_layout
+
+\begin_layout LyX-Code
+   cache, PIPT instruction cache
+\end_layout
+
+\begin_layout LyX-Code
+<6>[ 0.000000] Machine: Qualcomm MSM 8974 HAMMERHEAD
+\end_layout
+
+\begin_layout LyX-Code
+   (Flattened Device Tree), model: LGE MSM 8974 HAMMERHEAD
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:Log-dell'avvio-kernel-linux-comando-dmesg"
+
+\end_inset
+
+Log dell'avvio kernel Linux con il comando dmesg
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+Ma ciò che è più importante, sono i messaggi mostrati in concomitanza dell'esecu
+zione di 
+\emph on
+wpa_supplicant
+\emph default
+, in particolare durante il lancio dei due comandi 
+\emph on
+p2p_group_add
+\emph default
+.
+ Come si può notare nell'Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Log-dell'errore-durante-creazione-2-vif-comando-dmesg"
+
+\end_inset
+
+ compaiono diversi errori, non più in 
+\emph on
+wpa_supplicant
+\emph default
+ o 
+\emph on
+nl80211
+\emph default
+, ma nel livello inferiore, cioè 
+\emph on
+cfg80211
+\emph default
+.
+ Nella riga 1, l'interfaccia di rete è creata con successo, cioè la prima
+ con nome 
+\emph on
+p2p-p2p0-0
+\emph default
+.
+ Dopodiché, 
+\emph on
+cfg80211
+\emph default
+ mostra comunque degli errori nonostante la 
+\emph on
+VIF
+\emph default
+ sia utilizzabile e funzionante.
+ Non mi sono preoccupato di questo, poiché sono in grado di collegare dispositiv
+i ed utilizzare tale interfaccia senza difficoltà.
+\end_layout
+
+\begin_layout Standard
+Il problema è apparso quando ho lanciato il comando 
+\emph on
+p2p_group_add
+\emph default
+ per la seconda volta, infatti, il risultato è stato quello delle righe
+ 8 e 9 dell'Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Log-dell'errore-durante-creazione-2-vif-comando-dmesg"
+
+\end_inset
+
+.
+ Questa volta l'errore, oltre al codice, indica anche il nome 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+seqsplit{wl
+\backslash
+_cfg80211
+\backslash
+_add
+\backslash
+_virtual
+\backslash
+_iface}
+\end_layout
+
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+, che fa pensare ad una funzione all'interno dei driver.
+ Per ottenere la conferma ho usato il comando 
+\emph on
+grep -r 
+\begin_inset Quotes eld
+\end_inset
+
+wl_cfg80211_add_virtual_iface
+\begin_inset Quotes erd
+\end_inset
+
+
+\emph default
+ all'interno del sorgente del kernel e il risultato è quello in Figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Risultato-del-comando-grep-r"
+
+\end_inset
+
+.
+ Fortunatamente questa stringa appare solo nel file 
+\family sans
+/drivers/net/wireless/bcmdhd/wl_cfg80211.c.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+ 1.
+ <4>[8724.652887] Broadcom Dongle Host Driver: register
+\end_layout
+
+\begin_layout LyX-Code
+    interface [p2p-p2p0-0] MAC: fa:a9:d0:0c:65:30
+\end_layout
+
+\begin_layout LyX-Code
+ 2.
+ <6>[8724.654238] CFG80211-ERROR) wl_cfg80211_add_virtual_iface
+\end_layout
+
+\begin_layout LyX-Code
+    virtual interface(p2p-p2p0-0) is created net attach done
+\end_layout
+
+\begin_layout LyX-Code
+ 3.
+ <6>[8724.660003] CFG80211-ERROR) dhd_cfg80211_set_p2p_info:
+\end_layout
+
+\begin_layout LyX-Code
+    Set : op_mode=0x0045
+\end_layout
+
+\begin_layout LyX-Code
+ 4.
+ <6>[8724.750920] CFG80211-ERROR) wl_cfg80211_set_channel:
+\end_layout
+
+\begin_layout LyX-Code
+    netdev_ifidx(22), chan_type(0) target channel(1) 
+\end_layout
+
+\begin_layout LyX-Code
+ 5.
+ <6>[8724.752669] CFG80211-ERROR) wl_cfg80211_set_channel:
+\end_layout
+
+\begin_layout LyX-Code
+    netdev_ifidx(22), chan_type(1) target channel(1) 
+\end_layout
+
+\begin_layout LyX-Code
+ 6.
+ <6>[8724.753675] CFG80211-ERROR) wl_cfg80211_del_station:
+\end_layout
+
+\begin_layout LyX-Code
+    Disconnect STA : ff:ff:ff:ff:ff:ff scb_val.val 3
+\end_layout
+
+\begin_layout LyX-Code
+ 7.
+ <7>[8726.168810] p2p-p2p0-0: no IPv6 routers present
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset VSpace defskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+ 8.
+ <4>[8726.168944] 'wl p2p_ifadd' error -2
+\end_layout
+
+\begin_layout LyX-Code
+ 9.
+ <6>[8726.169368] CFG80211-ERROR) 
+\end_layout
+
+\begin_layout LyX-Code
+    wl_cfg80211_add_virtual_iface : virtual iface add failed (-2) 
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:Log-dell'errore-durante-creazione-2-vif-comando-dmesg"
+
+\end_inset
+
+Log dell'errore durante la creazione di due VIF con il comando dmesg
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/tagliate/0-funzione-che-genera-messaggio-errore.png
+	lyxscale 60
+	width 100col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Risultato-del-comando-grep-r"
+
+\end_inset
+
+Risultato del comando grep -r 
+\begin_inset Quotes eld
+\end_inset
+
+wl_cfg80211_add_virtual_iface
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+Analizzando tale file, riportato parzialmente in Figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:file_wl_cfg80211.c"
+
+\end_inset
+
+, c'è la definizione della 
+\emph on
+struct net_device 
+\emph default
+che in caso di errore mostra il messaggio 
+\begin_inset Quotes eld
+\end_inset
+
+Virtual iface add failed <codice errore>
+\begin_inset Quotes erd
+\end_inset
+
+ in Figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:errore_virtual_iface_add-failed"
+
+\end_inset
+
+, cioè quello ottenuto nell'Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Log-dell'errore-durante-creazione-2-vif-comando-dmesg"
+
+\end_inset
+
+, riga 9.
+ Questo messaggio è lanciato perché la variabile 
+\emph on
+err 
+\emph default
+ha una valore non ammesso, verificato tramite la 
+\emph on
+macro
+\emph default
+ Linux 
+\emph on
+unlikely
+\emph default
+ (usata per motivi d'ottimizzazione e sfruttare la tecnica chiamata 
+\emph on
+branch prediction
+\emph default
+).
+ Comunque, tale argomento è al di fuori da questo lavoro di tesi, quindi
+ mi voglio concentrare sulla funzione che genera l'errore, cioè 
+\emph on
+wl_cfgp2p_ifadd
+\emph default
+, la cui definizione, che è stata trovata grazie a grep (vedi Figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:ricerca-grep-wl80211p2pifadd"
+
+\end_inset
+
+), è visibile in Figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:defizione_wl_cfgp2p_ifadd_in_wlcfgp2p.c"
+
+\end_inset
+
+.
+ In questa funzione, vi è un'altra chiamata ad un'altra funzione, visibile
+ in Figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:chiamata_wldev_iovar_setbuff"
+
+\end_inset
+
+.
+ Tramite 
+\emph on
+grep
+\emph default
+ (Figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:ricerca_wldev_iovar_setbuff"
+
+\end_inset
+
+) ho scoperto che è definita in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:definizione_wldev_iovar_setbuff_in_wl_common.c"
+
+\end_inset
+
+ 
+\family sans
+wldev_common.c
+\family default
+.
+ Dopodiché, in essa ho notato che vi è la chiamata a 
+\emph on
+wldev_ioctl
+\emph default
+ in Figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:wldev_ioctl_chiamata_dhd_ioctl_entry_local"
+
+\end_inset
+
+ e così via addentrandosi sempre più nel meccanismo di comunicazione basato
+ su 
+\emph on
+ioctl
+\emph default
+, senza però giungere ad un motivo per cui 
+\emph on
+err
+\emph default
+ assuma quel valore.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/tagliate/1.png
+	lyxscale 60
+	scale 45
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:file_wl_cfg80211.c"
+
+\end_inset
+
+Funzione del file wl_cfg80211.c
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/tagliate/2 - wl_cfg80211 - riga del messaggio errore.png
+	lyxscale 60
+	width 100col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:errore_virtual_iface_add-failed"
+
+\end_inset
+
+Errore 
+\begin_inset Quotes eld
+\end_inset
+
+Virtual iface add failed
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/tagliate/3.png
+	lyxscale 60
+	width 100col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:ricerca-grep-wl80211p2pifadd"
+
+\end_inset
+
+Ricerca con grep wl_cfgp2p_ifadd
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/tagliate/4.png
+	lyxscale 60
+	width 100col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:defizione_wl_cfgp2p_ifadd_in_wlcfgp2p.c"
+
+\end_inset
+
+Definzione funzione wl_cfgp2p_ifadd in wl_cfgp2p.c
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/tagliate/5.png
+	lyxscale 60
+	width 100col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:chiamata_wldev_iovar_setbuff"
+
+\end_inset
+
+Chiamata a wldev_iovar_setbuff
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/tagliate/6.png
+	lyxscale 60
+	width 100col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:ricerca_wldev_iovar_setbuff"
+
+\end_inset
+
+Ricerca con grep di wldev_iovar_setbuff
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/tagliate/7.png
+	lyxscale 60
+	width 100col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:definizione_wldev_iovar_setbuff_in_wl_common.c"
+
+\end_inset
+
+Definizione wldev_iovar_setbuff in wldev_common.c e chiamata a wldev_ioctl
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/tagliate/8.png
+	lyxscale 60
+	width 100col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:wldev_ioctl_chiamata_dhd_ioctl_entry_local"
+
+\end_inset
+
+Definizione di wldev_ioctl e chiamata dhd_ioctl_entry_local
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Così ho pensato ad un'alternativa, cioè ritornare in 
+\family sans
+wl_cfgp2p.c
+\family default
+ e prima di assegnare il valore ad 
+\emph on
+err
+\emph default
+, chiamando 
+\emph on
+wldev_iovar_setbuff
+\emph default
+, ho aggiunto la 
+\emph on
+printk
+\emph default
+ 
+\end_layout
+
+\begin_layout LyX-Code
+printk("My message-MAC= 
+\end_layout
+
+\begin_layout LyX-Code
+%02x:%02x:%02x:%02x:%02x:%02x 
+\backslash
+n",ifreq.addr.octet[0],
+\end_layout
+
+\begin_layout LyX-Code
+ifreq.addr.octet[1], ifreq.addr.octet[2],
+\end_layout
+
+\begin_layout LyX-Code
+ifreq.addr.octet[3], ifreq.addr.octet[4],
+\end_layout
+
+\begin_layout LyX-Code
+ifreq.addr.octet[5]); 
+\end_layout
+
+\begin_layout Standard
+con il MAC address dell'interfaccia che si vuole inizializzare.
+ Ovviamente, ho dovuto studiare le 
+\emph on
+struct
+\emph default
+ di questo file per individuare il modo per estrarre il MAC address.
+ Inoltre, per essere precisi, durante i test ho gestito anche l'indice dell'inte
+rfaccia, cioè 
+\emph on
+ifindex
+\emph default
+, ma per brevità mi concentrerò solo sul concetto più importante.
+ Per semplificare, non è altro che una printf, il cui output è visibile
+ tramite il comando 
+\emph on
+dmesg
+\emph default
+, cioè l'output è salvato nel log del kernel.
+ In altre parole, ho fatto si che nel log di 
+\emph on
+dmesg
+\emph default
+ visto all'inizio di questa sezione, appaia un messaggio aggiuntivo con
+ il MAC address assegnato a quella 
+\emph on
+VIF
+\emph default
+.
+ Il risultato è visibile nell'Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Log-dmesg-con-printk-mac-address"
+
+\end_inset
+
+ in cui si può notare che 
+\series bold
+l'interfaccia viene creata sempre con lo stesso MAC address
+\series default
+ nel 
+\emph on
+net_device
+\emph default
+, quindi 
+\series bold
+più gruppi avranno tutti lo stesso indirizzo fisico
+\series default
+.
+
+\series bold
+ Questa situazione non è permessa, essendo il MAC address un identificativo
+ univoco.
+
+\series default
+ Ma, la domanda è: perché avviene? Si tratta di un bug dei driver, di funzioni
+ non implementate o altro?
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+<4>[303.999692] My message-MAC= fa:a9:d0:0c:65:30
+\end_layout
+
+\begin_layout LyX-Code
+<4>[304.016646] Broadcom Dongle Host Driver: 
+\end_layout
+
+\begin_layout LyX-Code
+   register interface [p2p-p2p0-0] MAC: fa:a9:d0:0c:65:30
+\end_layout
+
+\begin_layout LyX-Code
+<6>[304.018220] CFG80211-ERROR) wl_cfg80211_
+\end_layout
+
+\begin_layout LyX-Code
+   add_virtual_iface : virtual interface(p2p-p2p0-0) 
+\end_layout
+
+\begin_layout LyX-Code
+   is created net attach done
+\end_layout
+
+\begin_layout LyX-Code
+<6>[304.031038] CFG80211-ERROR) 
+\end_layout
+
+\begin_layout LyX-Code
+   wl_cfg80211_determine_vsdb_mode : Same Channel
+\end_layout
+
+\begin_layout LyX-Code
+   concurrency is enabled
+\end_layout
+
+\begin_layout LyX-Code
+<4>[305.065186] My message-MAC= fa:a9:d0:0c:64:81
+\end_layout
+
+\begin_layout LyX-Code
+<4>[305.065334] 'wl p2p_ifadd' error -2
+\end_layout
+
+\begin_layout LyX-Code
+<6>[305.065412] CFG80211-ERROR) 
+\end_layout
+
+\begin_layout LyX-Code
+   wl_cfg80211_add_virtual_iface: virtual iface add 
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:Log-dmesg-con-printk-mac-address"
+
+\end_inset
+
+Log dmesg con una printk aggiunta per mostrare il MAC address
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+Giunti a questo punto, l'unico modo per ottenere delle risposte è stato
+ contattare uno dipendente di Broadcom, Arend van Spriel, uno degli sviluppatori
+ che si è occupato proprio del chip Wi-Fi del Nexus 5, che è anche lo stesso
+ del Samsung Galaxy S4.
+ Questo hardware è supportato dai driver 
+\emph on
+brcmfmac
+\emph default
+, cioè basati su 
+\emph on
+cfg80211
+\emph default
+ o più precisamente 
+\emph on
+Full MAC
+\emph default
+, dove lo 
+\emph on
+stack 802.11
+\emph default
+ si trova nel 
+\emph on
+firmware
+\emph default
+ dei chip Wi-Fi 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "broadcom_driver_full_mac_Kernel_linux_mailinglist"
+
+\end_inset
+
+.
+ La spiegazione è chiara, infatti come detto all'inizio del capitolo,
+\series bold
+ l'hardware 
+\emph on
+Full MAC
+\emph default
+ non utilizza 
+\emph on
+mac80211
+\emph default
+, ma in 
+\emph on
+cfg80211
+\emph default
+ vi è il sistema di comunicazione con il 
+\emph on
+firmware
+\emph default
+ proprietario
+\series default
+ (anche se in questo caso c'è il livello aggiuntivo 
+\emph on
+brcmfmac
+\emph default
+).
+ Questo spiega:
+\end_layout
+
+\begin_layout Enumerate
+il motivo per cui non sono riuscito a trovare 
+\series bold
+l'assegnamento del MAC address
+\series default
+ nel sorgente dei driver.
+ Cioè, perché 
+\series bold
+è fatto nel 
+\emph on
+firmware
+\emph default
+ proprietario di Broadcom
+\series default
+, a cui non posso accedere;
+\end_layout
+
+\begin_layout Enumerate
+perché 
+\series bold
+\emph on
+wpa_supplicant 
+\emph default
+non è in grado di usare MAC address casuali
+\series default
+ nella creazione di interfacce di rete
+\series bold
+.
+ Infatti, è il 
+\emph on
+firmware
+\emph default
+ a fare tutto il lavoro e scegliere il MAC address e non il software nel
+ kernel o a livelli più elevati.
+\end_layout
+
+\begin_layout Standard
+Detto ciò, 
+\series bold
+ho dimostrato che è impossibile raggiungere gli obiettivi prefissati, a
+ causa di limiti nel 
+\emph on
+firmware
+\emph default
+ proprietario (quindi NON 
+\series default
+\emph on
+Open source
+\series bold
+\emph default
+ e NON modificabile)
+\series default
+.
+ Infatti, come già spiegato, 
+\series bold
+non si può avere interfacce di rete virtuali multiple con MAC address uguali
+ e questi indirizzi non possono essere modificati, perché generati nel 
+\emph on
+firmware
+\emph default
+ proprietario.
+ 
+\end_layout
+
+\begin_layout Standard
+Nonostante il lavoro sia di fatto concluso, voglio fare una precisazione
+ riguardo ad 
+\emph on
+iw
+\emph default
+.
+ Giustamente, arrivato a questo punto mi sono chiesto per quale motivo 
+\emph on
+iw
+\emph default
+ fornisce la lista di 
+\emph on
+VIFC
+\emph default
+ sbagliata.
+ Infatti, dice che è possibile avere due 
+\emph on
+VIF
+\emph default
+ P2P contemporaneamente, ma ciò si è dimostrato impossibile.
+ Per generare la combinazione di interfacce utilizzabili, 
+\emph on
+iw
+\emph default
+ deve comunicare con i driver, ma il motivo per cui da informazioni sbagliate
+ è che la funzione che fornisce quei risultati 
+\begin_inset Quotes eld
+\end_inset
+
+può fallire
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Questa affermazione si basa sui commenti di Rafal Milecki di Broadcom e
+ Krishna Chaitanya 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "iw_can_fail"
+
+\end_inset
+
+.
+\end_layout
+
+\end_body
+\end_document

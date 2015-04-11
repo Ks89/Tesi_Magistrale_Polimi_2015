@@ -1,0 +1,1657 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass book
+\options openright
+\use_default_options false
+\master ../tesi.lyx
+\maintain_unincluded_children false
+\language italian
+\language_package default
+\inputencoding auto
+\fontencoding T1
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 11
+\spacing single
+\use_hyperref false
+\papersize a4paper
+\use_geometry false
+\use_package amsmath 2
+\use_package amssymb 2
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 0
+\use_package mathtools 1
+\use_package mhchem 0
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 0
+\index Indice
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 2
+\paperpagestyle fancy
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+Nell'introduzione ho spiegato quali sono gli obiettivi e come raggiungerli
+ dal punto di vista teorico.
+ Prima di scendere nel dettaglio di questo problema, ho utilizzato le API
+ di Android
+\emph on
+ Software Development Kit
+\emph default
+ (SDK) 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "android_sdk"
+
+\end_inset
+
+ in
+\emph on
+ Android Studio
+\emph default
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "android_studio"
+
+\end_inset
+
+ per esplorarne le capacità e le funzioni nel caso di 
+\emph on
+Wi-Fi Direct
+\emph default
+.
+ Poiché, ho già spiegato che Android non permette ad un dispositivo di essere
+ in più gruppi contemporaneamente, ho realizzato due app con l'obiettivo
+ di nascondere tale limite all'utente finale.
+ Una si concentra su un caso specifico di utilizzo, cioè la messaggistica
+ con la possibilità di accodare i messaggi e riconnettersi automaticamente
+ alle persone con cui si sta comunicando.
+ Invece, l'altra sull'idea di far partecipare un dispositivo a due gruppi,
+ cioè una sequenza di connessioni e disconnessioni per dare l'impressione
+ di una partecipazione simultanea in più gruppi.
+\end_layout
+
+\begin_layout Standard
+In questo capitolo non mi concentrerò sugli aspetti implementativi, poiché
+ i progetti completi in 
+\emph on
+Android Studio
+\emph default
+ sono disponibili online nelle 
+\emph on
+repository
+\emph default
+ 
+\emph on
+Github
+\emph default
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "pingpong,pigeon_messenger"
+
+\end_inset
+
+, piuttosto sulla progettazione.
+ A causa della natura totalmente asincrona di queste app, cioè basate su
+ eventi, ho realizzato diversi diagrammi per spiegarne il funzionamento.
+ Infatti, ho creato quelli a stati per mostrare l'evoluzione delle app,
+ dall'apertura fino al raggiungimento della funzionalità desiderata, e quelli
+ delle classi per mostrare alcune componenti importanti.
+\end_layout
+
+\begin_layout Section
+PingPong
+\end_layout
+
+\begin_layout Standard
+La prima app permette ad un Client già connesso ad un GO di svolgere questa
+ procedura ciclica:
+\end_layout
+
+\begin_layout Enumerate
+scollegarsi dal proprio GO
+\emph on
+;
+\end_layout
+
+\begin_layout Enumerate
+collegarsi ad uno specifico GO nelle vicinanze;
+\end_layout
+
+\begin_layout Enumerate
+scollegarsi nuovamente;
+\end_layout
+
+\begin_layout Enumerate
+ricollegarsi al GO iniziale e così via.
+\end_layout
+
+\begin_layout Standard
+Da questo il nome dell'app, 
+\emph on
+PingPong
+\emph default
+.
+ Riferendomi al fatto il dispositivo Client si comporta come la pallina,
+ colpita dalle due racchette (rappresentate dai GO) e costretta a rimbalzare
+ da un lato ad un altro.
+ Durante la realizzazione di quest'app, sia nella documentazione, sia nel
+ codice, ho utilizzato una terminologia specifica per identificarne le component
+i e le azioni svolte.
+ Per essere coerente, userò questi termini anche in questo documento.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+PingPong device
+\begin_inset Quotes erd
+\end_inset
+
+: è il Client che salta da un gruppo all'altro.
+ Riprendendo l'analogia del ping-pong, inteso come gioco, è la pallina.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+Rimbalzare
+\begin_inset Quotes erd
+\end_inset
+
+ o 
+\begin_inset Quotes eld
+\end_inset
+
+rimbalzo
+\begin_inset Quotes erd
+\end_inset
+
+: azione che corrisponde all'esecuzione della procedura ciclica, definita
+ poco fa.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+Ping device
+\begin_inset Quotes erd
+\end_inset
+
+: è il GO del primo gruppo 
+\emph on
+Wi-Fi Direct
+\emph default
+ a cui il 
+\emph on
+PingPong device
+\emph default
+ è connesso, prima di iniziare a 
+\emph on
+rimbalzare.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+Pong device
+\begin_inset Quotes erd
+\end_inset
+
+: è il GO del secondo gruppo 
+\emph on
+Wi-Fi Direct
+\emph default
+ a cui il 
+\emph on
+PingPong device
+\emph default
+ si connetterà, durante il 
+\emph on
+rimbalzo
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+PingPong mode
+\begin_inset Quotes erd
+\end_inset
+
+: modalità da attivare sui dispositivi che vogliono partecipare ad uno dei
+ gruppi, mentre il 
+\emph on
+PingPong device
+\emph default
+ 
+\emph on
+rimbalza
+\emph default
+.
+ Permette di riavviare automaticamente la 
+\emph on
+fase di Discovery, 
+\emph default
+necessaria tra ogni disconnessione e riconnessione per individuare nuovamente
+ i 
+\emph on
+Peer,
+\emph default
+ quando è in corso il 
+\emph on
+rimbalzo
+\emph default
+.
+ Per raggiungere tale obiettivo ho creato questa modalità che si basa solo
+ su eventi per svolgere determinate azioni.
+ Normalmente è disattivata, infatti non è necessaria per la connessione
+ o lo scambio di file, ma è importante solo per sincronizzare i dispositivi
+ durante la procedura di 
+\emph on
+rimbalzo
+\emph default
+ del 
+\emph on
+PingPong device
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+Test mode
+\begin_inset Quotes erd
+\end_inset
+
+: modalità che ho creato per testare la funzionalità del 
+\emph on
+rimbalzo
+\emph default
+ del 
+\emph on
+PingPong device
+\emph default
+.
+ Essa non fa altro che utilizzare come 
+\emph on
+Pong device
+\emph default
+, il 
+\emph on
+Ping device
+\emph default
+ stesso.
+ Cioè, un dispositivo si scollega dal proprio GO ed automaticamente vi si
+ ricollega, e così via all'infinito.
+ Questo è utile per testare la funzionalità in caso di due soli Smartphone/Table
+t a disposizione.
+ Infatti, perché questa app possa essere provata in modo rilevante sono
+ necessari cinque dispositivi, anche se ne consiglio almeno sei.
+\end_layout
+
+\begin_layout Standard
+L'obiettivo di 
+\emph on
+PingPong
+\emph default
+ è quello di far si che un Client, cioè il 
+\emph on
+PingPong device
+\emph default
+, possa far parte di due gruppi contemporaneamente, senza che ciò avvenga
+ realmente.
+ Infatti, l'idea è di nascondere tale limite all'utente, facendo si che
+ il dispositivo si connetta e disconnetta ai GO dei due gruppi, in modo
+ che possa inviare un file a due GO contemporaneamente.
+\end_layout
+
+\begin_layout Standard
+In Figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Diagramma-a-stati-pingpong-generale"
+
+\end_inset
+
+ c'è il diagramma a stati di 
+\emph on
+PingPong,
+\emph default
+ con solamente la parte che gestisce le funzionalità base, mentre in Figura
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Diagramma-a-stati-pingpong-specifico"
+
+\end_inset
+
+ c'è la sola parte che si occupa della logica del 
+\emph on
+rimbalzo
+\emph default
+.
+ La convenzione utilizzata è:
+\end_layout
+
+\begin_layout Itemize
+in verde sono rappresentati gli stati in cui l'app aggiorna l'interfaccia
+ grafica ed attende l'azione dell'utente;
+\end_layout
+
+\begin_layout Itemize
+in nero le operazioni interne che appena terminate portano subito allo stato
+ successivo;
+\end_layout
+
+\begin_layout Itemize
+in viola sono gli stati legati a 
+\emph on
+Wi-Fi Direct
+\emph default
+, cioè operazioni associabili alle fasi del protocollo e operazioni sui
+ gruppi;
+\end_layout
+
+\begin_layout Itemize
+le frecce rosse sono operazioni richieste espressamente dall'utente interagendo
+ con l'interfaccia grafica.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/diagramma_stati_tesi_pingpong_1.png
+	lyxscale 50
+	width 100col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Diagramma-a-stati-pingpong-generale"
+
+\end_inset
+
+Diagramma a stati di PingPong in generale
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/diagramma_stati_tesi_pingpong_2.png
+	lyxscale 50
+	width 70col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Diagramma-a-stati-pingpong-specifico"
+
+\end_inset
+
+Diagramma a stati di PingPong nello specifico
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Per rendere più facile l'estensione di quest'app ho deciso di creare un'astrazio
+ne degli oggetti 
+\emph on
+WiFiP2pDevice
+\emph default
+ e 
+\emph on
+WiFiP2pGroup
+\emph default
+ che ho chiamato rispettivamente 
+\emph on
+P2PDevice
+\emph default
+ e 
+\emph on
+P2PGroup
+\emph default
+.
+ L'obiettivo è far si che possa aggiungere informazioni come la presenza
+ in più gruppi che Android normalmente non permette.
+ Inoltre, ho realizzato le liste di questi elementi, come quella dei dispositivi
+ nelle vicinanze (
+\emph on
+PeerList
+\emph default
+), i Client di un GO (
+\emph on
+ClientList
+\emph default
+), la 
+\emph on
+PingPongList
+\emph default
+ con i GO tra cui il 
+\emph on
+PingPong device
+\emph default
+, ma soprattutto la lista 
+\emph on
+P2PGroups
+\emph default
+, cioè quella dei gruppi a cui il dispositivo appartiene.
+ Ovviamente, ogni 
+\emph on
+P2PGroup
+\emph default
+ definisce la lista dei suoi Client oltre a parametri aggiuntivi come l'indirizz
+o IP del GO.
+ Poiché le API di Android non hanno questa funzione e per una questione
+ di praticità, ho creato il concetto di 
+\emph on
+LocalP2PDevice
+\emph default
+, cioè il riferimento al dispositivo P2P in uso.
+ Oltre al 
+\emph on
+WiFiP2pDevice
+\emph default
+, contiene anche due attributi utili per la gestione di un gruppo 
+\emph on
+Autonomous
+\emph default
+, ma soprattutto quello per abilitare la 
+\emph on
+pingpong mode
+\emph default
+.
+ Poiché le classi: 
+\emph on
+ClientList
+\emph default
+, 
+\emph on
+LocalP2PDevice
+\emph default
+, 
+\emph on
+P2PGroups
+\emph default
+, 
+\emph on
+PeerList
+\emph default
+ e 
+\emph on
+PingPongList
+\emph default
+ sono uniche e soprattutto devono essere accessibili da ogni package
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Un package ha lo scopo di riunire classi o entità analoghe logicamente correlate.
+ Per maggiori dettagli vedi 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://it.wikipedia.org/wiki/Package_(Java)
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+ dell'app, ho implementato il design pattern chiamato 
+\emph on
+Singleton
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/classDiagram_pingpong.png
+	width 70col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Diagramma-UML-classi-pingpong"
+
+\end_inset
+
+Diagramma UML delle classi di PingPong
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace defskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+L'interfaccia grafica è composta da una sola 
+\emph on
+Activity
+\emph default
+ che implementa varie interfacce e gestisce tutti gli eventi.
+ Questo perché 
+\emph on
+Wi-Fi Direct 
+\emph default
+è implementato con una logica basata su eventi.
+ Essi possono essere intercettati utilizzando un 
+\emph on
+Broadcast Receiver
+\emph default
+ e implementando opportune interfacce.
+ La grafica è estremamente modulare ed interamente basata su 
+\emph on
+Fragment
+\emph default
+ che sono caricati e mostrati a runtime dinamicamente.
+ Tutti gli elementi hanno subito personalizzazioni grafiche per migliorarne
+ l'aspetto e soprattutto utilizzare 
+\emph on
+Relative Layout
+\emph default
+ rendendoli adattabili al variare delle dimensioni dello schermo.
+ Per supportare al meglio la nuova versione del sistema operativo, Android
+ Lollipop, ho creato l'app in 
+\emph on
+Material Design
+\emph default
+, sfruttando le più recenti API compatibili con KitKat, cioè incluse in
+ 
+\emph on
+appcompat v7
+\emph default
+ e 
+\emph on
+v4
+\emph default
+, tra cui 
+\emph on
+Toolbar
+\emph default
+, 
+\emph on
+RecyclerView
+\emph default
+, 
+\emph on
+CardView
+\emph default
+ (vedi Figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Interfaccia-grafica-dell'app-pingpong"
+
+\end_inset
+
+).
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename immagini/pingpong-main.png
+	scale 70
+
+\end_inset
+
+
+\begin_inset space \hfill{}
+\end_inset
+
+
+\begin_inset Graphics
+	filename immagini/pingpong-details.png
+	scale 70
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Interfaccia-grafica-dell'app-pingpong"
+
+\end_inset
+
+Interfaccia grafica dell'app PingPong
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+I 
+\emph on
+Fragment
+\emph default
+ che contengono liste di elementi, utilizzano 
+\emph on
+RecyclerView
+\emph default
+ e gli 
+\emph on
+Adapter
+\emph default
+ associati.
+ Per mantenere la logica di 
+\emph on
+Wi-Fi Direct
+\emph default
+ separata dalla grafica, ho fatto in modo che i 
+\emph on
+Fragment
+\emph default
+ definiscano delle interfacce interne, che sono implementate dall'
+\emph on
+Activity
+\emph default
+ che a sua volta definisce i metodi esposti dalle interfacce.
+ Tale tecnica è detta 
+\emph on
+Callback Interface
+\emph default
+ e permette di non dover passare riferimenti di oggetti come per esempio
+ l'
+\emph on
+Activity
+\emph default
+.
+ In questo modo, ho fatto si che 
+\emph on
+WiFiP2pManager
+\emph default
+, cioè la classe principale che gestisce 
+\emph on
+Wi-Fi Direct
+\emph default
+, sia definita solo nell'
+\emph on
+Activity
+\emph default
+ e mai utilizzata in altre classi.
+ 
+\end_layout
+
+\begin_layout Standard
+La logica che gestisce il 
+\emph on
+rimbalzo
+\emph default
+ si trova in un 
+\emph on
+AsyncTask
+\emph default
+, con l'obiettivo di disaccoppiarla dal resto dell'app, in particolare dall'inte
+rfaccia grafica.
+ Purtroppo, a causa di come sono state realizzate le API di 
+\emph on
+Wi-Fi Direct
+\emph default
+ in Android ed in particolare a causa della loro natura totalmente asincrona
+ basata su eventi, è impossibile isolare in classi singole alcune funzioni.
+ Di conseguenza, la logica che gestisce il 
+\emph on
+rimbalzo
+\emph default
+ si trova solo parzialmente nell'
+\emph on
+AsyncTask
+\emph default
+,
+\emph on
+ 
+\emph default
+che ho chiamato 
+\emph on
+PingPongLogic
+\emph default
+.
+ Per comprendere al meglio come ho realizzato la funzionalità in questione,
+ consiglio di visionare il codice sorgente.
+ In particolare, iniziando dal metodo 
+\emph on
+doInBackgound
+\emph default
+ di 
+\emph on
+PingPongLogi
+\emph default
+c
+\emph on
+.
+
+\emph default
+ Da esso si possono seguire facilmente tutti i metodi chiamati per capire
+ il flusso di eventi.
+ Dato che la logica è asincrona, molti eventi non sono in sequenza, ma dipendono
+ dall'attivazione di metodi definiti in interfacce gestite da Android.
+ Quindi, ho aggiunto alcuni commenti per indicare dove continuerà l'esecuzione.
+ Seguendo metodi e commenti si può 
+\begin_inset Quotes eld
+\end_inset
+
+percorrere
+\begin_inset Quotes erd
+\end_inset
+
+ tutto il ciclo di 
+\emph on
+rimbalzo
+\emph default
+ e ricominciarlo proseguendo all'infinito.
+ Questa sequenza è esattamente quella che fa l'app e che ho rappresentato
+ in molto semplificato in Figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Diagramma-a-stati-pingpong-specifico"
+
+\end_inset
+
+.
+ Faccio notare che ho dovuto inserire alcuni ritardi tra quelle operazioni
+ per far si che i dispositivi coinvolti nella 
+\emph on
+PingPong mode
+\emph default
+ riescano a sincronizzarsi a vicenda, cioè che le 
+\emph on
+fasi di Discovery
+\emph default
+ avvengano in instanti ravvicinati, tali per cui i dispositivi possano individua
+rsi e negoziare per la connessione.
+ La 
+\emph on
+fase di Discovery
+\emph default
+ può essere considerata il 
+\begin_inset Quotes eld
+\end_inset
+
+tallone di Achille
+\begin_inset Quotes erd
+\end_inset
+
+ di questo protocollo
+\emph on
+, 
+\emph default
+infatti il tempo per individuare i dispositivi è troppo elevato.
+ A peggiorare la situazione entra in gioco l'implementazione di questo protocoll
+o in Android, in cui dopo alcuni secondi dall'avvio della 
+\emph on
+fase di Discovery
+\emph default
+, i dispositivi non sono più in grado di vedersi, nonostante la ricerca
+ sia ancora in esecuzione.
+ Non ho trovato nessun rifermento nella documentazione ad eventuali timeout
+ in Android, ma secondo 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "experimenting_opportunistic_networks"
+
+\end_inset
+
+ è di 120 secondi.
+ Dalla mia esperienza, ho notato che ci sono problemi anche con tempi molto
+ inferiori.
+\end_layout
+
+\begin_layout Standard
+Come si può vedere dalla 
+\emph on
+repository
+\emph default
+ ufficiale del progetto, il test su sei dispositivi ha comunque avuto successo,
+ ma ciò ha richiesto alcuni tentativi.
+ Per applicazioni reali, consiglio di non utilizzare tale tecnica.
+ Proprio a causa delle difficoltà incontrate nella realizzazione di quest'app,
+ ho creato il video (il cui link si trova nel file 
+\family sans
+readme
+\family default
+\emph on
+ 
+\emph default
+di
+\emph on
+ Github
+\emph default
+) per dimostrarne il funzionamento, ma tale situazione, con una sincronizzazione
+ così perfetta, non è facile da raggiungere ed ha richiesto la manipolazione
+ di alcuni ritardi, fino al raggiungimento del risultato voluto.
+ Un altro motivo per cui ho utilizzato questi ritardi è che se l'esecuzione
+ di operazioni come 
+\emph on
+connect
+\emph default
+, 
+\emph on
+disconnect
+\emph default
+ e 
+\emph on
+discovery
+\emph default
+ sono fatte in modo consecutivo e troppo ravvicinato, tendono a fallire
+ per motivi che non dipendono da me, ma dall'implementazione di Android.
+\end_layout
+
+\begin_layout Section
+Pigeon Messenger
+\end_layout
+
+\begin_layout Standard
+In 
+\emph on
+PingPong
+\emph default
+ ho scelto un ambito in cui le performance sono importanti, ma cosa succede
+ analizzando una situazione differente come la messaggistica tra utenti?
+ La risposta è 
+\emph on
+Pigeon
+\emph default
+ 
+\emph on
+Messenger,
+\emph default
+ cioè un'app che permette ai dispositivi nelle vicinanze di comunicare tra
+ di loro.
+ Ogni dispositivo può gestire più chat contemporaneamente, dando l'illusione
+ che le conversazioni avvengano nello stesso istante, sfruttando il fatto
+ che il destinatario può impiegare alcuni secondi per rispondere.
+ Questo, grazie al fatto che le performance non sono un requisito essenziale.
+\end_layout
+
+\begin_layout Standard
+Poiché, l'obiettivo è illudere l'utente di essere connesso a più chat contempora
+neamente, i messaggi che sono stati inviati nel momento in cui la connessione
+ non è presente, devono essere accodati ed inviati appena torna disponibile.
+ Inoltre, scrivere ed inviare un messaggio ad un utente deve corrispondere
+ subito ad un tentativo di connessione con esso, per far si che il messaggio,
+ magari importante, sia recapitato il prima possibile.
+ Ovviamente, se l'utente vuole fare ciò mentre sta chattando con un altro,
+ l'app deve scollegarsi dal primo per collegarsi al secondo.
+ Queste sono esattamente le funzionalità principali di 
+\emph on
+Pigeon Messenger
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Durante la creazione di quest'app, ma in particolare durante la stesura
+ della documentazione, ho utilizzato il termine 
+\begin_inset Quotes eld
+\end_inset
+
+Eternal discovery
+\begin_inset Quotes erd
+\end_inset
+
+ per indicare la funzione che ho realizzato per far si che ogni azione che
+ cambia lo stato di connessione con un 
+\emph on
+Peer
+\emph default
+, riavvii il più rapidamente possibile la 
+\emph on
+fase di Discovery
+\emph default
+.
+ Considerando gli stessi problemi già affrontati con 
+\emph on
+PingPong
+\emph default
+, cioè legati alla 
+\emph on
+fase di Discovery
+\emph default
+, non ci sono state difficoltà rilevanti nella sincronizzazione.
+ Quando ci si disconnette e ci si riconnette, i dispositivi nelle vicinanze
+ sono trovati nuovamente.
+\end_layout
+
+\begin_layout Standard
+Come per 
+\emph on
+PingPong
+\emph default
+, ho definito 
+\emph on
+LocalP2PDevice
+\emph default
+ che rappresenta il dispositivo corrente, però ho aggiunto anche 
+\emph on
+P2PDestinationDevice
+\emph default
+, cioè l'astrazione di un 
+\emph on
+P2PDevice
+\emph default
+ con il riferimento all'indirizzo IP del dispositivo a cui è collegato.
+ Poiché, in quest'app sono permesse solo connessioni tra due dispositivi
+ e non di gruppo, l'IP è sempre quello dell'altro dispositivo.
+
+\color magenta
+ 
+\end_layout
+
+\begin_layout Standard
+Ho realizzato l'interfaccia grafica nello stesso modo di 
+\emph on
+PingPong
+\emph default
+, ove possibile riutilizzando gli elementi già creati, ma con una maggiore
+ attenzione alla user-experience, dato che questa app potrebbe essere usata
+ realmente dagli utenti.
+ Per far si che l'accesso alle funzioni, in particolare alle chat, fosse
+ la più semplice e rapida possibile, ho scelto l'uso dei 
+\emph on
+tab
+\emph default
+.
+ Ovviamente, questa caratteristica rende la gestione dell'app più complessa
+ per diversi motivi.
+\end_layout
+
+\begin_layout Itemize
+I 
+\emph on
+tab
+\emph default
+ richiedono l'uso di un 
+\emph on
+Frament
+\emph default
+ principale con un 
+\emph on
+Viewpager
+\emph default
+ e un 
+\emph on
+Adapter
+\emph default
+ associato.
+\end_layout
+
+\begin_layout Itemize
+I 
+\emph on
+tab
+\emph default
+ sono 
+\emph on
+Fragment
+\emph default
+ di diverso tipo.
+
+\emph on
+ WiFiP2pServicesFragment
+\emph default
+ è il primo e viene creato all'avvio dell'app, mentre e gli altri sono 
+\emph on
+WiFiChatFragmentList
+\emph default
+.
+ Questo richiede un meccanismo per riassociare gli indici della lista dei
+ 
+\emph on
+ChatFragment
+\emph default
+ e quella dei 
+\emph on
+tab.
+
+\emph default
+ Avrei potuto scambiare la posizione dei 
+\emph on
+Fragment
+\emph default
+, ma questo non sarebbe stata una buona scelta dal punto di vista dell'usabilità
+ dell'app.
+\end_layout
+
+\begin_layout Itemize
+I 
+\emph on
+WiFiChatFragmentList
+\emph default
+ non sono creati staticamente, ma solo in base alla necessità, cioè quando
+ inizia una nuova chat.
+ Inoltre, non vi sono limiti sul numero di 
+\emph on
+Fragment
+\emph default
+ instanziabili.
+\end_layout
+
+\begin_layout Itemize
+È necessario creare una logica che permette all'interfaccia grafica di mostrare
+ automaticamente il 
+\emph on
+Fragment
+\emph default
+ della chat in corso, sia se appena creata, sia se già esistente.
+\end_layout
+
+\begin_layout Itemize
+Per capire quale chat è associata ad un dispositivo e quindi usarlo come
+ dispositivo di destinazione per la connessione, far si che vi sia una lista
+ di dispositivi e una logica per associarli ai 
+\emph on
+tab
+\emph default
+ (in modo da mantenere la separazione tra logica e grafica).
+\end_layout
+
+\begin_layout Itemize
+Per far capire all'utente quale sia la chat attiva in corso, bisogna utilizzare
+ icone o colori differenti.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename immagini/pidgeon-main.png
+	scale 70
+
+\end_inset
+
+
+\begin_inset space \hfill{}
+\end_inset
+
+
+\begin_inset Graphics
+	filename immagini/pidgeon-chat copia.png
+	scale 70
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Interfaccia-grafica-dell'app-pigeonmessenger"
+
+\end_inset
+
+Interfaccia grafica dell'app Pigeon Messenger
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In 
+\emph on
+Pigeon Messenger
+\emph default
+, l'utilizzo delle API di 
+\emph on
+Wi-Fi Direct
+\emph default
+ è differente rispetto a 
+\emph on
+PingPong
+\emph default
+, perché in quest'app ho utilizzato la funzione per gestire i servizi tramite
+ il protocollo 
+\emph on
+Bonjour
+\emph default
+ (per maggiori informazioni fare riferimento alle specifiche 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "wifi_direct_specification"
+
+\end_inset
+
+).
+ A causa di questa caratteristica, la logica è più complessa, inoltre bisogna
+ gestire più eventi.
+ Soprattutto, l'interazione tra logica è grafica richiede l'uso di 
+\emph on
+Handler
+\emph default
+, per evitare problemi ed eseguire troppe operazione nel 
+\emph on
+Thread
+\emph default
+ dell'interfaccia grafica o doverlo invocare manualmente su grosse porzioni
+ di codice.
+ Questa tecnica, utilizzata anche nel codice sorgente di Android è ottima,
+ perché permette, non solo di scambiare messaggi testuali, ma anche oggetti.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/diagramma_stati_tesi_pigeonMessenger_1.png
+	lyxscale 50
+	width 100col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Diagramma-a-statipigeon-generale"
+
+\end_inset
+
+Diagramma a stati di Pigeon Messenger in generale
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+I colori e la logica con cui ho realizzato gli schemi nelle Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Diagramma-a-statipigeon-generale"
+
+\end_inset
+
+ e 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Diagramma-a-stati-pigeon-coda-messaggi"
+
+\end_inset
+
+ è la stessa di 
+\emph on
+PingPong
+\emph default
+.
+ Nella prima è rappresentato il diagramma degli stati.
+ Cioè, una volta avviata l'app e creato il 
+\emph on
+TabFragment
+\emph default
+, inizia la ricerca di altri servizi.
+ Appena sono disponibili, l'interfaccia grafica è aggiornata.
+ Una volta che l'utente esegue la connessione, viene inizializzata con un
+ 
+\emph on
+WifiP2pConfig
+\emph default
+ personalizzato per far si che chi avvii la connessione sia il Client.
+ Di conseguenza, il 
+\emph on
+Broadcast Receiver
+\emph default
+ riceve la notifica e per mia scelta richiede le informazioni sulla connessione,
+ in modo da ottenere gli indirizzi IP e distinguere un GO da un Client.
+ Quindi, ho potuto creare il 
+\emph on
+SocketHandler
+\emph default
+ corretto, salvare l'indirizzo 
+\emph on
+IP
+\emph default
+ e mostrarlo nell'interfaccia grafica.
+ Infine, raccolti tutti i dati tramite un messaggio inviato dall'
+\emph on
+Handler
+\emph default
+ del 
+\emph on
+ChatManage
+\emph default
+r, ho sfruttato il meccanismo a scambio di messaggi in cui il GO informa
+ il Client del suo nome, il MAC Address e l'indirizzo IP assegnato al Client,
+ mentre il Client informa il GO del nome e del MAC address, come in Figura
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Diagramma-di-sequenza-pigeonmesseger"
+
+\end_inset
+
+ (non ha bisogno dell'IP, perché un Client lo può ottenere facilmente dalle
+ API Android, cosa che non avviene col GO).
+ Lo scambio dell'IP è essenziale poiché Google non ha creato API per farlo.
+ 
+\end_layout
+
+\begin_layout Standard
+Nel momento in cui i dispositivi leggono le informazioni ricevute dall'altro,
+ possono capire chi è il dispositivo in questione, verificare se la chat
+ è già stata avviata e quindi aggiornare l'interfaccia grafica in modo opportuno.
+ A questo punto, l'utente può inserire messaggi nella chat.
+ Nel caso di un evento di disconnessione, oltre alle azioni svolte dal 
+\emph on
+Broadcast Receiver
+\emph default
+, c'è la procedura di 
+\emph on
+Eternal Discovery
+\emph default
+ che riavvia immediatamente la 
+\emph on
+fase di Discovery
+\emph default
+ riselezionando automaticamente
+\emph on
+ il Fragment
+\emph default
+ della lista dei servizi.
+ A questo punto, se l'utente sceglie un dispositivo a cui non si è mai collegato
+, ricomincia la procedura descritta poco fa, altrimenti, viene inviata la
+ lista di tutti i messaggi, accodati prima che avvenisse la connessione
+ e mostrando il 
+\emph on
+tab
+\emph default
+ corretto.
+ Per brevità, in questo diagramma ho sostituito la procedura di connessione,
+ di richiesta delle informazioni sulla connessione e di inizializzazione
+ con il commento 
+\begin_inset Quotes eld
+\end_inset
+
+is connected?
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Nella Figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Diagramma-a-stati-pigeon-coda-messaggi"
+
+\end_inset
+
+ c'è una parte aggiuntiva della logica di questa app che spiega l'aggiunta
+ di messaggi in coda quando la connessione non è ancora disponibile.
+ Ciò può avvenire in seguito a un problema nella
+\emph on
+ fase di Discovery
+\emph default
+, che può essere causato dall'irraggiungibilità o dalla richiesta dell'utente.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/diagramma_stati_tesi_pigeonMessenger_2.png
+	lyxscale 50
+	width 70col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Diagramma-a-stati-pigeon-coda-messaggi"
+
+\end_inset
+
+Diagramma a stati di Pigeon Messenger con coda messaggi
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/pigeon_messenger-sequence.png
+	lyxscale 50
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Diagramma-di-sequenza-pigeonmesseger"
+
+\end_inset
+
+Diagramma di sequenza di Pigeon Messenger
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Per completezza ho riportato in Figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Diagramma-UML-delle-classi-pigeon"
+
+\end_inset
+
+ il diagramma delle classi, estremamente ridotto, concentrandomi soprattutto
+ sull'uso di interfacce.
+ I colori giallo e verde servono per mostrare la classe e l'interfaccia
+ definita all'interno di tali classe, ma implementata da quella collegata
+ tramite relazione con linea tratteggiata.
+ Questo diagramma è utile per comprendere la struttura dei 
+\emph on
+Fragment
+\emph default
+, ma soprattutto mettere in evidenza ciò che ho accennato prima, cioè che
+ è l'
+\emph on
+Activity
+\emph default
+ a gestire gli eventi 
+\emph on
+Wi-Fi Direct
+\emph default
+.
+ Per mantenere ancora di più i 
+\emph on
+Fragment
+\emph default
+ separati dalla logica del programma, ho fatto in modo che la gestione dei
+ 
+\emph on
+SocketHandler
+\emph default
+ per la comunicazione non avvenisse in essi.
+ Per non parlare di 
+\emph on
+ChatManager
+\emph default
+, il quale è totalmente disaccoppiato dalla grafica, infatti si trova su
+ un 
+\emph on
+Thread
+\emph default
+ separato.
+ Nel 
+\emph on
+ChatManager
+\emph default
+ c'è la logica che gestisce l'invio dei messaggi dal 
+\emph on
+Thread
+\emph default
+ in questione all'interfaccia grafica, tramite gli 
+\emph on
+Handler
+\emph default
+ definiti nei 
+\emph on
+SocketHandler
+\emph default
+.
+ Anche i questo caso, lo schema è una semplificazione per mostrare gli elementi
+ fondamentali di quest'app.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/ClassDiagram_PigeonMessenger.png
+	lyxscale 80
+	width 100col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Diagramma-UML-delle-classi-pigeon"
+
+\end_inset
+
+Diagramma UML delle classi di Pigeon Messenger
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

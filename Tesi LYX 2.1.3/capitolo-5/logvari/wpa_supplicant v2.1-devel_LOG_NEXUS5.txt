@@ -1,0 +1,104 @@
+wpa_supplicant v2.1-devel-4.4.4
+random: Trying to read entropy from /dev/random
+I/wpa_supplicant( 2654): Successfully initialized wpa_supplicant
+Initializing interface 'p2p0' conf '/data/misc/wifi/p2p_supplicant.conf' driver 'nl80211' ctrl_interface 'N/A' bridge 'N/A'
+Configuration file '/data/misc/wifi/p2p_supplicant.conf' -> '/data/misc/wifi/p2p_supplicant.conf'
+Reading configuration file '/data/misc/wifi/p2p_supplicant.conf'
+ctrl_interface='/data/misc/wifi/sockets'
+disable_scan_offload=1
+driver_param='use_p2p_group_interface=1'
+update_config=1
+device_name='Nexus5-poli4'
+config_methods='virtual_push_button physical_display keypad'
+p2p_ssid_postfix='-Nexus5-poli4'
+persistent_reconnect=1
+
+
+nl80211: Use separate P2P group interface (driver advertised support)
+nl80211: Enable multi-channel concurrent (driver advertised support)
+nl80211: Driver is new enough to support monitor-less mode
+nl80211: interface p2p0 in phy phy0
+nl80211: Set mode ifindex 20 iftype 2 (STATION)
+
+nl80211: driver param='use_p2p_group_interface=1'
+nl80211: Use separate P2P group interface
+
+nl80211: Added 802.11b mode based on 802.11g information
+p2p0: Own MAC address: fa:a9:d0:0c:e5:30
+
+WPS: Set UUID for interface p2p0
+WPS: UUID based on MAC address - hexdump(len=16): 30 0c 7a b7 38 8f 5f af ae e2 49 d3 5f d4 30 01
+
+p2p0: Added interface p2p0
+
+Daemonize..
+
+p2p0: Control interface command 'P2P_GROUP_ADD'
+P2P: Stop any on-going P2P FIND
+
+P2P: Set GO freq 2412 MHz (no preference known)
+P2P: Cannot force GO on any of the channels we are already using. Use one of the free channels
+P2P: Create a new interface p2p-p2p0-0 for the group
+nl80211: Create interface iftype 9 (P2P_GO)
+nl80211: New interface p2p-p2p0-0 created: ifindex=22
+
+P2P: Created pending virtual interface p2p-p2p0-0 addr fa:a9:d0:0c:65:30
+Initializing interface 'p2p-p2p0-0' conf 'N/A' driver 'nl80211' ctrl_interface '/data/misc/wifi/sockets' bridge 'N/A'
+
+nl80211: Use separate P2P group interface (driver advertised support)
+nl80211: Enable multi-channel concurrent (driver advertised support)
+nl80211: Driver is new enough to support monitor-less mode
+nl80211: interface p2p-p2p0-0 in phy phy0
+nl80211: Set mode ifindex 22 iftype 9 (P2P_GO)
+
+nl80211: Setup AP - device_ap_sme=1 use_monitor=0
+
+nl80211: driver param='use_p2p_group_interface=1'
+nl80211: Use separate P2P group interface
+
+nl80211: Added 802.11b mode based on 802.11g information
+p2p-p2p0-0: Own MAC address: fa:a9:d0:0c:65:30
+
+
+p2p-p2p0-0: Added interface p2p-p2p0-0
+
+p2p0: P2P: Use separate group interface p2p-p2p0-0
+p2p-p2p0-0: P2P: Starting GO
+
+Start a pre-selected network without scan step
+Setting up AP (SSID='DIRECT-D9-Nexus5-poli4')
+
+nl80211: Setup AP operations for P2P group (GO)
+nl80211: Set mode ifindex 22 iftype 9 (P2P_GO)
+
+Completing interface initialization
+Mode: IEEE 802.11g  Channel: 1  Frequency: 2412 MHz
+nl80211: Set freq 2412 (ht_enabled=1, vht_enabled=0, bandwidth=20 MHz, cf1=2412 MHz, cf2=0 MHz)
+
+E/wpa_supplicant( 2665): Using interface p2p-p2p0-0 with hwaddr fa:a9:d0:0c:65:30 and ssid "DIRECT-D9-Nexus5-poli4"
+
+nl80211: ifindex=22
+
+wpa_driver_nl80211_set_key: ifindex=22 (p2p-p2p0-0) alg=3 addr=0xb6ecbfbb key_idx=1 set_tx=1 seq_len=0 key_len=16
+   broadcast key
+
+I/wpa_supplicant( 2665): P2P-GROUP-STARTED p2p-p2p0-0 GO ssid="DIRECT-D9-Nexus5-poli4" freq=2412 passphrase="MCJLTwVk" go_dev_addr=fa:a9:d0:0c:e5:30
+
+p2p-p2p0-0: Setup of interface done.
+
+
+
+
+
+p2p0: Control interface command 'P2P_GROUP_ADD'
+P2P: Stop any on-going P2P FIND
+P2P: Stopping find
+
+P2P: Set GO freq 2412 MHz (no preference known)
+P2P: Force GO on a channel we are already using (2412 MHz)
+P2P: Create a new interface p2p-p2p0-1 for the group
+nl80211: Create interface iftype 9 (P2P_GO)
+E/wpa_supplicant( 2665): Failed to create interface p2p-p2p0-1: -12 (Out of memory)
+E/wpa_supplicant( 2665): P2P: Failed to create new group interface
+E/wpa_supplicant( 2665): P2P: Failed to add group interface
+

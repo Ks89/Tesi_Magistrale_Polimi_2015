@@ -1,0 +1,21 @@
+<4>[  205.172406] dhd_set_suspend: force extra Suspend setting 
+<4>[  205.181907] dhd_get_suspend_bcn_li_dtim NO dtim skip for AP with beacon 400 ms
+<6>[  205.711332] [Touch] touch on
+<4>[  205.742048] dhd_set_suspend: Remove extra suspend setting 
+<6>[  205.913212] mdss_dsi_panel_on
+<6>[  205.952372] lm3630_backlight_on
+<6>[  205.966055] bcm2079x 0-0077: 10,63
+<6>[  301.018541] max17048_work: rsoc=0x7742 rvcell=0x0C5E soc=61 v_mv=3957 i_ua=-345878 t=343
+<6>[  301.054417] healthd: battery l=61 v=3957 t=34.3 h=2 st=2 c=-346 chg=u
+<4>[  303.987512] dhd_wlfc_init(): successfully enabled bdcv2 tlv signaling, 79
+<4>[  303.999692] My message - mac address is 8a:c9:d0:f4:3a:1a 
+<4>[  304.016646] Broadcom Dongle Host Driver: register interface [p2p-p2p0-0] MAC: 8a:c9:d0:f4:3a:1a
+<6>[  304.018220] CFG80211-ERROR) wl_cfg80211_add_virtual_iface :  virtual interface(p2p-p2p0-0) is created net attach done
+<6>[  304.031038] CFG80211-ERROR) wl_cfg80211_determine_vsdb_mode : Same Channel concurrency is enabled
+<6>[  304.034080] CFG80211-ERROR) dhd_cfg80211_set_p2p_info : Set : op_mode=0x0045
+<6>[  304.106509] CFG80211-ERROR) wl_cfg80211_set_channel : netdev_ifidx(22), chan_type(0) target channel(1) 
+<6>[  304.107590] CFG80211-ERROR) wl_cfg80211_set_channel : netdev_ifidx(22), chan_type(1) target channel(1) 
+<6>[  304.108668] CFG80211-ERROR) wl_cfg80211_del_station : Disconnect STA : ff:ff:ff:ff:ff:ff scb_val.val 3
+<4>[  305.065186] My message - mac address is 8a:c9:d0:f4:3a:1a 
+<4>[  305.065334] 'wl p2p_ifadd' error -2
+<6>[  305.065412] CFG80211-ERROR) wl_cfg80211_add_virtual_iface :  virtual iface add failed (-2) 

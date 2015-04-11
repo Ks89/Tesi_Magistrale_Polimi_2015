@@ -1,0 +1,4972 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass book
+\options openright
+\use_default_options false
+\master ../tesi.lyx
+\maintain_unincluded_children false
+\language italian
+\language_package default
+\inputencoding auto
+\fontencoding T1
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 11
+\spacing single
+\use_hyperref false
+\papersize a4paper
+\use_geometry false
+\use_package amsmath 2
+\use_package amssymb 2
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 0
+\use_package mathtools 1
+\use_package mhchem 0
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 0
+\index Indice
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 2
+\paperpagestyle fancy
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+In questo lavoro di tesi ho più volte accennato in modo superficiale il
+ concetto di 
+\emph on
+Virtual network InterFace
+\emph default
+ (VIF), ma ora è necessario approfondire l'argomento, quindi ho deciso di
+ mostrarne un'introduzione teorica basata su due progetti, il primo riguarda
+ Windows e definisce il concetto stesso di 
+\begin_inset Quotes eld
+\end_inset
+
+interfaccia virtuale di rete
+\begin_inset Quotes erd
+\end_inset
+
+, il secondo è un ottimo riferimento per Linux, a cui questo documento è
+ più vicino.
+ Poiché Android utilizza un kernel Linux modificato, è sempre valido il
+ concetto di VIF, ma con importanti limitazioni che non riguardano in modo
+ specifico 
+\emph on
+Wi-Fi Direct
+\emph default
+, ma la gestione di qualunque tipo di VIF.
+ Tale problema sarà spiegato nel dettaglio lungo questo capitolo, tramite
+\emph on
+ wpa_supplicant 
+\emph default
+e 
+\emph on
+iw
+\emph default
+ ed in modo ancora più approfondito nel successivo.
+\end_layout
+
+\begin_layout Section
+Interfacce di rete virtuali
+\end_layout
+
+\begin_layout Standard
+Il concetto di 
+\begin_inset Quotes eld
+\end_inset
+
+interfaccia di rete virtuale
+\begin_inset Quotes erd
+\end_inset
+
+ o 
+\emph on
+Virtual network InterFace 
+\emph default
+(VIF) è stato presentato per la prima volta da Microsoft nel 2003 con il
+ nome di 
+\emph on
+MultiNet
+\emph default
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "multinet"
+
+\end_inset
+
+, con l'obiettivo di connettere un PC a più reti wireless contemporaneamente,
+ questo perché avere più chip Wi-Fi sullo stesso dispositivo causa consumi
+ di energia troppo elevati.
+ L'idea è quella di virtualizzare una singola scheda di rete fisica, introducend
+o un livello intermedio al di sotto di quello IP (nello 
+\emph on
+stack di rete
+\emph default
+) che alterna continuamente le connessioni tra le reti wireless.
+ Il vantaggio principale è che i protocolli TCP/IP e le applicazioni non
+ richiedono nessuna modifica.
+ L'utilità delle VIF riguarda:
+\end_layout
+
+\begin_layout Itemize
+la possibilità di connessione a più reti wireless;
+\end_layout
+
+\begin_layout Itemize
+estensione della rete, cioè usare 
+\emph on
+Access Point
+\emph default
+ che estendono l'area di ricezione della rete;
+\end_layout
+
+\begin_layout Itemize
+nodi 
+\emph on
+Gateway
+\emph default
+, cioè un nodo connesso ad internet e contemporaneamente ad una 
+\emph on
+rete ad-hoc
+\emph default
+;
+\end_layout
+
+\begin_layout Itemize
+l'aumento delle capacità delle 
+\emph on
+reti ad-hoc
+\emph default
+;
+\end_layout
+
+\begin_layout Itemize
+l'utilizzo di macchine virtuali per connetterle a diverse reti fisiche.
+\end_layout
+
+\begin_layout Standard
+Prima di questo progetto, una scheda di rete avrebbe potuto connettersi
+ solo ad una rete fisica e soprattutto non avrebbe potuto interagire con
+ altri dispositivi su frequenze diverse.
+ Inoltre, un nodo di in una
+\emph on
+ rete ad-hoc
+\emph default
+ non avrebbe potuto interagire con altri, anche se sullo stesso canale.
+ Questo perché IEEE 802.11 specifica diversi protocolli per la comunicazione
+ tra IBSS e BSS e non si occupa della sincronizzazione.
+ 
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+MultiNet
+\emph default
+ definisce la virtualizzazione di una scheda di rete tramite l'astrazione
+ di più schede che sono adattatori sempre attivi su una singola scheda di
+ rete fisica.
+ Questo lo si ottiene facendo 
+\emph on
+multiplexing
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Multiplexing è la tecnica per cui più canali trasmissivi in ingresso condividono
+ la stessa capacità trasmissiva disponibile in uscita
+\begin_inset CommandInset citation
+LatexCommand cite
+key "multiplexing"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\emph default
+ della scheda di rete attraverso più reti wireless, cioè si alternano le
+ varie interfacce usando uno slot temporale detto 
+\emph on
+Active Period 
+\emph default
+per ogni rete operante su un particolare canale.
+ La somma degli 
+\emph on
+Active Period 
+\emph default
+di tutte le reti connesse è chiamato 
+\emph on
+Switching Cycl
+\emph default
+e.
+ L'architettura di basa su 
+\emph on
+MultiNet Protocol Driver
+\emph default
+ che è un livello intermedio tra IP a MAC.
+ Il driver espone adattatori di rete multipli sempre attivi (uno per ogni
+ rete wireless) e permette che vi sia un IP diverso assegnato ad ogni rete.
+ Idealmente, ogni adattatore di rete esposto dal driver dovrebbe avere anche
+ un MAC address diverso.
+\end_layout
+
+\begin_layout Standard
+Utilizzare 
+\emph on
+MultiNet
+\emph default
+ rispetto ad avere più schede Wi-Fi fa si che i consumi energetici siano
+ inferiori.
+ Infatti, anche quando i chip sono in stato di 
+\emph on
+idle
+\emph default
+, consumano comunque di più (circa il doppio) di 
+\emph on
+MultiNet
+\emph default
+.
+ Usando la 
+\emph on
+Power Save Mode
+\emph default
+ (PSM) si riesce a ridurre il consumo della soluzione a due chip, diventando
+ paragonabile a 
+\emph on
+MultiNet
+\emph default
+, ma ciò riduce il throughput e quindi le performance diminuiscono.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/multinet_stack_rete_modificato.tiff
+	scale 80
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Stack-di-rete-multinet"
+
+\end_inset
+
+Stack di rete modificato con Microsoft MultiNet
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Questo progetto è nato su Windows XP, ma poi ci sono state diverse soluzioni
+ in Linux come per esempio 
+\emph on
+Juggler
+\emph default
+ per il kernel Linux 2.6.
+ In 
+\emph on
+Juggler
+\emph default
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "juggler"
+
+\end_inset
+
+ si alternano le reti wireless secondo un algoritmo 
+\emph on
+Round Robin
+\emph default
+, aggiornando continuamente SSID, BSSID e la frequenza nella scheda di rete
+ fisica.
+ 
+\emph on
+Juggler
+\emph default
+ usa alcuni buffer per salvare i pacchetti di rete e il dispositivo virtuale,
+ o 
+\emph on
+pseudodevice
+\emph default
+, impersona un'interfaccia di rete cablata ethernet, con un IP privato statico
+ e un MAC Address Ethernet, per distinguerlo da interfacce fisiche di rete.
+ Se 
+\emph on
+Juggler
+\emph default
+ deve passare da una rete ad un'altra ed è su una frequenza diversa, deve
+ essere cambiata nella scheda di rete fisica, insieme a SSID, MAC address
+ e modalità di rete.
+ 
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/juggler_network_stack.tiff
+	lyxscale 60
+	scale 60
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Stack-di-rete-juggler"
+
+\end_inset
+
+Stack di rete modificato con Juggler
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+Ho spiegato questo concetto perché Android è basato su kernel Linux, quindi
+ supporta le interfacce di rete virtuali, anche se in modo molto limitato
+ e perché da questo capitolo parlerò molte volte di tali argomenti.
+\end_layout
+
+\begin_layout Section
+Wpa_supplicant
+\end_layout
+
+\begin_layout Standard
+Dopo il tentativo di estendere o modificare le API di Android nel Capitolo
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:secondo-capitolo"
+
+\end_inset
+
+, per i motivi già spiegati, ho deciso di cambiare totalmente approccio.
+ Esso non si basa più sull'interazione con il framework Android, ma sul
+ livello 
+\begin_inset Quotes eld
+\end_inset
+
+nativo nell'architettura di Android
+\begin_inset Quotes erd
+\end_inset
+
+, come in Figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Android-framework"
+
+\end_inset
+
+.
+ Cioè, nella parte in cui non si utilizza direttamente Java, poiché vi sono
+ programmi scritti principalmente in C/C++.
+ Uno di questi è 
+\emph on
+wpa_supplicant
+\emph default
+.
+ Ho già accennato questo software nel Capitolo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:secondo-capitolo"
+
+\end_inset
+
+ per esplorare la soluzione con NDK (Sezione 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Utilizzare-wpa_supplicant-con-ndk"
+
+\end_inset
+
+) e usarlo per un esempio pratico, ma ora approfondirò l'argomento.
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace medskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Jouni Malinen tra il 2002 e il 2003 ha sviluppato un programma chiamato
+ 
+\emph on
+hostapd 
+\emph default
+e i 
+\emph on
+driver Host AP con
+\emph default
+ l'obiettivo di creare un 
+\emph on
+daemon
+\emph default
+
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Un demone (daemon in inglese) è un programma eseguito in background, cioè
+ senza che sia sotto il controllo diretto dell'utente, tipicamente per fornire
+ un servizio 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "daemon_wikipedia"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+ nello spazio dell'utente (
+\emph on
+User space
+\emph default
+) per la gestione degli 
+\emph on
+AP
+\emph default
+ in Linux.
+ Ancora oggi questo programma è supportato ed aggiornato.
+ Nel 2004 ha realizzato anche 
+\emph on
+wpa_supplicant
+\emph default
+, cioè un'altro 
+\emph on
+daemon
+\emph default
+, ma
+\emph on
+ 
+\emph default
+dedicato più al lato 
+\emph on
+Client
+\emph default
+ rispetto a quello 
+\emph on
+AP
+\emph default
+.
+ Anch'esso continua ad essere aggiornato da una community vasta di sviluppatori
+ indipendenti e di società come Google, Sony, Intel, Broadcom, ma la principale
+ è Qualcomm per cui Malinen stesso lavora.
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+wpa_supplicant
+\emph default
+, come dice il nome, è un 
+\emph on
+supplicant
+\emph default
+, cioè un'entità (in questo caso è un software) ad un'estremità di un segmento
+ point-to-point di rete locale che cerca di essere autenticato da un 
+\emph on
+autenticatore
+\emph default
+ all'altro estremo di questo collegamento.
+ Normalmente un 
+\emph on
+supplicant
+\emph default
+ è software installato sui computer degli utenti finali.
+ L'utente invoca il 
+\emph on
+supplicant
+\emph default
+ ed invia le credenziali per connettere il computer ad una rete sicura.
+ Se l'autenticazione ha successo, tipicamente l'
+\emph on
+autenticatore
+\emph default
+ permette al computer di connettersi alla rete.
+ Quindi, in un certo senso, un 
+\emph on
+supplicant
+\emph default
+ si riferisce ad un utente o un client di una rete che tenta di accedere
+ a risorse protette da un meccanismo di autenticazione IEEE 802.1X 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "supplicant"
+
+\end_inset
+
+.
+
+\emph on
+ Wpa_supplicant
+\emph default
+ è un software multipiattaforma per Linux, BSD, Mac OS X e Windows con supporto
+ per WPA e WPA2 (IEEE 802.11i / RSN) e può essere usato sia per desktop/laptop,
+ sia per sistemi embedded 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "wpa_supplicant_arch_linux_descrizione,wpa_supplicant"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Questo software è stato progettato per essere eseguito come un 
+\emph on
+daemon
+\emph default
+ che resta in esecuzione in background e controlla la connessione wireless.
+ Quindi, agisce da 
+\emph on
+back-end
+\emph default
+ e supporta software di 
+\emph on
+front-end
+\emph default
+ o a linea di comando come 
+\emph on
+wpa_cli
+\emph default
+ o ad interfaccia grafica come 
+\emph on
+wpa_gui
+\emph default
+.
+ 
+\emph on
+Wpa_supplicant
+\emph default
+ usa un processo di compilazione per selezionare quali funzioni includere,
+ proprio come il kernel Linux e questo permette di generare un eseguibile
+ molto piccolo 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "supplicant"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Principalmente è utilizzato in distribuzioni Linux, infatti, quando è nato
+ Android, cioè un sistema operativo basato su un kernel Linux modificato,
+ è stato utilizzato come base per tutte le operazioni Wi-Fi di questi dispositiv
+i.
+ Oggi, tutti gli Smartphone e Tablet Android con un chip Wi-Fi utilizzano
+ questo 
+\emph on
+daemon
+\emph default
+ per le operazioni di rete Wi-Fi.
+ Con la standardizzazione di 
+\emph on
+Wi-Fi Direct
+\emph default
+, anche 
+\emph on
+wpa_supplicant
+\emph default
+ è stato aggiornato supportando questo tipo di protocollo.
+ Ad oggi, in Android, usa lo stesso codice sorgente della versione per Linux,
+ l'unica differenza è che la compilazione viene gestita dall'ABS, tramite
+ 
+\family sans
+Android.mk
+\family default
+ che ne configura le funzionalità.
+ Poiché Google partecipa a questo progetto, fornisce supporto ufficiale
+ alla compilazione per Android con il file 
+\family sans
+Android.mk
+\family default
+ corretto, che utilizzerò in seguito per ottenere gli eseguibili di 
+\emph on
+wpa_supplicant
+\emph default
+ e 
+\emph on
+wpa_cli
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace smallskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Come ho già accennato, 
+\emph on
+wpa_supplicant
+\emph default
+ si trova nel livello nativo dell'architettura di Android e di conseguenza
+ è necessario 
+\begin_inset Quotes eld
+\end_inset
+
+parlare
+\begin_inset Quotes erd
+\end_inset
+
+ con questo software tramite JNI, operazione che Android svolge internamente,
+ ma con una struttura complessa e disordinata.
+ Io ho pensato ad una soluzione più semplice e più facile da estendere in
+ futuro, cioè utilizzare i software di 
+\emph on
+front-end
+\emph default
+, come 
+\emph on
+wpa_cli
+\emph default
+ per 
+\begin_inset Quotes eld
+\end_inset
+
+parlare
+\begin_inset Quotes erd
+\end_inset
+
+ con 
+\emph on
+wpa_supplicant
+\emph default
+ tramite linea di comando in Android.
+ Il risultato che otterrei, è un software che espone le funzioni di 
+\emph on
+wpa_supplicant
+\emph default
+ all'utente, bypassando tutti i limiti del framework Android visti nel Capitolo
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:secondo-capitolo"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection*
+File di configurazione
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+Wpa_supplicant
+\emph default
+ è configurato usando un file di testo con una lista di tutte le reti e
+ i parametri che deve utilizzare.
+ Il file in questione si chiama 
+\family sans
+wpa_supplicant.conf
+\family default
+.
+ Su Android ce n'è un altro chiamato 
+\family sans
+p2p_supplicant.conf
+\family default
+.
+ Il primo è utilizzato per avviare 
+\emph on
+wpa_supplicant
+\emph default
+ sull'interfaccia di rete 
+\emph on
+wlan0
+\emph default
+, mentre il secondo sulla 
+\emph on
+p2p0 
+\emph default
+(per 
+\emph on
+Wi-Fi Direct
+\emph default
+).
+\end_layout
+
+\begin_layout Standard
+Il file d'esempio con questi parametri è disponibile in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "wpa_supplicant_conf"
+
+\end_inset
+
+, ma per avere una visione veramente chiara dell'argomento ho dovuto esplorare
+ il codice sorgente, fino a trovare il file che esegue il parsing di questi
+ comandi, per capirne la sintassi e i valori assegnabili.
+ 
+\family sans
+Wpa_supplicant.conf 
+\family default
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "wpa_supplicant_conf"
+
+\end_inset
+
+ d'esempio nella 
+\emph on
+repository
+\emph default
+ 
+\emph on
+Git
+\emph default
+ ufficiale costituisce anche la documentazione, ma data la dimensione di
+ questo file e dal numero di parametri utilizzabili, ho scelto di concentrami
+ su quelli che ho trovato più utili per i miei scopi.
+\end_layout
+
+\begin_layout Enumerate
+
+\emph on
+network = { (...) }
+\emph default
+ blocco che specifica una nuova rete wireless salvata con tutti i parametri
+ di configurazione per permettere, per esempio, la riconnessione automatica.
+ Android non gestisce questo autonomamente, ma lascia che sia 
+\emph on
+wpa_supplicant
+\emph default
+ a farlo, tramite questo file di configurazione che aggiorna ogni volta
+ che ci si connette ad una nuova rete.
+\end_layout
+
+\begin_layout Enumerate
+
+\emph on
+update_config=1
+\emph default
+ permette a 
+\emph on
+wpa_supplicant
+\emph default
+ di aggiornare il file di configurazione, cioè di sovrascriverlo.
+ Questo è molto utile, altrimenti l'aggiunta di blocchi 
+\emph on
+network
+\emph default
+ o il loro aggiornamento non sarebbe possibile.
+ In Android è attiva di default, sia in 
+\family sans
+p2p_supplicant.conf,
+\family default
+ sia in 
+\family sans
+wpa_supplicant.conf
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+
+\emph on
+ctrl_interface=<percorso assoluto>
+\emph default
+ indica il percorso assoluto della cartella in cui sono presenti i socket
+ utilizzati da 
+\emph on
+wpa_cli
+\emph default
+ per comunicare col processo di 
+\emph on
+wpa_supplicant
+\emph default
+.
+ Il percorso predefinito in Linux è 
+\emph on
+/var/run/wpa_supplicant
+\emph default
+, mentre in Android è 
+\emph on
+/data/misc/wifi/sockets
+\emph default
+.
+ In quest'ultimo, tale parametro non è presente di default, semplicemente
+ perché Google non fornisce nel sistema operativo compilato 
+\emph on
+wpa_cli
+\emph default
+.
+ Infatti, si appoggia a socket creati da Android stesso, che non possono
+ essere utilizzati con 
+\emph on
+wpa_supplicant
+\emph default
+.
+\end_layout
+
+\begin_layout Enumerate
+
+\emph on
+ap_scan=<valore intero>
+\emph default
+ permette di stabilire la modalità di scansione.
+ Infatti 
+\emph on
+wpa_supplicant
+\emph default
+ richiede al driver di eseguire la scansione degli AP.
+ Il comportamento cambia in base al suo valore.
+ Ci sono tre possibili opzioni.
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+=1: di default, 
+\emph on
+wpa_supplicant
+\emph default
+ inzia a scansionare e seleziona l'AP.
+ Se non trova un AP associato alle reti salvate può essere inizializzata
+ una nuova 
+\emph on
+rete ad-hoc IBSS
+\emph default
+ o in modalità AP, se configurate.
+\end_layout
+
+\begin_layout Enumerate
+= 0: il driver si occupa della scansione, selezione dell'AP e dei parametri
+ di associazione IEEE 802.11.
+\end_layout
+
+\begin_layout Enumerate
+= 2: come 0, ma associa l'AP usando un sistema di sicurezza e un SSID (ma
+ non BSSID).
+ In questa modalità, i blocchi di rete nel file di configurazione sono provati
+ uno ad uno, fino a che il driver non avvisa che l'associazione è avvenuta
+ con successo.
+ Ogni blocco di rete deve specificare esplicitamente le politiche di sicurezza.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+
+\emph on
+driver_param="field=value"
+\emph default
+ per passare parametri al driver.
+ Il formato è specificato dall'interfaccia del driver.
+ In molti casi questo non serve, ma come mostrerò nel proseguo del capitolo,
+ nel caso di Android ho usato proprio questo parametro.
+ 
+\end_layout
+
+\begin_layout Enumerate
+
+\emph on
+config_methods=<lista parametri separati da spazio>
+\emph default
+ cioè la lista di tutte le modalità di configurazione supportate.
+ I parametri disponibili sono 
+\emph on
+usba, ethernet, label, display, ext_nfc_token, int_nfc_token, nfc_interface,
+ push_button, keypad, virtual_display, physical_display, virtual_push_button,
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+seqsplit{physical
+\backslash
+_push
+\backslash
+_button}
+\end_layout
+
+\end_inset
+
+
+\emph default
+.
+ In Android, questi parametri sono già impostati e non è stato necessario
+ modificarli.
+\end_layout
+
+\begin_layout Subsection*
+Supporto
+\end_layout
+
+\begin_layout Standard
+Sebbene esista una documentazione ufficiale, non è neanche lontanamente
+ sufficiente per usare correttamente 
+\emph on
+wpa_supplicant
+\emph default
+.
+ Inoltre, il codice sorgente è molto esteso, infatti il solo file 
+\family sans
+wpa_supplicant.c
+\family default
+ è di più di 10.000 righe e per la maggior parte senza nemmeno una riga di
+ commento, quindi, di fatto, l'unico vero esperto è il creatore stesso,
+ cioè Jouni Malinen.
+ Però, per fortuna esiste una mailing list pubblica, molto simile a quella
+ usata dal kernel Linux, in cui è possibile porre domande e spesso a rispondere
+ è proprio Jouni in persona, oltre ad altri sviluppatori, per esempio di
+ Qualcomm e Intel.
+ Purtroppo, la maggior parte di loro lavora su Linux e il supporto che forniscon
+o è destinato a questo sistema, lasciando a me il riadattamento ad Android,
+ per nulla scontato e banale.
+\end_layout
+
+\begin_layout Standard
+Nel proseguo di questo capitolo parlerò solamente di 
+\emph on
+wpa_supplicant
+\emph default
+ in Android.
+ Le procedure pratiche riguardano la mia personale esperienza.
+ Purtroppo, non ho trovato nessun supporto specifico per 
+\emph on
+wpa_supplicant
+\emph default
+ in Android.
+\end_layout
+
+\begin_layout Section
+Compilare wpa_supplicant e wpa_cli
+\end_layout
+
+\begin_layout Standard
+Negli anni sono uscite molte versioni di questo software.
+ In Android Lollipop 5.0.1 è presente la 2.3, mentre in KitKat la 2.1.
+ Per quanto riguarda 
+\emph on
+Wi-Fi Direct
+\emph default
+ conviene avere l'ultima implementazione disponibile (
+\emph on
+branch master
+\emph default
+), per assicurarsi di avere quella con tutti i miglioramenti possibili,
+ poiché come già ripetuto, 
+\emph on
+Wi-Fi Direct
+\emph default
+ è un protocollo giovane e ogni miglioramento è ben accetto.
+ In Lollipop 5.0.1 ho fatto esattamente questo, cioè ho utilizzato una versione
+ ancora in sviluppo circa a metà tra la 2.3 e la 2.4 (appena uscita).
+ Per fare ciò ho scaricato dalla 
+\emph on
+repository
+\emph default
+ ufficiale di 
+\emph on
+wpa_supplicant 
+\emph default
+il codice sorgente (vedi Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Download-e-compilazione-wpa_supplicant_wpa_cli"
+
+\end_inset
+
+ righe 1-3).
+ Dopodiché, l'ho sostituito a quello presente in AOSP (righe 4-18) mantenendo
+ la struttura con i due collegamenti simbolici e ho compilato solamente
+ i moduli 
+\emph on
+wpa_supplicant
+\emph default
+ e 
+\emph on
+wpa_cli
+\emph default
+ (vedi Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Download-e-compilazione-wpa_supplicant_wpa_cli"
+
+\end_inset
+
+ righe 19-22).
+ La procedura completa è nell'Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Inizializzare-l'ambiente-per-compilare-android"
+
+\end_inset
+
+ e il risultato della compilazione sono diversi file, comprese alcune librerie
+ 
+\begin_inset Quotes eld
+\end_inset
+
+.so
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Sono sufficienti solo i due eseguibili 
+\emph on
+wpa_supplicant 
+\emph default
+e
+\emph on
+ wpa_cli
+\emph default
+, copiandoli dalla cartella
+\emph on
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+seqsplit{out/target/product/<nome dispositivo>/system/bin/}
+\end_layout
+
+\end_inset
+
+ 
+\emph default
+alla 
+\emph on
+/sdcard
+\emph default
+ del dispositivo.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+ 1.
+ $ mkdir ~/wpa_supplicant_master
+\end_layout
+
+\begin_layout LyX-Code
+ 2.
+ $ cd ~/wpa_supplicant_master
+\end_layout
+
+\begin_layout LyX-Code
+ 3.
+ $ git clone http://w1.fi/hostap.git
+\begin_inset VSpace smallskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+ 4.
+ $ cd ~/androidsource/aosp-main/external/wpa_supplicant_8
+\end_layout
+
+\begin_layout LyX-Code
+ 5.
+ $ rm -r hs20
+\end_layout
+
+\begin_layout LyX-Code
+ 6.
+ $ rm -r src
+\end_layout
+
+\begin_layout LyX-Code
+ 7.
+ $ rm -r wpa_supplicant
+\end_layout
+
+\begin_layout LyX-Code
+ 8.
+ $ rm -r hostapd
+\end_layout
+
+\begin_layout LyX-Code
+ 9.
+ $ rm Android.mk
+\end_layout
+
+\begin_layout LyX-Code
+10.
+ $ cp -r ~/wpa_supplicant_master/hostap/hostapd 
+\end_layout
+
+\begin_layout LyX-Code
+     ../hostapd
+\end_layout
+
+\begin_layout LyX-Code
+11.
+ $ cp -r ~/wpa_supplicant_master/hostap/src ../src
+\end_layout
+
+\begin_layout LyX-Code
+12.
+ $ cp -r ~/wpa_supplicant_master/hostap/wpa_supplicant 
+\end_layout
+
+\begin_layout LyX-Code
+     ../wpa_supplicant
+\end_layout
+
+\begin_layout LyX-Code
+13.
+ $ cp -r ~/wpa_supplicant_master/hostap/hs20 ../hs20
+\end_layout
+
+\begin_layout LyX-Code
+14.
+ $ cp ~/wpa_supplicant_master/hostap/Android.mk 
+\end_layout
+
+\begin_layout LyX-Code
+     ../Android.mk
+\end_layout
+
+\begin_layout LyX-Code
+15.
+ $ cd wpa_supplicant
+\end_layout
+
+\begin_layout LyX-Code
+16.
+ $ ln -s ~/androidsource/aosp-main/external/ 
+\end_layout
+
+\begin_layout LyX-Code
+    wpa_supplicant_8/src
+\end_layout
+
+\begin_layout LyX-Code
+17.
+ $ cd ../hostapd
+\end_layout
+
+\begin_layout LyX-Code
+18.
+ $ ln -s ~/androidsource/aosp-main/external/ 
+\end_layout
+
+\begin_layout LyX-Code
+    wpa_supplicant_8/src
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset VSpace smallskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+19.
+ $ cd ~/androidsource/aosp-main
+\end_layout
+
+\begin_layout LyX-Code
+20.
+ $ source build/envsetup.sh
+\end_layout
+
+\begin_layout LyX-Code
+21.
+ $ lunch
+\end_layout
+
+\begin_layout LyX-Code
+22.
+ $ make wpa_supplicant wpa_cli -jN
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:Download-e-compilazione-wpa_supplicant_wpa_cli"
+
+\end_inset
+
+Download e compilazione di wpa_supplicant e wpa_cli
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Eseguire wpa_supplicant e wpa_cli
+\end_layout
+
+\begin_layout Standard
+Dopo che ho compilato 
+\emph on
+wpa_supplicant
+\emph default
+ e la sua interfaccia a linea di comando 
+\emph on
+wpa_cli
+\emph default
+, li ho messi sul dispositivo e li ho eseguiti.
+ Purtroppo non è sufficiente fare copia-incolla dei file per eseguirli facilment
+e.
+ Innanzitutto, è obbligatorio un dispositivo con i privilegi di root, ma
+ soprattutto la una procedura da seguire ha una variante nel caso di Android
+ 5.0 o superiore.
+\end_layout
+
+\begin_layout Subsection
+Inizializzazione
+\end_layout
+
+\begin_layout Standard
+Per poter procedere ho dovuto installare l'Android SDK perché contiene il
+ programma 
+\emph on
+adb
+\emph default
+.
+ Quindi, ho scaricato l'SDK e seguito i comandi nell'Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Procedura-per-installazione-sdk"
+
+\end_inset
+
+.
+ Dopo che ho installato gli elementi consigliati, nella cartella 
+\emph on
+~/androidSdk/platform-tools/ 
+\emph default
+è apparso il file eseguibile 
+\family sans
+adb
+\family default
+.
+ Quindi, ho collegato il dispositivo al PC/MAC, ho attivato la 
+\emph on
+modalità debug
+\emph default
+ nelle impostazioni e ho copiato i file compilati nella 
+\emph on
+/sdcard
+\emph default
+.
+ Dopo queste operazioni, ho seguito la procedura di inizializzazione descritta
+ nell'Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Procedura-per-inizializzare-esecuzione-wpa_suppl"
+
+\end_inset
+
+.
+ Per far si che il comando 
+\emph on
+adb
+\emph default
+ sia individuato dal terminale di Ubuntu, ho dovuto aggiungere nel file
+ .
+\family sans
+profile
+\family default
+ la riga 
+\emph on
+export PATH=$PATH:~/androidSdk/platform-tools
+\emph default
+ e riavviare la macchina virtuale.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+$ mkdir ~/androidSdk
+\end_layout
+
+\begin_layout LyX-Code
+$ cd ~/Scaricati
+\end_layout
+
+\begin_layout LyX-Code
+$ mv android-sdk_r24.0.2-linux.tgz 
+\end_layout
+
+\begin_layout LyX-Code
+../androidSdk/android-sdk_r24.0.2-linux.tgz
+\end_layout
+
+\begin_layout LyX-Code
+$ cd ../androidSdk
+\end_layout
+
+\begin_layout LyX-Code
+$ tar zxvf android-sdk_r24.0.2-linux.tgz
+\end_layout
+
+\begin_layout LyX-Code
+$ rm android-sdk_r24.0.2-linux.tgz
+\end_layout
+
+\begin_layout LyX-Code
+$ cd tools
+\end_layout
+
+\begin_layout LyX-Code
+$ android
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:Procedura-per-installazione-sdk"
+
+\end_inset
+
+Procedura per installazione di Android SDK
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A questo punto, ho seguito la procedura nell'Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Procedura-per-inizializzare-esecuzione-wpa_suppl"
+
+\end_inset
+
+ (inserendo solo i comandi dopo ai simboli $ e #, ovviamente).
+ Questa sequenza di operazioni apre la 
+\emph on
+shell
+\emph default
+ di 
+\emph on
+adb
+\emph default
+ per poter interagire con il dispositivo (riga 1), si esegue coi privilegi
+ di root (riga 2) e fa il 
+\emph on
+mount
+\emph default
+ e il 
+\emph on
+remount
+\emph default
+ di 
+\emph on
+/system
+\emph default
+ in modalità lettura e scrittura per poter modificare i file (riga 4).
+ La riga 3 serve per visualizzare la lista delle partizioni in Android,
+ utile per individuare quella che nel nome termina con 
+\begin_inset Quotes eld
+\end_inset
+
+/system
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Una volta scoperta, ho copiato il nome che per esempio su Nexus 5 è 
+\emph on
+/dev/block/platform/msm_sdcc.1/by-name/system
+\emph default
+ a fianco del comando in riga 4.
+ Dopodiché, la riga 6 crea un backup di 
+\emph on
+wpa_supplicant
+\emph default
+ pre-installato e copia in 
+\emph on
+/system/bin
+\emph default
+ i due file compilati nell'Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Download-e-compilazione-wpa_supplicant_wpa_cli"
+
+\end_inset
+
+ (righe 7-8).
+ Infine, imposta i permessi, il proprietario e il contesto 
+\emph on
+SELinux
+\emph default
+ di tali file ai valori di default (righe 9-13).
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+ 1.
+ $ adb shell
+\end_layout
+
+\begin_layout LyX-Code
+
+\emph on
+    * daemon not running.
+ starting it now on port 5037 *
+\end_layout
+
+\begin_layout LyX-Code
+
+\emph on
+    * daemon started successfully *
+\end_layout
+
+\begin_layout LyX-Code
+ 2.
+ $ su 
+\end_layout
+
+\begin_layout LyX-Code
+ 3.
+ # mount
+\end_layout
+
+\begin_layout LyX-Code
+ 4.
+ # mount -o remount,rw <nome completo di /system>
+\end_layout
+
+\begin_layout LyX-Code
+ 5.
+ # cd /system/bin
+\end_layout
+
+\begin_layout LyX-Code
+ 6.
+ # mv wpa_supplicant wpa_supplicant_backup
+\end_layout
+
+\begin_layout LyX-Code
+ 7.
+ # cp /sdcard/wpa_supplicant wpa_supplicant
+\end_layout
+
+\begin_layout LyX-Code
+ 8.
+ # cp /sdcard/wpa_cli wpa_cli
+\end_layout
+
+\begin_layout LyX-Code
+ 9.
+ # chmod 755 wpa_supplicant
+\end_layout
+
+\begin_layout LyX-Code
+10.
+ # chmod 755 wpa_cli
+\end_layout
+
+\begin_layout LyX-Code
+11.
+ # chown 0.2000 wpa_supplicant
+\end_layout
+
+\begin_layout LyX-Code
+12.
+ # chown 0.2000 wpa_cli
+\end_layout
+
+\begin_layout LyX-Code
+13.
+ # chcon u:object_r:wpa_exec:s0 wpa_supplicant
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:Procedura-per-inizializzare-esecuzione-wpa_suppl"
+
+\end_inset
+
+Preparazione per eseguire wpa_supplicant e wpa_cli
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection*
+SELinux 
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+NSA Security-Enhanced Linux
+\emph default
+ (SELinux) fornisce un sistema di controllo degli accessi a grana fine (in
+ inglese fine-grained).
+ È utilizzato in due modi, 
+\emph on
+permissive mode
+\emph default
+ in cui le violazioni alle regole sono registrate, ma senza prendere azioni,
+ ed 
+\emph on
+enforcing mode
+\emph default
+ in cui non sono permesse violazioni.
+ 
+\emph on
+SELinux
+\emph default
+ è stato introdotto in Android 4.3 in 
+\emph on
+permissive mode
+\emph default
+, poi in 
+\emph on
+enforcing mode
+\emph default
+ in Android 4.4, ma comunque la maggior parte dei dispositivi con 4.4 hanno
+ continuato a funzionare con la precedente modalità.
+ Da 5.0 la 
+\emph on
+enforcing mode
+\emph default
+ è diventata attiva di default.
+ Quando funziona con la prima non ci sono problemi, ma se in 
+\emph on
+enforcing mode
+\emph default
+ la parte dell'app che richiede i privilegi di root può avere comportamenti
+ non voluti ed inaspettati.
+ 
+\end_layout
+
+\begin_layout Standard
+Per verificare da un'app la presenza di SELinux si può leggere 
+\emph on
+/sys/fs/selinux/enforce
+\emph default
+ tramite 
+\emph on
+libsuperuser
+\emph default
+ con 
+\emph on
+Shell.SU.shell()
+\emph default
+.
+ A definire quali sono le regole di sicurezza applicate al processo è il
+ 
+\emph on
+Contesto SELinux
+\emph default
+ (in inglese 
+\emph on
+SELinux Context
+\emph default
+) 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "selinux"
+
+\end_inset
+
+.
+ Alcuni contesti sono:
+\end_layout
+
+\begin_layout Itemize
+u:r:init:s0 - Contesto 
+\emph on
+init
+\emph default
+ più elevato;
+\end_layout
+
+\begin_layout Itemize
+u:r:shell:s0 - Shell senza privilegi, come 
+\emph on
+adb shell
+\emph default
+;
+\end_layout
+
+\begin_layout Itemize
+u:r:system_app:s0 - App di sistema;
+\end_layout
+
+\begin_layout Itemize
+u:r:recovery:s0 - Recovery;
+\end_layout
+
+\begin_layout Itemize
+u:object_r:wpa_exec:s0 - Wi-Fi.
+\end_layout
+
+\begin_layout Standard
+Questo argomento, che riguarda la sicurezza informatica, è molto vasto e
+ richiederebbe una trattazione più ampia, ma non fa parte di questo lavoro
+ di tesi.
+ Le uniche informazioni che ho fornito sono quelle essenziali per poter
+ comprendere il concetto e non ne sono necessarie altre.
+\end_layout
+
+\begin_layout Subsection
+Configurazione di wpa_supplicant
+\end_layout
+
+\begin_layout Standard
+Tentare di eseguire 
+\emph on
+wpa_supplicant
+\emph default
+, senza un'accurata configurazione causerà errori, tipicamente con codice
+ 
+\begin_inset Quotes eld
+\end_inset
+
+255
+\begin_inset Quotes erd
+\end_inset
+
+ o messaggi come 
+\begin_inset Quotes eld
+\end_inset
+
+segmentation fault
+\begin_inset Quotes erd
+\end_inset
+
+.
+ I file di configurazione 
+\family sans
+wpa_supplicant.conf 
+\family default
+e 
+\family sans
+p2p_supplicant.conf
+\family default
+ sono in 
+\emph on
+/data/misc/wifi
+\emph default
+.
+ Una volta eseguita la procedura di inizializzazione, ho utilizzato un file
+ manager con privilegi di root dal Google PlayStore per modificare questi
+ file.
+ 
+\end_layout
+
+\begin_layout Standard
+Negli algoritmi 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:wpa_supplicant.conf"
+
+\end_inset
+
+ e 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:p2p_supplicant.conf"
+
+\end_inset
+
+ ho messo i file di configurazione utilizzati in KitKat su Nexus 4.
+ Le righe cruciali, per il corretto funzionamento di 
+\emph on
+wpa_supplicant
+\emph default
+ in Android, sono 
+\emph on
+ctrl_interface
+\emph default
+ (il percorso in cui si trovano i socket) e 
+\emph on
+driver_param
+\emph default
+ (descriverò questo parametro nel corso del capitolo).
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+
+\series bold
+ctrl_interface=/data/misc/wifi/sockets
+\end_layout
+
+\begin_layout LyX-Code
+disable_scan_offload=1
+\end_layout
+
+\begin_layout LyX-Code
+update_config=1
+\end_layout
+
+\begin_layout LyX-Code
+device_name=occam
+\end_layout
+
+\begin_layout LyX-Code
+manufacturer=LGE
+\end_layout
+
+\begin_layout LyX-Code
+model_name=Nexus 4
+\end_layout
+
+\begin_layout LyX-Code
+model_number=Nexus 4
+\end_layout
+
+\begin_layout LyX-Code
+serial_number=XXXXXXXXXXXXXXX
+\end_layout
+
+\begin_layout LyX-Code
+device_type=10-0050F204-5
+\end_layout
+
+\begin_layout LyX-Code
+config_methods=physical_display virtual_push_button
+\end_layout
+
+\begin_layout LyX-Code
+pmf=1
+\end_layout
+
+\begin_layout LyX-Code
+tdls_external_control=1
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:wpa_supplicant.conf"
+
+\end_inset
+
+wpa_supplicant.conf
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout LyX-Code
+ctrl_interface=/data/misc/wifi/sockets
+\end_layout
+
+\begin_layout LyX-Code
+disable_scan_offload=1
+\end_layout
+
+\begin_layout LyX-Code
+
+\series bold
+driver_param=use_p2p_group_interface=1
+\end_layout
+
+\begin_layout LyX-Code
+update_config=1
+\end_layout
+
+\begin_layout LyX-Code
+device_name=Nexus 4
+\end_layout
+
+\begin_layout LyX-Code
+device_type=10-0050F204-5
+\end_layout
+
+\begin_layout LyX-Code
+config_methods=virtual_push_button physical_display keypad
+\end_layout
+
+\begin_layout LyX-Code
+p2p_ssid_postfix=-Nexus 4
+\end_layout
+
+\begin_layout LyX-Code
+persistent_reconnect=1
+\end_layout
+
+\begin_layout LyX-Code
+pmf=1
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:p2p_supplicant.conf"
+
+\end_inset
+
+p2p_supplicant.conf
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Avvio di wpa_supplicant e wpa_cli
+\end_layout
+
+\begin_layout Standard
+A questo punto, dopo essermi assicurato di aver il Wi-Fi abilitato nelle
+ impostazioni di Android, ho ripetuto i passi da 1 a 5 dell'Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Download-e-compilazione-wpa_supplicant_wpa_cli"
+
+\end_inset
+
+ e seguito la procedura nell'Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Avvia-wpa_supplicant-e_wpa_cli"
+
+\end_inset
+
+.
+ La prima riga è utile solo su Lollipop e serve per cambiare il contesto
+ 
+\emph on
+SELinux
+\emph default
+ di 
+\emph on
+wpa_supplicant
+\emph default
+, mentre la seconda serve per terminare in modo forzato il processo 
+\emph on
+wpa_supplicant
+\emph default
+ in esecuzione (mi è capitato di doverla eseguire più volte, perché il processo
+ si interrompesse).
+ La terza riga per avviarlo eseguendolo su un solo processo, ma con due
+ interfacce contemporaneamente, cioè 
+\emph on
+wlan0
+\emph default
+ per quanto riguarda il Wi-Fi e 
+\emph on
+p2p0
+\emph default
+ per la parte 
+\emph on
+Wi-Fi Direct
+\emph default
+.
+ Per una guida completa sui parametri che si possono passare a questo programma,
+ consiglio di eseguire il comando 
+\emph on
+wpa_supplicant --help
+\emph default
+, ma i principali e quelli rilevanti in questo lavoro di tesi sono:
+\end_layout
+
+\begin_layout Itemize
+-B : necessario per eseguirlo come 
+\emph on
+daemon;
+\end_layout
+
+\begin_layout Itemize
+-i<interfaccia di rete> : per specificare l'interfaccia su cui eseguirlo;
+\end_layout
+
+\begin_layout Itemize
+-D<driver> : specifica il driver da utilizzare (in Android usare sempre
+ 
+\emph on
+nl80211
+\emph default
+, perché supportato e più recente degli altri);
+\end_layout
+
+\begin_layout Itemize
+-c : specifica il file di configurazione;
+\end_layout
+
+\begin_layout Itemize
+-N : esegue i comandi successivi su un altro processo, internamente a
+\emph on
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+seqsplit{wpa
+\backslash
+_supplicant}
+\end_layout
+
+\end_inset
+
+
+\emph default
+, facendo si che col comando 
+\emph on
+ps w
+\emph default
+ appaia solo un processo col nome 
+\emph on
+wpa_supplicant.
+\end_layout
+
+\begin_layout Standard
+Detto ciò, ho avviato 
+\emph on
+wpa_cli
+\emph default
+,
+\emph on
+ 
+\emph default
+tramite la procedura riportata nell'Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Avvia-wpa_supplicant-e_wpa_cli"
+
+\end_inset
+
+ (riga 4), specificando sempre l'interfaccia di rete con 
+\begin_inset Quotes eld
+\end_inset
+
+-i
+\begin_inset Quotes erd
+\end_inset
+
+, con l'unica condizione che essa sia stata precedentemente avviata con
+ 
+\emph on
+wpa_supplicant 
+\emph default
+in modo manuale o automatico.
+ Il parametro 
+\begin_inset Quotes eld
+\end_inset
+
+-p
+\begin_inset Quotes erd
+\end_inset
+
+ specifica il percorso dei socket, necessario per far si che il processo
+ 
+\emph on
+wpa_cli
+\emph default
+ possa comunicare con quello di 
+\emph on
+wpa_supplicant
+\emph default
+.
+ 
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+ 1.
+ # chcon u:object_r:system_file:s0 wpa_supplicant
+\end_layout
+
+\begin_layout LyX-Code
+ 2.
+ # killall -SIGKILL wpa_supplicant
+\end_layout
+
+\begin_layout LyX-Code
+ 3.
+ # wpa_supplicant -B -iwlan0 -Dnl80211 
+\end_layout
+
+\begin_layout LyX-Code
+     -c/data/misc/wifi/wpa_supplicant.conf -N -B 
+\end_layout
+
+\begin_layout LyX-Code
+     -ip2p0 -Dnl80211 -c/data/misc/wifi/p2p_supplicant.conf
+\end_layout
+
+\begin_layout LyX-Code
+ 4.
+ # wpa_cli -ip2p0 -p/data/misc/wifi/sockets
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:Avvia-wpa_supplicant-e_wpa_cli"
+
+\end_inset
+
+Avviare wpa_supplicant e wpa_cli
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout LyX-Code
+wpa_cli v2.1-devel-4.4.4
+\end_layout
+
+\begin_layout LyX-Code
+Copyright (c) 2004-2013, Jouni Malinen <j@w1.fi> and contributors
+\end_layout
+
+\begin_layout LyX-Code
+This software may be distributed under the terms of the BSD 
+\end_layout
+
+\begin_layout LyX-Code
+license.
+\end_layout
+
+\begin_layout LyX-Code
+See README for more details.
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+Interactive mode
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+>
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:wpa_cli-avviato-in-interactive-mode"
+
+\end_inset
+
+wpa_cli avviato in 
+\begin_inset Quotes eld
+\end_inset
+
+interactive mode
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+Aggiungendo 
+\begin_inset Quotes eld
+\end_inset
+
+-dd
+\begin_inset Quotes erd
+\end_inset
+
+ dopo ogni comando di 
+\emph on
+wpa_supplicant 
+\emph default
+separato da 
+\emph on
+
+\begin_inset Quotes eld
+\end_inset
+
+
+\emph default
+-N
+\emph on
+
+\begin_inset Quotes erd
+\end_inset
+
+,
+\emph default
+ permette di abilitare la modalità con più messaggi di debug, ma dalla mia
+ esperienza non sempre funziona, dipende dal dispositivo.
+ Inoltre, 
+\emph on
+wpa_cli
+\emph default
+ ha due tipi di modalità di avvio: la 
+\emph on
+interactive mode
+\emph default
+ e la modalità con passaggio di parametri.
+ Per tutto questo lavoro di tesi ho usato la
+\emph on
+ interactive
+\emph default
+ perché più comoda, ma per esporre le funzionalità di 
+\emph on
+wpa_cli 
+\emph default
+in Java dovrò usare l'altra modalità, oltre ad avere i privilegi di root
+ e appoggiarmi alla libreria 
+\emph on
+libsuperuser
+\emph default
+ di 
+\emph on
+Jorrit Jongma
+\emph default
+, conosciuto nell'ambiente del modding ed hacking di Android come 
+\begin_inset Quotes eld
+\end_inset
+
+Chainfire
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "libsuperuser"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Attenzione, a causa delle nuove misure di sicurezza di Lollipop è necessario
+ modificare il 
+\emph on
+contesto SELinux
+\emph default
+ di 
+\emph on
+wpa_supplicant
+\emph default
+ in 
+\emph on
+u:object_r:system_file:s0
+\emph default
+, impedendo al framework Android di connettersi ad internet.
+ Terminate le operazioni, è necessario ripristinare quello di default 
+\emph on
+u:object_r:wpa_exec:s0
+\emph default
+ per riabilitare il Wi-Fi in Android.
+ Quasi sempre questa operazione richiede il riavvio completo del dispositivo.
+\end_layout
+
+\begin_layout Section
+Utilizzare wpa_supplicant e wpa_cli
+\end_layout
+
+\begin_layout Standard
+Dopo aver avviato 
+\emph on
+wpa_cli
+\emph default
+, ho potuto utilizzarlo per connettere più dispositivi.
+ Innanzitutto, prima di procedere ho dovuto eseguirlo su tutti, che nei
+ test effettuati erano Nexus 5 e Samsung Galaxy S4.
+ Per una lista completa dei comandi e di tutti i parametri, che possono
+ essere utilizzati, non ho fatto riferimento né all'help di 
+\emph on
+wpa_cli
+\emph default
+, né alla documentazione fornita nei file 
+\family sans
+readme
+\family default
+, poiché aggiornati raramente.
+ L'unico metodo che ho trovato per capire come utilizzare questo programma
+ è leggere il sorgente del file 
+\family sans
+wpa_cli.c
+\family default
+, disponibile nella 
+\emph on
+repository
+\emph default
+ ufficiale, concentrandomi sul parsing delle stringhe passate come parametri.
+\end_layout
+
+\begin_layout Subsection*
+Connessione di due dispositivi
+\end_layout
+
+\begin_layout Standard
+Il primo passo è avviare la fase di Discovery su entrambi i dispositivi
+ con 
+\emph on
+p2p_find
+\emph default
+.
+ Appena un dispositivo ne trova un altro apparirà un messaggio: 
+\emph on
+P2P-DEVICE-FOUND
+\emph default
+ con il MAC address, il nome e altri parametri.
+ A volte è capitato che un dispositivo non mostrasse i messaggi 
+\emph on
+P2P-DEVICE-FOUND
+\emph default
+, nonostante fosse comunque in grado di farlo, in particolare con i Samsung
+ Galaxy S4.
+ Purtroppo, è sempre accaduto in modo imprevedibile, l'unica soluzione che
+ ho trovato è utilizzare il comando 
+\emph on
+p2p_peers
+\emph default
+ per ottenere la lista dei dispositivi rilevati.
+ Quindi, ho usato questi risultati per ottenere il MAC address e procedere
+ con la connessione.
+ Il comando 
+\emph on
+p2p_find
+\emph default
+, in realtà, permette di specificare molti più parametri, infatti la sintassi
+ è:
+\end_layout
+
+\begin_layout LyX-Code
+p2p_find [timeout in seconds] [type=<social|progressive>] 
+\backslash
+ 
+\end_layout
+
+\begin_layout LyX-Code
+[dev_id=<addr>] [dev_type=<device type>] 
+\backslash
+ 
+\end_layout
+
+\begin_layout LyX-Code
+[delay=<search delay in ms>] [seek=<service name>] [freq=<MHz>].
+ 
+\end_layout
+
+\begin_layout Standard
+È importante notare che senza specificare il 
+\emph on
+timeout
+\emph default
+, la 
+\emph on
+fase di Discovery
+\emph default
+ continuerà all'infinito, o fino a che sarà sospesa da un altro comando.
+ Dai test effettuati, dopo alcuni minuti, i dispositivi sono stati comunque
+ in grado di trovarsi a vicenda, cosa che non accade con le API P2P in Android.
+ Nel caso di 
+\emph on
+wpa_supplicant
+\emph default
+ ho notato molti meno problemi, per quanto riguarda la 
+\emph on
+fase di Discovery
+\emph default
+, rispetto al framework Android.
+\end_layout
+
+\begin_layout Standard
+Una volta che i due dispositivi si sono trovati, su uno dei due ho usato
+ il comando 
+\emph on
+p2p_connect
+\emph default
+ per la connessione
+\emph on
+, 
+\emph default
+specificando il MAC address di destinazione e il 
+\emph on
+wps_method
+\emph default
+
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Metodo da usare per WPS, per esempio la pressione di un pulsante o un codice
+ PIN
+\begin_inset CommandInset citation
+LatexCommand cite
+key "wifi_direct_specification"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+.
+ In questo lavoro di tesi, ho utilizzato il metodo 
+\emph on
+Push Button Configuration
+\emph default
+ (PBC), perché più comodo da utilizzare, ma ho sperimentato anche il PIN.
+ Ho deciso di usare PBC, perché nell'ambito delle 
+\emph on
+Opportunistic Networks
+\emph default
+ è più adatto, poiché richiede la semplice pressione di un pulsante sullo
+ schermo dello Smartphone di destinazione (anche se l'ideale sarebbe non
+ averlo proprio e creare connessioni senza chiedere il consenso, cosa comunque
+ possibile tramite Java reflection secondo 
+\family sans
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "experimenting_opportunistic_networks"
+
+\end_inset
+
+
+\family default
+).
+ Il comando utilizzabile per eseguire la connessione ha la sintassi:
+\end_layout
+
+\begin_layout LyX-Code
+p2p_connect <peer device address> 
+\end_layout
+
+\begin_layout LyX-Code
+<pbc|pin|PIN#|p2ps> [display|keypad|p2ps] 
+\end_layout
+
+\begin_layout LyX-Code
+[persistent|persistent=<network id>] [join|auth] 
+\end_layout
+
+\begin_layout LyX-Code
+[go_intent=<0..15>] [freq=<in MHz>] [ht40] [vht] 
+\end_layout
+
+\begin_layout LyX-Code
+[provdisc] [auto].
+ 
+\end_layout
+
+\begin_layout Standard
+Anche in questo caso, si possono specificare molti parametri.
+ Ho testato i principali in alcuni esperimenti, ma quelli che si sono rilevati
+ utili sono:
+\emph on
+ wps_method
+\emph default
+, 
+\emph on
+join
+\emph default
+, 
+\emph on
+go_intent
+\emph default
+
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Il valore intero più alto assegnato, specifica chi sarà il più probabile
+ GO durante la negoziazione
+\begin_inset CommandInset citation
+LatexCommand cite
+key "wifi_direct_specification"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+ e
+\emph on
+ persistent
+\emph default
+.
+ Poiché, in ambito di 
+\emph on
+Opportunistic Networks
+\emph default
+ è preferibile un gruppo 
+\emph on
+autonomous
+\emph default
+ o comunque standard, il 
+\emph on
+persistent
+\emph default
+ non lo considererò, questo basandomi sull'analisi delle performance in
+ 
+\family sans
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "experimenting_opportunistic_networks"
+
+\end_inset
+
+
+\family default
+.
+ Principalmente ho sperimentato le soluzioni classiche perché più facili
+ da gestire.
+ Infatti la connessione è relativamente semplice, cioè ho utilizzato il
+ comando 
+\emph on
+p2p_connect MAC_address_destinazione pbc go_intent=15 
+\emph default
+per eseguire la connessione facendo si che sia il GO.
+ Lo stesso comando l'ho eseguito anche sul dispositivo di destinazione,
+ ma specificando il MAC address del precedente e un 
+\emph on
+go_intent
+\emph default
+ minore, per esempio 1, in modo da assicurarmi che fosse il Client.
+ Ovviamente, forzare chi è il Client e chi è il GO non è necessario, ma
+ si è rivelato molto comodo in fase di sperimentazione.
+ Una volta avviata la connessione, come fa il dispositivo a cui è diretto
+ il comando 
+\emph on
+p2p_connect
+\emph default
+ a sapere il MAC address del mittente? Semplicemente, lo riceve in un messaggio
+ 
+\emph on
+P2P-PROV-DISC-PBC-REQ
+\emph default
+ che contiene i dati del dispositivo che sta richiedendo una connessione.
+ In base ad essi, il destinatario può adattarsi e rispondere di conseguenza.
+ Una volta stabilita la connessione, l'ho mantenuta per diversi minuti,
+ per verificare che funzionasse senza alcun problema.
+ La situazione è rappresentata in Figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Connessione-di-due-dispositivi-wpa-supplicant"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/wpa_supplicant_2_device.png
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Connessione-di-due-dispositivi-wpa-supplicant"
+
+\end_inset
+
+Connessione di due dispositivi con wpa_supplicant
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Connessione di tre o più dispositivi
+\end_layout
+
+\begin_layout Standard
+Dopo aver connesso due dispositivi, ho deciso di collegarne un terzo al
+ GO.
+ Purtroppo, fare ciò non è semplice come con due, infatti 
+\emph on
+wpa_cli
+\emph default
+ utilizza un'interfaccia principale per eseguire le operazioni e ne crea
+ altre, cioè quelle del gruppo, con nomi simili a 
+\emph on
+p2p-p2p0-0
+\emph default
+ o 
+\emph on
+p2p-wlan0-4
+\emph default
+.
+ L'attuale implementazione di 
+\emph on
+wpa_cli
+\emph default
+ richiede l'esecuzione di alcuni comandi in quella principale, mentre altri
+ in quelle di gruppo (gli sviluppatori hanno recentemente pianificato di
+ aggiungere la funzione per lanciare i comandi su una sola interfaccia,
+ come tra l'altro ho consigliato anche io nella mailing list dopo una lunga
+ serie di esperimenti 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "mailinglist_wpa_supplicant-consiglioaggiuntaparametro_wps_pbc"
+
+\end_inset
+
+).
+ Quindi, una volta connessi due dispositivi, per far si che un terzo possa
+ collegarsi al GO del gruppo, bisogna avviare 
+\emph on
+wps_pbc
+\emph default
+ sul GO, non sull'interfaccia principale, ma su quella di gruppo 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "mailinglist_wpa_supplicant-usareinterfacciacorretta"
+
+\end_inset
+
+.
+ Purtroppo, non si può specificare il nome dell'interfaccia di gruppo in
+ 
+\emph on
+wps_pbc
+\emph default
+, quindi ho dovuto aprire un'altra connessione con 
+\emph on
+wpa_cli
+\emph default
+ usando 
+\emph on
+-i<interfaccia_gruppo>
+\emph default
+ (per esempio 
+\emph on
+-ip2p-p2p0-0
+\emph default
+) ed ho eseguito
+\emph on
+ wps_pbc
+\emph default
+.
+ Invece, sul dispositivo che vuole connettersi, ho utilizzato 
+\emph on
+p2p_connect 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+seqsplit{MAC
+\backslash
+_address
+\backslash
+_GO}
+\end_layout
+
+\end_inset
+
+ pbc join
+\emph default
+
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Join è il parametro che permette di collegarsi ad un GO di un gruppo già
+ avviato.
+\end_layout
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/wpa_supplicant_3_device.png
+	width 100col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Connessione-di-tre-dispositivi-wpa-supplicant"
+
+\end_inset
+
+Connessione di tre dispositivi con wpa_supplicant
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+Il risultati ottenuti sono visibili nelle Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Connessione-di-tre-dispositivi-wpa-supplicant"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:wpa_supplicant-GO-con-interfaccia-controllo"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:wpa_supplicant-primo-Client"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:wpa_supplicant-GO-con-client-interfacciagruppo"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:wpa_supplicant-secondo-Client"
+
+\end_inset
+
+.
+ Tale metodo può essere utilizzato anche senza l'
+\emph on
+interactive mode
+\emph default
+ e questo è perfetto per la comunicazione tra più dispositivi e teoricamente
+ permetterebbe anche di scalare con l'uso di interfacce multiple.
+ In Figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Interfaccia-p2p-creata-socket"
+
+\end_inset
+
+ c'è la lista dei socket, cioè i quattro predefiniti su KitKat e quello
+ aperto da 
+\emph on
+wpa_supplicant
+\emph default
+ dopo aver creato un gruppo 
+\emph on
+Wi-Fi Direct
+\emph default
+.
+ Il motivo per cui si può avviare 
+\emph on
+wpa_cli 
+\emph default
+sull'interfaccia di gruppo è proprio perché 
+\emph on
+wpa_supplicant
+\emph default
+ stesso l'ha creata apposta per fare ciò.
+ 
+\end_layout
+
+\begin_layout Standard
+Invece, per quanto riguarda la disconnessione, non esiste il comando 
+\emph on
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+seqsplit{p2p
+\backslash
+_disconnect}
+\end_layout
+
+\end_inset
+
+
+\emph default
+, ma si utilizza 
+\emph on
+p2p_group_remove
+\emph default
+ anche sui Client 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "mailinglist_wpa_supplicant-p2pgroupremove"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout LyX-Code
+p2p_group_remove <group interface>
+\end_layout
+
+\begin_layout Standard
+Se eseguito sul Client, si disconnette dal GO, ma tutti gli altri non subiscono
+ variazioni, se invece è il GO ad eseguirlo, tutti i Client ricevono il
+ comando e di conseguenza la rete cade.
+ Lo stesso vale se il GO si spegne, o esce dall'area di ricezione.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/wpa_cli_images/go_with_2_phones_connected.tiff
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:wpa_supplicant-GO-con-interfaccia-controllo"
+
+\end_inset
+
+Wpa_supplicant GO con due client su interfaccia p2p0
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/wpa_cli_images/client_first_connected.tiff
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:wpa_supplicant-primo-Client"
+
+\end_inset
+
+Wpa_supplicant primo Client connesso al GO
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/wpa_cli_images/go_on_p2pinterface_with_the_second_device_connected.tiff
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:wpa_supplicant-GO-con-client-interfacciagruppo"
+
+\end_inset
+
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+Wpa_supplicant GO con il secondo client su interfaccia di gruppo
+\end_layout
+
+\end_inset
+
+Wpa_supplicant GO con il secondo client sull'interfaccia di gruppo p2p-p2p0-0
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/wpa_cli_images/client_second_connected.tiff
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:wpa_supplicant-secondo-Client"
+
+\end_inset
+
+Wpa_supplicant secondo Client connesso al GO
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+root@mako:/ # ls -a /data/misc/wifi/sockets                            
+        
+\end_layout
+
+\begin_layout LyX-Code
+p2p-p2p0-0
+\end_layout
+
+\begin_layout LyX-Code
+p2p0
+\end_layout
+
+\begin_layout LyX-Code
+wlan0
+\end_layout
+
+\begin_layout LyX-Code
+wpa_ctrl_2250-1
+\end_layout
+
+\begin_layout LyX-Code
+wpa_ctrl_2250-2
+\end_layout
+
+\begin_layout LyX-Code
+wpa_ctrl_567-1
+\end_layout
+
+\begin_layout LyX-Code
+wpa_ctrl_567-2
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:Interfaccia-p2p-creata-socket"
+
+\end_inset
+
+Interfaccia p2p creata da wpa_supplicant e socket associato
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Modificare il kernel per creare le VIF
+\end_layout
+
+\begin_layout Standard
+A questo punto ho ottenuto gli elementi per descrivere l'approccio alle
+ soluzioni dell'introduzione, infatti ho proposto di risolvere gli obiettivi
+ usando interfacce di rete multiple.
+ Poiché, il chip wireless sui dispositivi Android è uno solo, si tratta
+ di interfacce di rete virtuali.
+ Quindi, teoricamente, per raggiungere l'obiettivo, sarebbe sufficiente
+ creare altre interfacce di rete, eseguire 
+\emph on
+wpa_supplicant
+\emph default
+ e poi 
+\emph on
+wpa_cli
+\emph default
+ su di esse per creare nuovi gruppi.
+ Purtroppo non è così 
+\begin_inset Quotes eld
+\end_inset
+
+semplice
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Inizialmente, ho tentato di aggiungere una VIF con il comando 
+\emph on
+ip link add link name <nome VIF> type macvtap
+\emph default
+ per creare un'interfaccia virtuale 
+\emph on
+MacVTap
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Per maggiori informazioni su MacVTap vedere 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "macvtap"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+,
+\emph default
+ il risultato è nell'Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Macvtap-operazione-non-supportata"
+
+\end_inset
+
+.
+ Cioè, ho tentato di eseguire un'operazione non sopportata.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+root@hammerhead:/ # ip link add link wlan0 name prova type macvtap
+\end_layout
+
+\begin_layout LyX-Code
+RTNETLINK answers: Operation not supported on transport endpoint
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:Macvtap-operazione-non-supportata"
+
+\end_inset
+
+MacVTap, operazione non supportata
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+Questo accade perché Android non permette la creazione di interfacce virtuali
+ di rete.
+ In realtà ad imporre questo limite è il kernel, più precisamente il modo
+ con cui è stato configurato.
+ Quindi, ho deciso di modificarne la configurazione, compilarlo ed installarlo
+ sul dispositivo.
+ Nella Sezione 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Configurare-il-kernel"
+
+\end_inset
+
+, ho già accennato a come configurare il kernel, ma ora spiegherò nello
+ specifico su quali voci di
+\emph on
+ make menuconfig 
+\emph default
+ho agito, per abilitare l'uso delle VIF.
+\end_layout
+
+\begin_layout Standard
+Come primo passo sono entrato nel menu 
+\emph on
+Device Drivers
+\emph default
+ e poi nel suo sotto-menu 
+\emph on
+Network device support
+\emph default
+, come in Figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Kernel-menuconfig-Device-drivers"
+
+\end_inset
+
+.
+ Tutte le impostazioni utili le ho trovate lì, cioè ho abilitato con [*]
+ (vedi Figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Kernel-menuconfig-abilitazione-vif"
+
+\end_inset
+
+): 
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+MAC-VLAN support;
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+MAC-VLAN based tap driver;
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+Virtual ethernet pair device
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Tutte queste impostazioni attivano a loro volta molte voci all'interno del
+ file 
+\family sans
+.config
+\family default
+, ma non è necessario specificare quali, poiché 
+\emph on
+make menuconfig
+\emph default
+ fa questo lavoro tramite interfaccia grafica in modo semplificato.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/kernel_vif/1.png
+	lyxscale 50
+	width 100col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Kernel-menuconfig-Device-drivers"
+
+\end_inset
+
+Kernel make menuconfig 
+\begin_inset Quotes eld
+\end_inset
+
+Device Drivers
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/kernel_vif/3.png
+	lyxscale 50
+	width 100col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Kernel-menuconfig-abilitazione-vif"
+
+\end_inset
+
+Kernel make menuconfig abilitazione VIF
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Una volta compilato il kernel con 
+\emph on
+make
+\emph default
+, rimpacchettato e installato sul dispositivo ho provveduto anche ad installare
+ 
+\emph on
+Busybox 
+\emph default
+(dello sviluppatore con nickname 
+\begin_inset Quotes eld
+\end_inset
+
+Stericson
+\begin_inset Quotes erd
+\end_inset
+
+) 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "busybox_stericson"
+
+\end_inset
+
+ tramite il Google PlayStore per abilitare più comandi Linux in Android,
+ che purtroppo non sono inclusi o troppo limitati.
+ Dopodiché, ho creato l'interfaccia di rete virtuale seguendo la procedura
+ nell'Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Creazione-interfaccia-macvtap"
+
+\end_inset
+
+, il cui risultato è visibile in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:ifconfig-vif-esistente"
+
+\end_inset
+
+.
+ Infine, ho assegnato un IP e una netmask all'interfaccia e l'ho attivata
+ con i comandi nell'Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:ifconfig-VIF-con-ip_e-up"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+adb shell
+\end_layout
+
+\begin_layout LyX-Code
+shell@mako:/ $ su 
+\end_layout
+
+\begin_layout LyX-Code
+root@mako:/ # ip link add link wlan0 name prova type macvtap
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:Creazione-interfaccia-macvtap"
+
+\end_inset
+
+Creazione interfaccia di rete di tipo MacVTap
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+root@mako:/ # busybox ifconfig prova                                   
+        
+\end_layout
+
+\begin_layout LyX-Code
+prova     Link encap:Ethernet  HWaddr 46:9E:A6:3F:69:D9  
+\end_layout
+
+\begin_layout LyX-Code
+          BROADCAST MULTICAST  MTU:1500  Metric:1
+\end_layout
+
+\begin_layout LyX-Code
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+\end_layout
+
+\begin_layout LyX-Code
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+\end_layout
+
+\begin_layout LyX-Code
+          collisions:0 txqueuelen:500 
+\end_layout
+
+\begin_layout LyX-Code
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:ifconfig-vif-esistente"
+
+\end_inset
+
+Ifconfig mostra la nuova VIF
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+root@mako:/ # busybox ifconfig prova 10.169.129.42 netmask 
+\end_layout
+
+\begin_layout LyX-Code
+              255.255.248.0 up
+\end_layout
+
+\begin_layout LyX-Code
+prova     Link encap:Ethernet  HWaddr 46:9E:A6:3F:69:D9  
+\end_layout
+
+\begin_layout LyX-Code
+          inet addr:10.169.129.42  Bcast:10.169.135.255  
+\end_layout
+
+\begin_layout LyX-Code
+          Mask:255.255.248.0
+\end_layout
+
+\begin_layout LyX-Code
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+\end_layout
+
+\begin_layout LyX-Code
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+\end_layout
+
+\begin_layout LyX-Code
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+\end_layout
+
+\begin_layout LyX-Code
+          collisions:0 txqueuelen:500 
+\end_layout
+
+\begin_layout LyX-Code
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:ifconfig-VIF-con-ip_e-up"
+
+\end_inset
+
+Ifconfig mostra la nuova VIF con IP assegnato ed UP
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+root@mako:/ # ls /data/misc/wifi/sockets                               
+        
+\end_layout
+
+\begin_layout LyX-Code
+p2p0
+\end_layout
+
+\begin_layout LyX-Code
+wlan0
+\end_layout
+
+\begin_layout LyX-Code
+wpa_ctrl_567-1
+\end_layout
+
+\begin_layout LyX-Code
+wpa_ctrl_567-2
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:Lista-dei-socket-wifi"
+
+\end_inset
+
+Lista dei socket Wi-Fi
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Nonostante ciò, la lista dei socket attivi risulta quella nell'Algoritmo
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Lista-dei-socket-wifi"
+
+\end_inset
+
+.
+ Questo vuol dire che tale interfaccia, sebbene sia presente, non ha aperto
+ un socket.
+ Quindi perché non creare un socket manualmente? La risposta è che non si
+ può, deve essere il programma a farlo 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "mailinglist_wpa_supplicant_macvtap"
+
+\end_inset
+
+.
+ Comunque, il motivo specifico è che un'interfaccia 
+\emph on
+MacVTap
+\emph default
+ non è basata sui driver 
+\emph on
+nl80211
+\emph default
+, necessari perché 
+\emph on
+wpa_supplicant
+\emph default
+ possa svolgere le operazioni richieste (approfondirò il concetto di 
+\emph on
+nl80211
+\emph default
+ nel Capitolo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:quinto-capitolo"
+
+\end_inset
+
+).
+ Infatti, tentando di eseguire 
+\emph on
+wpa_supplicant
+\emph default
+ su questa interfaccia, il risultato è stato quello nell'Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Errore-di-connessione-wpa_supplicant-macvtap"
+
+\end_inset
+
+, cioè l'errore con codice 255.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout LyX-Code
+root@mako:/ # wpa_supplicant -B -iprova -Dnl80211 
+\end_layout
+
+\begin_layout LyX-Code
+     -c/data/misc/wifi/p2p_supplicant.conf
+\end_layout
+
+\begin_layout LyX-Code
+255| root@mako:/ # 
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:Errore-di-connessione-wpa_supplicant-macvtap"
+
+\end_inset
+
+Errore di connessione di wpa_supplicant con interfaccia MacVTap
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+Quindi, ho verificato se è possibile creare due VIF, eseguendo due volte
+ il comando 
+\emph on
+p2p_group_add
+\emph default
+.
+ La sintassi è la seguente: 
+\end_layout
+
+\begin_layout LyX-Code
+p2p_group_add [persistent|persistent=<network id>] 
+\end_layout
+
+\begin_layout LyX-Code
+[freq=<freq in MHz>] [ht40] [vht]
+\end_layout
+
+\begin_layout Standard
+Per svolgere questo esperimento non non ho dovuto specificare nessun parametro,
+ poiché sono tutti opzionali (essendo indicati con 
+\begin_inset Quotes eld
+\end_inset
+
+[ ]
+\begin_inset Quotes erd
+\end_inset
+
+).
+ Il risultato di questo comando è l'aggiunta di un gruppo 
+\emph on
+autonomous
+\emph default
+.
+ Il problema è che eseguendolo due volte, con l'obiettivo di creare due
+ gruppi, cioè due interfacce differenti (
+\emph on
+p2p-p2p0-0
+\emph default
+ e 
+\emph on
+p2p-p2p0-1
+\emph default
+) e quindi potersi avvicinare alla soluzione del problema descritto nell'introdu
+zione, il risultato che ho ottenuto è quello nell'Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Tentativo-di-creazione-2-gruppi_p2p_group_add"
+
+\end_inset
+
+.
+ Cioè non è possibile che un dispositivo Android possa connettersi a due
+ altri contemporaneamente, in questo caso essere due volte GO.
+ Quindi ho analizzato il problema in molti modi, per esempio cercando di
+ capire se è il tipo di gruppo a creare questo ostacolo, o se l'utilizzo
+ di altri comandi per la connessione permette di aggirare il problema, ma
+ tutto ciò è stato inutile, compreso il caso di un dispositivo GO su una
+ interfaccia e 
+\emph on
+Client
+\emph default
+ su un'altra.
+ Il problema è legato allo Smartphone/Tablet stesso, o più precisamente
+ ai suoi driver, e non a 
+\emph on
+wpa_supplicant
+\emph default
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "mailinglist_wpa_supplicant-limitidriver"
+
+\end_inset
+
+.
+ Inoltre, prima di portare l'analisi ad un livello ancora più nel dettaglio,
+ mi sono chiesto se fosse possibile usare 
+\emph on
+wlan0
+\emph default
+ invece che in modalità Wi-Fi in modo P2P.
+ Purtroppo, anche questo non è possibile, perché sono richiese interfacce
+ di gruppo per svolgere le operazioni Wi-Fi Direct 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "mailinglist_wpa_supplicant-usarewlan0ep2p0pergruppo"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+> p2p_group_add
+\end_layout
+
+\begin_layout LyX-Code
+  OK
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+<3>P2P-GROUP-STARTED p2p-p2p0-0 GO ssid="DIRECT-uQ" 
+\end_layout
+
+\begin_layout LyX-Code
+   freq=2412 passphrase="PwrBkw3a" go_dev_addr=10:68:3f:43:92:ab
+\end_layout
+
+\begin_layout LyX-Code
+<3>CTRL-EVENT-SCAN-RESULTS 
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+> p2p_group_add
+\end_layout
+
+\begin_layout LyX-Code
+  FAIL
+\end_layout
+
+\begin_layout LyX-Code
+<5>P2P: Failed to add group interface
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:Tentativo-di-creazione-2-gruppi_p2p_group_add"
+
+\end_inset
+
+Tentativo di creazione di gruppi con p2p_group_add
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Verificare le Valid Interface Combinations con iw di Linux
+\end_layout
+
+\begin_layout Standard
+Una possibile spiegazione è che siano i driver a non supportare l'aggiunta
+ di più VIF e visionando la documentazione del kernel Linux 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "linux_doc_p2p"
+
+\end_inset
+
+ ho notato il parametro 
+\emph on
+driver_param=use_p2p_group_interface=1
+\emph default
+, che ho aggiunto nei file di configurazione.
+ L'obiettivo è far si che, anche se i driver non supportano tale funzionalità,
+ 
+\emph on
+wpa_supplicant
+\emph default
+ riesca comunque a creare le interfacce di rete.
+ Nonostante ciò non è stato comunque possibile risolvere il problema.
+ Così, per cercare di capire quale sia il reale supporto dei driver dei
+ dispositivi Android, ho utilizzato il programma 
+\emph on
+iw
+\emph default
+ di Linux.
+ Questo software non è strettamente necessario per risolvere i problemi
+ posti nell'introduzione, ma in questo caso mi è tornato utile come strumento
+ di analisi.
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+Iw
+\emph default
+ è il programma a linea di comando, creato da Johannes Berg, per la configurazio
+ne di dispositivi wireless con i nuovi driver 
+\emph on
+nl80211
+\emph default
+.
+ È ancora in fase di sviluppo e l'unica pagina di documentazione del progetto
+ è quella che si ottiene con 
+\emph on
+iw help
+\emph default
+ nel terminale, riassunta e migliorata nella pagina ufficiale del kernel
+ Linux 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "iw_kernel_linux_doc"
+
+\end_inset
+
+.
+ Parlerò in modo più approfondito dei driver wireless del kernel Linux nel
+ Capitolo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:quinto-capitolo"
+
+\end_inset
+
+, per ora mi voglio concentrare in modo specifico su questo programma.
+ A differenza di 
+\emph on
+wpa_supplicant
+\emph default
+ e 
+\emph on
+wpa_cli
+\emph default
+, 
+\emph on
+iw
+\emph default
+ non è in AOSP e quindi non è possibile compilarlo facilmente.
+ Prima di mostrare la procedura è necessario che faccia alcune precisazioni
+ riguardo a 
+\emph on
+PIE 
+\emph default
+in Lollipop.
+ Infatti, tentando di eseguire 
+\emph on
+iw
+\emph default
+ su Lollipop ho ottenuto l'errore: 
+\emph on
+error: only position independent executables (PIE) are supported.
+ 
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+Position-independent executable
+\emph default
+ (PIE) è un file eseguibile fatto interamente di 
+\emph on
+Position-Independent Code
+\emph default
+ (PIC), cioè codice che può essere messo in qualunque punto della memoria
+ primaria ed essere eseguito senza essere vincolato ad indirizzi di memoria
+ fissati.
+ Come detto più volte, questi concetti legati alla sicurezza informatica
+ non fanno parte di questo lavoro di tesi, quindi rimando a 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "pic_wikipedia"
+
+\end_inset
+
+ per maggiori informazioni.
+ 
+\end_layout
+
+\begin_layout Standard
+Il motivo per cui ho ottenuto quell'errore è che ho compilato 
+\emph on
+iw
+\emph default
+ per KitKat e ho tentato di usarlo su Lollipop, perché su quest'ultimo non
+ si può compilare a causa di problemi di dipendenze con 
+\emph on
+libnl
+\emph default
+ non risolvibili (parlerò di 
+\emph on
+libnl
+\emph default
+ nel Capitolo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:quinto-capitolo"
+
+\end_inset
+
+).
+ Dato che 
+\emph on
+iw 
+\emph default
+mi serve solo per capire i problemi di Android nel gestire più VIF, ho deciso
+ di applicare una patch a Lollipop che disattiva il controllo di PIE e poi
+ rimuoverla una volta terminati i test.
+ La patch installabile tramite file 
+\begin_inset Quotes eld
+\end_inset
+
+.zip
+\begin_inset Quotes erd
+\end_inset
+
+ è scaricabile dalla pagina ufficiale da XDA Developers forum
+\begin_inset CommandInset citation
+LatexCommand cite
+key "piepatchxda"
+
+\end_inset
+
+.
+ Fatto ciò, ho compilato 
+\emph on
+iw
+\emph default
+ (a patto di aver scaricato anche il sorgente di KitKat, infatti ho chiamato
+ la cartella 
+\emph on
+aosp-kk
+\emph default
+) seguendo la procedura in Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Download-e-compilazione-iw-android-kk"
+
+\end_inset
+
+ e l'ho copiato dalla cartella 
+\emph on
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+seqsplit{out/target/product/<nome dispositivo>/system/bin/}
+\end_layout
+
+\end_inset
+
+ 
+\emph default
+alla 
+\emph on
+/sdcard
+\emph default
+ del dispositivo.
+ Quindi, ho installato iw sul dispositivo (KitKat o dopo la 
+\emph on
+PIE Patch 
+\emph default
+anche su Lollipop) con i comandi in Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:installazione_iw"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+ 1.
+ $ mkdir ~/iw_master
+\end_layout
+
+\begin_layout LyX-Code
+ 2.
+ $ cd ~/iw_master
+\end_layout
+
+\begin_layout LyX-Code
+ 3.
+ $ git clone http://git.sipsolutions.net/iw.git
+\end_layout
+
+\begin_layout LyX-Code
+ 4.
+ $ cd ~/androidsource/aosp-kk/external
+\end_layout
+
+\begin_layout LyX-Code
+ 5.
+ $ cp -r ~/iw_master/iw .
+ 
+\end_layout
+
+\begin_layout LyX-Code
+ 6.
+ $ cd ~/androidsource/aosp-kk
+\end_layout
+
+\begin_layout LyX-Code
+ 7.
+ $ source build/envsetup.sh
+\end_layout
+
+\begin_layout LyX-Code
+ 8.
+ $ lunch
+\end_layout
+
+\begin_layout LyX-Code
+ 9.
+ $ make iw -jN
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:Download-e-compilazione-iw-android-kk"
+
+\end_inset
+
+Download e compilazione di iw per Android
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+ 1.
+ $ adb shell
+\end_layout
+
+\begin_layout LyX-Code
+
+\emph on
+    * daemon not running.
+ starting it now on port 5037 *
+\end_layout
+
+\begin_layout LyX-Code
+
+\emph on
+    * daemon started successfully *
+\end_layout
+
+\begin_layout LyX-Code
+ 2.
+ $ su 
+\end_layout
+
+\begin_layout LyX-Code
+ 3.
+ # mount -o remount,rw <nome completo di /system>
+\end_layout
+
+\begin_layout LyX-Code
+ 4.
+ # cp /sdcard/iw /system/bin
+\end_layout
+
+\begin_layout LyX-Code
+ 5.
+ # cd /system/bin
+\end_layout
+
+\begin_layout LyX-Code
+ 6.
+ # chmod 777 iw
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:installazione_iw"
+
+\end_inset
+
+Installazione di iw per Android
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+Dopodiché, per ottenere le 
+\emph on
+Valid InterFace Combinations
+\emph default
+ (VIFC) tramite 
+\emph on
+iw
+\emph default
+ ho usato i comandi nell'Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:ottenere_VIFC_iw"
+
+\end_inset
+
+.
+ Il risultato nel caso di Nexus 4, 5 e Samsung Galaxy S4, ordinati in base
+ alla data di uscita sul mercato, sono consultabili nell'Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:iw-list"
+
+\end_inset
+
+.
+ Su questi risultati è importante fare alcune osservazioni, innanzitutto
+ su come leggerli.
+ Cercando su internet non ho trovato nessuna guida che aiutasse ad interpretarli
+ in modo completo e corretto, quindi l'unica soluzione trovata per ottenere
+ una risposta definitiva è stato analizzare il sorgente, per la precisione
+ il file 
+\family sans
+nl80211.h
+\family default
+ (presente sia nel kernel di Android in 
+\family sans
+msm/include/linux/nl80211.h
+\family default
+ sia nella 
+\emph on
+repository
+\emph default
+ 
+\emph on
+Git
+\emph default
+ di 
+\emph on
+iw
+\emph default
+).
+ Ciò che interessa è la 
+\emph on
+struct
+\emph default
+ 
+\emph on
+enum nl80211_if_combination_attrs {(...)}
+\emph default
+ e più precisamente la documentazione sopra ad essa in cui tramite piccoli
+ esempi è spiegata la logica di questa notazione.
+ Per esempio: 
+\end_layout
+
+\begin_layout Itemize
+#{tipo0}<=n significa che il numero di interfacce di tipo0 è al massimo
+ uguale a n;
+\end_layout
+
+\begin_layout Itemize
+#{tipo1, tipo2}<=n significa che il numero di interfacce del tipo1 e tipo2
+ sommate è al massimo uguale a n;
+\end_layout
+
+\begin_layout Itemize
+#{tipo0}<=m,#{tipo1, tipo2}<=n significa che il numero di interfacce del
+ tipo1 e tipo2 sommate è al massimo uguale a n e contemporaneamente si può
+ avere anche al massimo m interfacce di tipo0;
+\end_layout
+
+\begin_layout Itemize
+#{tipo0}<=m,#{tipo1, tipo2}<=n,total<=3,#channels<=2 significa che il numero
+ di interfacce del tipo1 e tipo2 sommate è al massimo n e contemporaneamente
+ si può avere anche al massimo m interfacce di tipo0, ma la somma n+m deve
+ essere al massimo 3 (cioè 3 in totale), inoltre queste 3 totali possono
+ essere su 2 canali diversi o anche sullo stesso.
+ Quindi le condizioni 
+\emph on
+total
+\emph default
+ e 
+\emph on
+channels
+\emph default
+ sono applicate all'intera espressione;
+\end_layout
+
+\begin_layout Standard
+Se in 
+\emph on
+Supported interface modes
+\emph default
+ vi è un certo tipo di interfaccia, è sempre possibile crearne almeno una
+ di quel tipo da sola, questo non è nemmeno considerato nella VIFC, cioè
+ questa combinazione 
+\emph on
+#{<type>} <= 1, channels = 1, total = 1
+\emph default
+ esiste sempre.
+ Quindi nel caso specifico dell'Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:iw-list"
+
+\end_inset
+
+, per esempio per il Nexus 5, VIFC dice quanto segue: 
+\begin_inset Quotes eld
+\end_inset
+
+si possono creare al massimo tre interfacce, su un massimo di due canali,
+ di cui al massimo una IBSS, al massimo due di tipo managed e al massimo
+ due tra P2P-GO e P2P-Client (cioè posso avere per esempio due GO o due
+ Client o un GO e un Client)
+\begin_inset Quotes erd
+\end_inset
+
+.
+ 
+\series bold
+Quindi la configurazione composta da una managed, una P2P-GO e una P2P-Client
+ è confermata e questo permetterebbe di risolvere il problema della scalabilità
+ descritto nell'introduzione.
+ Purtroppo, come ho già dimostrato in precedenza, eseguendo due volte il
+ comando 
+\emph on
+p2p_group_add
+\emph default
+ in 
+\emph on
+wpa_supplicant
+\emph default
+ questo non accade.
+ La domanda è: perché? 
+\series default
+La riposta la spiegherò nel Capitolo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:quinto-capitolo"
+
+\end_inset
+
+, ma prima voglio fare due brevi precisazioni.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+ 1.
+ $ adb shell
+\end_layout
+
+\begin_layout LyX-Code
+
+\emph on
+    * daemon not running.
+ starting it now on port 5037 *
+\end_layout
+
+\begin_layout LyX-Code
+
+\emph on
+    * daemon started successfully *
+\end_layout
+
+\begin_layout LyX-Code
+ 2.
+ $ su 
+\end_layout
+
+\begin_layout LyX-Code
+ 3.
+ # iw phy phy0 info
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:ottenere_VIFC_iw"
+
+\end_inset
+
+Ottenere lista VIFC 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+//caso Nexus 4 (novembre 2012)
+\end_layout
+
+\begin_layout LyX-Code
+Supported interface modes:
+\end_layout
+
+\begin_layout LyX-Code
+   * IBSS
+\end_layout
+
+\begin_layout LyX-Code
+   * managed
+\end_layout
+
+\begin_layout LyX-Code
+   * AP
+\end_layout
+
+\begin_layout LyX-Code
+   * P2P-client
+\end_layout
+
+\begin_layout LyX-Code
+   * P2P-GO
+\end_layout
+
+\begin_layout LyX-Code
+valid interface combinations:
+\end_layout
+
+\begin_layout LyX-Code
+   * #{managed}<=3, #{AP}<=1, #{P2P-client,P2P-GO}<=1,
+\end_layout
+
+\begin_layout LyX-Code
+   total<=3, #channels<=2
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset VSpace smallskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+//caso Samsung Galaxy S4 GT-I9505 (aprile 2013)
+\end_layout
+
+\begin_layout LyX-Code
+Supported interface modes:
+\end_layout
+
+\begin_layout LyX-Code
+   * IBSS
+\end_layout
+
+\begin_layout LyX-Code
+   * managed
+\end_layout
+
+\begin_layout LyX-Code
+   * AP
+\end_layout
+
+\begin_layout LyX-Code
+   * P2P-client
+\end_layout
+
+\begin_layout LyX-Code
+   * P2P-GO
+\end_layout
+
+\begin_layout LyX-Code
+valid interface combinations:
+\end_layout
+
+\begin_layout LyX-Code
+   * #{managed}<=3, #{P2P-client,P2P-GO}<=2, #{IBSS}<= 1,
+\end_layout
+
+\begin_layout LyX-Code
+   total<=3, #channels<=2
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset VSpace smallskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+//caso Nexus 5 (ottobre 2013)
+\end_layout
+
+\begin_layout LyX-Code
+Supported interface modes: 
+\end_layout
+
+\begin_layout LyX-Code
+   (le stesse del GT-I9505)
+\end_layout
+
+\begin_layout LyX-Code
+valid interface combinations:
+\end_layout
+
+\begin_layout LyX-Code
+   * #{managed}<=2, #{P2P-client,P2P-GO}<=2, #{IBSS}<=1,
+\end_layout
+
+\begin_layout LyX-Code
+   total<=3, #channels<=2
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:iw-list"
+
+\end_inset
+
+iw list su Nexus 4, Nexus 5 e Samsung Galaxy S4
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+La prima è che dopo la creazione di un gruppo P2P è possibile usare 
+\emph on
+iw
+\emph default
+ per verificare la creazione dell'interfaccia di rete di gruppo, come in
+ Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:iw-dev-per-galaxys4-nexus5"
+
+\end_inset
+
+.
+ Inoltre, è interessante vedere come le interfacce 
+\emph on
+MacVTap
+\emph default
+ non siano nemmeno rilevate da questo software, ancora a prova delle loro
+ capacità limitate.
+ Ciò si nota nell'Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:iw-dev-per-galaxys4-nexus5"
+
+\end_inset
+
+ in cui appaiono solo interfacce a cui è associato un socket.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+//Samsung Galaxy S4 lista interfacce di rete
+\end_layout
+
+\begin_layout LyX-Code
+root@jflte:/ # iw dev
+\end_layout
+
+\begin_layout LyX-Code
+phy#0
+\end_layout
+
+\begin_layout LyX-Code
+  Interface p2p-wlan0-0
+\end_layout
+
+\begin_layout LyX-Code
+    ifindex 11
+\end_layout
+
+\begin_layout LyX-Code
+    type P2P-GO
+\end_layout
+
+\begin_layout LyX-Code
+  Interface wlan0
+\end_layout
+
+\begin_layout LyX-Code
+    ifindex 10
+\end_layout
+
+\begin_layout LyX-Code
+    type managed
+\end_layout
+
+\begin_layout LyX-Code
+  Interface p2p0
+\end_layout
+
+\begin_layout LyX-Code
+    ifindex 9
+\end_layout
+
+\begin_layout LyX-Code
+    type managed
+\end_layout
+
+\begin_layout LyX-Code
+Unnamed/non-netdev interface
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset VSpace defskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+//Nexus 5 lista interfacce di rete
+\end_layout
+
+\begin_layout LyX-Code
+root@hammerhead:/system/bin # iw dev
+\end_layout
+
+\begin_layout LyX-Code
+phy#0
+\end_layout
+
+\begin_layout LyX-Code
+  Interface p2p-p2p0-0
+\end_layout
+
+\begin_layout LyX-Code
+    ifindex 22
+\end_layout
+
+\begin_layout LyX-Code
+    type P2P-client
+\end_layout
+
+\begin_layout LyX-Code
+  Interface wlan0
+\end_layout
+
+\begin_layout LyX-Code
+    ifindex 21
+\end_layout
+
+\begin_layout LyX-Code
+    type managed
+\end_layout
+
+\begin_layout LyX-Code
+  Interface p2p0
+\end_layout
+
+\begin_layout LyX-Code
+    ifindex 20
+\end_layout
+
+\begin_layout LyX-Code
+    type managed
+\end_layout
+
+\begin_layout LyX-Code
+Unnamed/non-netdev interface
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:iw-dev-per-galaxys4-nexus5"
+
+\end_inset
+
+iw dev per Samsung Galaxy S4 (GO) e Nexus 5 (Client)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+La seconda ed ultima precisazione è che con 
+\emph on
+iw
+\emph default
+ è possibile creare interfacce di rete virtuali, ma appoggiandosi sempre
+ su 
+\emph on
+nl80211,
+\emph default
+ come
+\emph on
+ wpa_supplicant,
+\emph default
+ il risultato è lo stesso.
+ Anche tentare di rimuovere quelle interfacce per crearne altre non è possibile
+ probabilmente per colpa di limiti nei driver Wi-Fi.
+\end_layout
+
+\end_body
+\end_document

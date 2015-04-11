@@ -1,0 +1,1898 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass book
+\options openright
+\use_default_options false
+\master ../tesi.lyx
+\maintain_unincluded_children false
+\language italian
+\language_package default
+\inputencoding auto
+\fontencoding T1
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 11
+\spacing single
+\use_hyperref false
+\papersize a4paper
+\use_geometry false
+\use_package amsmath 2
+\use_package amssymb 2
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 0
+\use_package mathtools 1
+\use_package mhchem 0
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 0
+\index Indice
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 2
+\paperpagestyle fancy
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+Nelle successive sezioni descriverò le tecnologie Wi-Fi e 
+\emph on
+Wi-Fi Direct
+\emph default
+: dati i loro vasti documenti di specifica mi concentrerò sui concetti necessari
+ per comprenderne il funzionamento, quindi ometterò i dettagli che non hanno
+ avuto rilevanza in questo lavoro di tesi.
+ Successivamente, tratterò alcuni scenari di utilizzo di 
+\emph on
+Wi-Fi Direct
+\emph default
+ e farò riferimento allo stato attuale della ricerca.
+ Per un maggiore approfondimento del protocollo 
+\emph on
+Wi-Fi Direct
+\emph default
+, fare riferimento alla specifiche ufficiali l'appendice 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "wifi_direct_specification"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+Wi-Fi
+\end_layout
+
+\begin_layout Standard
+Nel 1999, diverse compagnie sparse in tutto il mondo si sono unite per lavorare
+ assieme in un'associazione no-profit chiamata 
+\emph on
+Wi-Fi Alliance
+\emph default
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "wifi_who_we_are"
+
+\end_inset
+
+, con l'obiettivo di diffondere le tecnologie wireless senza considerare
+ il loro marchio.
+ Da ciò è nata la tecnologia chiamata commercialmente come 
+\emph on
+Wi-Fi
+\emph default
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "wifi_commercial_name"
+
+\end_inset
+
+.
+ Essa permette la connettività tra dispositivi senza fili in una rete locale
+ basandosi sulle specifiche dello standard 
+\emph on
+IEEE 802.11
+\emph default
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "wifi_wikipedia"
+
+\end_inset
+
+.
+ Oggi Wi-Fi è nel 25 percento delle abitazioni di tutto il mondo, con circa
+ due milioni di dispositivi venduti solo nel 2013.
+ L'adozione di Wi-Fi continua a crescere con la comune visione di connettere
+ tutti ed ovunque.
+ Ad alimentare ancora di più la diffusione di questa tecnologia sono stati
+ i dispositivi mobili come Smartphone e Tablet, che fin dalla loro nascita
+ hanno adottato Wi-Fi.
+ Infatti, ricordo che il primo iPhone uscito nel 2007, considerato come
+ il primo Smartphone, ha avuto fin da subito un chip Wi-Fi (802.11 b/g) per
+ la connessione ad Internet
+\begin_inset CommandInset citation
+LatexCommand cite
+key "iphone1"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace medskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Una rete Wi-Fi definita secondo IEEE 802.11 è costituita da 
+\emph on
+Stazioni
+\emph default
+ (STA), cioè dispositivi che possono collegarsi in un rete senza fili tramite
+ 
+\emph on
+Wireless Network Interface Controller
+\emph default
+ (WNIC).
+ Le stazioni si dividono in Client e 
+\emph on
+Access Point 
+\emph default
+(AP).
+ Quest'ultimo permette la comunicazione tra i Client e di solito fa da router
+ wireless.
+ L'insieme di tutte le STA che possono comunicare tra loro è detto 
+\emph on
+Basic Service Set 
+\emph default
+(BSS).
+ Ogni BSS ha un 
+\emph on
+identificativo
+\emph default
+ (ID) chiamato 
+\emph on
+BSSID 
+\emph default
+che corrisponde al MAC address dell'Access Point.
+ Ci sono tre tipi di BSS
+\begin_inset CommandInset citation
+LatexCommand cite
+key "tipi_reti_wifi_wikipedia"
+
+\end_inset
+
+ (Figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:tipi_di_rete"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Itemize
+Infrastructure BSS: c'è un solo AP che controlla tutto il traffico.
+\end_layout
+
+\begin_layout Itemize
+Extended Service Set (ESS): due o più BSS che condividono lo stesso SSID
+ e credenziali di accesso e appaiono come un singolo BSS.
+ I BSS possono anche condividere lo stesso canale di trasmissione.
+\end_layout
+
+\begin_layout Itemize
+Indipendent BSS (IBSS) o 
+\emph on
+ad-hoc
+\emph default
+: non prevede un Access Point tra le proprie STA, quindi permette la comunicazio
+ne tra i propri Client senza che un AP li coordini, cioè può essere considerato
+ come un antenato di 
+\emph on
+Wi-Fi Direct
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Poiché parlerò più volte di 
+\emph on
+reti
+\emph default
+ 
+\emph on
+ad-hoc
+\emph default
+ o IBSS, sia in questo capitolo, sia nei successivi, è importante evidenziare
+ che i problemi principali sono:
+\end_layout
+
+\begin_layout Itemize
+velocità di trasferimento di soli 11 Mbps;
+\end_layout
+
+\begin_layout Itemize
+non poter utilizzare la connessione internet e quella 
+\emph on
+ad-hoc
+\emph default
+ contemporaneamente;
+\end_layout
+
+\begin_layout Itemize
+non compatibile con tutti i dispositivi (quelli Android spesso non la supportano
+, per scelte dei produttori).
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/tipi_di_reti.jpg
+	lyxscale 70
+	scale 70
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:tipi_di_rete"
+
+\end_inset
+
+Tipi di reti Wi-Fi (BSS, ESS, IBSS)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Wireless Mesh Network
+\end_layout
+
+\begin_layout Standard
+Per concludere questa breve trattazione su Wi-Fi, ci tengo a precisare che
+ in realtà esiste una quarta modalità di funzionamento, detta Wireless Mesh
+ Network
+\begin_inset CommandInset citation
+LatexCommand cite
+key "mesh_network"
+
+\end_inset
+
+, le cui specifiche sono state definite in IEEE 802.11s
+\begin_inset CommandInset citation
+LatexCommand cite
+key "802.11s"
+
+\end_inset
+
+.
+ Una 
+\emph on
+Wireless Mesh Network
+\emph default
+ (WMN) è una rete costituita da nodi organizzati in una 
+\emph on
+topologia mesh
+\emph default
+, come in Figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:forma_rete-mesh"
+
+\end_inset
+
+.
+ Essa è anche una forma di 
+\emph on
+rete ad-hoc
+\emph default
+, che è molto vicina alle
+\emph on
+ Mobile Ad-Hoc Newtork
+\emph default
+ (MANET), anche se quest'ultime considerano la mobilità dei nodi.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/mesh_network_example.png
+	lyxscale 50
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:forma_rete-mesh"
+
+\end_inset
+
+Mesh network
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Le Mesh newtork sono spesso costituite da 
+\emph on
+Mesh Client
+\emph default
+, 
+\emph on
+Mesh Router
+\emph default
+ e 
+\emph on
+Gateway
+\emph default
+.
+ Generalmente,
+\emph on
+ 
+\emph default
+i 
+\emph on
+Mesh Client
+\emph default
+ sono laptop o dispositivi mobili, mentre i 
+\emph on
+Mesh Router
+\emph default
+ inoltrano il traffico dai/ai 
+\emph on
+Gateway
+\emph default
+, che potrebbero anche essere connessi ad Internet.
+ Solo STA di tipo Mesh posso partecipare in questa rete, infatti una stazione
+ di questo tipo non fa parte di un BSS o di un IBSS, quindi una STA Mesh
+ comunica solo con altre stazioni della stessa tipologia.
+ Anche se, IEEE 802.11s fornisce meccanismi di proxy per permettere la comunicazi
+one tra nodi Mesh e dispositivi 802.11 classici
+\begin_inset CommandInset citation
+LatexCommand cite
+key "802.11s"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Le caratteristiche più importanti di una Mesh Newtork sono l'affidabilità
+ e la ridondanza.
+ Infatti, quando un nodo non può più funzionare, i restanti possono continuare
+ a comunicare tra loro, direttamente o attraverso altri nodi intermedi.
+\end_layout
+
+\begin_layout Standard
+In Figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:mesh_applicazione"
+
+\end_inset
+
+ è rappresentata una possibile applicazione di queste reti, cioè quella
+ di fornire una connessione internet anche ai i nodi al di fuori dell'area
+ di ricezione dell'AP (per esempio i nodi 1, 2, 3 e 4), sfruttando la connession
+e delle STA Mesh più vicine.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/mesh_esempio_internet.jpg
+	lyxscale 50
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:mesh_applicazione"
+
+\end_inset
+
+Esempio di applicazione di una Mesh network
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Wi-Fi Direct
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Wi-Fi-Direct"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Nel 2007, 
+\emph on
+Wi-Fi Alliance
+\emph default
+ ha introdotto una nuova tecnologia chiamata 
+\emph on
+Wi-Fi Direct
+\emph default
+, inizialmente nota come 
+\emph on
+Wi-Fi P2P
+\emph default
+, con l'obiettivo di supportare comunicazioni 
+\emph on
+peer-to-peer 
+\emph default
+(P2P) promettendone una facile configurazione ed utilizzo.
+ Inoltre, ha fatto si che tale protocollo permettesse velocità di trasferimento
+ di 250 Mbps, superiore alle tecnologie concorrenti (per esempio 
+\emph on
+LTE Direct
+\emph default
+, 
+\emph on
+Bluetooth 4
+\emph default
+,
+\emph on
+ reti ad-hoc IBSS
+\emph default
+) e compatibilità su tutti i dispositivi Wi-Fi, semplicemente tramite un
+ aggiornamento software, aprendo le porte a nuovi scenari di utilizzo.
+ 
+\end_layout
+
+\begin_layout Standard
+Un dispositivo che fa parte di una rete 
+\emph on
+Wi-Fi Direct
+\emph default
+ è detto 
+\emph on
+Peer
+\emph default
+ (o 
+\begin_inset Quotes eld
+\end_inset
+
+P2P Device
+\begin_inset Quotes erd
+\end_inset
+
+).
+ Può essere un 
+\emph on
+Group Owner
+\emph default
+ (GO), cioè un AP che fornisce funzionalità BSS ai Client, a volte chiamato
+\emph on
+ Software Access Point
+\emph default
+ (Soft-AP), oppure può essere un Client che si distingue in
+\emph on
+ Legacy
+\emph default
+ e 
+\emph on
+P2P
+\emph default
+.
+ Il primo non supporta tutte le funzionalità del protocollo, quindi in questo
+ lavoro di tesi non lo considererò, mentre il secondo è il dispositivo che
+ è connesso al GO.
+ L'insieme di GO e i suoi Client è detto 
+\begin_inset Quotes eld
+\end_inset
+
+gruppo
+\begin_inset Quotes erd
+\end_inset
+
+ (P2P Group) che può essere 
+\emph on
+Standard
+\emph default
+, 
+\emph on
+Persistent
+\emph default
+ o 
+\emph on
+Autonomous
+\emph default
+.
+ Per maggiori informazioni ed approfondimenti, in particolare sulla 
+\emph on
+fase di Discovery
+\emph default
+, i tipi e la formazione dei gruppi, rimando alle specifiche ufficiali disponibi
+li in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "wifi_direct_specification"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Purtroppo, nella definizione di tali specifiche, 
+\emph on
+Wi-Fi Alliance
+\emph default
+ non ha considerato molte applicazioni che in ambito di ricerca hanno trovato
+ terreno fertile, in particolare quelle in cui la rete è soggetta a continui
+ cambiamenti, o costituita da dispositivi molto differenti.
+ In questa situazione ci sono le 
+\emph on
+Opportunistic Network
+\emph default
+, che rappresentano la naturale evoluzione delle 
+\emph on
+Mobile Ad-Hoc Network
+\emph default
+ (MANET), superando le limitazioni ed i vincoli di questo paradigma, a causa
+ di topologie di rete estremamente dinamiche.
+ Esse traggono vantaggio dalla mobilità degli individui e dal conseguente
+ dinamismo di rete, definendo comunicazioni generate dagli incontri casuali
+ tra le persone e i loro dispositivi.
+ In questo scenario, quando due utenti entrano in contatto, possono sfruttare
+ comunicazioni dirette per fornire accesso ad internet, scambiare contenuti,
+ offrire servizi, condividere risorse ed inviare messaggi, anche tra altri
+ dispositivi che non sono in contatto in quel preciso istante
+\begin_inset CommandInset citation
+LatexCommand cite
+key "experimenting_opportunistic_networks"
+
+\end_inset
+
+
+\family sans
+.
+\end_layout
+
+\begin_layout Section
+Scenari di utilizzo
+\end_layout
+
+\begin_layout Standard
+In passato sono usciti molti articoli di progetti che si basano su 
+\emph on
+reti ad-hoc
+\emph default
+ come tecnologia di comunicazione.
+ Al contrario, 
+\emph on
+Wi-Fi Direct 
+\emph default
+è un protocollo ancora abbastanza giovane e spesso le ricerche sono riadattament
+i, da
+\emph on
+ reti ad-hoc
+\emph default
+ a 
+\emph on
+Wi-Fi Direct
+\emph default
+, di lavori precedenti.
+ Ne mostrerò alcuni esempi nella Sottosezione 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Diffusione-info-impededendo-censura"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Molte di esse si concentrano nella soluzione di problemi specifici in un
+ determinato scenario, come per esempio lo streaming video, la gestione
+ di emergenze o la comunicazione libera senza possibilità di censura, ma
+ non cercano di risolvere gli attuali problemi di 
+\emph on
+Wi-Fi Direct
+\emph default
+, piuttosto trovano dei modi per aggirarli.
+\end_layout
+
+\begin_layout Standard
+In questo lavoro di testi mi sono posto come obiettivo quello di risolvere
+ i problemi specifici descritti nell'introduzione che sono alla base di
+ molte di queste ricerche.
+ L'unico articolo che conosco che affronta uno di questi problemi in modo
+ specifico e dettagliato è 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "wifidirect_multigroup_dissemination_publicsafety"
+
+\end_inset
+
+, riassunto nella Sezione 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:malabocchia-telecom-paper"
+
+\end_inset
+
+.
+ Gli autori sfruttano la combinazione di Wi-Fi e 
+\emph on
+Wi-Fi Direct
+\emph default
+, mentre il mio obiettivo è estendere quest'ultimo protocollo, risolvendo
+ a livello software i due problemi specifici già citati, senza utilizzare
+ il classico Wi-Fi.
+ La differenza è che con la soluzione che propongo, il protocollo risulterebbe
+ ancora più scalabile.
+ 
+\end_layout
+
+\begin_layout Standard
+Per quanto riguarda il secondo problema, cioè quello di rendere resistente
+ ai guasti una rete 
+\emph on
+Wi-Fi Direct
+\emph default
+, non conosco lavori specifici al riguardo.
+ 
+\end_layout
+
+\begin_layout Subsection
+Condivisione video in streaming
+\end_layout
+
+\begin_layout Standard
+In questi ultimi anni, nelle abitazioni si stanno diffondendo sempre più
+ dispositivi elettronici Wi-Fi, di tipo diverso dal punto di vista delle
+ capacità di rete, elaborazione e gestione del consumo energetico.
+ Per esempio le Smart TV
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Con Smart TV si definisce commercialmente la categoria di apparecchiature
+ elettroniche di consumo che hanno come principale caratteristica l'integrazione
+ di funzioni e di servizi legati a internet.
+ La stessa locuzione è utilizzata in modo più generico per definire la tendenza
+ alla convergenza tecnologica tra il mondo dei personal computer e quello
+ della televisione
+\begin_inset CommandInset citation
+LatexCommand cite
+key "smart_tv"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+, i 
+\emph on
+Media Player
+\emph default
+ connessi alla TV, i dispositivi di archiviazione di rete (NAS
+\begin_inset CommandInset citation
+LatexCommand cite
+key "nas"
+
+\end_inset
+
+) con supporto 
+\emph on
+DLNA
+\emph default
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "dlna"
+
+\end_inset
+
+, gli Smartphone, i Tablet oltre ai classici PC e laptop.
+\end_layout
+
+\begin_layout Standard
+In un ambiente casalingo, per la condivisione di dati tra questi dispositivi
+ non è necessario avere un 
+\emph on
+Access Point
+\emph default
+ connesso ad internet, poiché lo scambio di informazioni avviene nella rete
+ locale (LAN).
+ Quindi, poter utilizzare reti 
+\emph on
+Wi-Fi Direct
+\emph default
+ per la condivisione locale di dati è uno scenario in cui questo protocollo
+ trova una perfetta collocazione.
+ Addirittura, lo si può utilizzare per lo streaming video, sfruttando l'elevata
+ velocità di trasmissione/ricezione dei nuovi dispositivi
+\begin_inset CommandInset citation
+LatexCommand cite
+key "collaborative_streaming_media_content_sharing"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Con la diffusione del nuovo standard IEEE 802.11ac (velocità di trasferimento
+ superiori ad 1 Gbps), lo streaming video ad alta definizione è sempre più
+ interessante, anche per risoluzioni 4K.
+ Infatti, è evidente che gli utenti vogliano poter vedere video su schermi
+ sempre più grandi, lo dimostra l'attuale trend di mercato, cioè i nuovi
+ Smartphone, i Phablet
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+
+\emph on
+Phablet
+\emph default
+ è un termine informale per dispositivi touch-screen con schermi compresi
+ tra i 5.3 pollici e i 6.99 pollici, che combinano le caratteristiche degli
+ Smartphone e dei Mini Tablet
+\begin_inset CommandInset citation
+LatexCommand cite
+key "phablet"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+ e le TV sempre più grandi.
+ In questi casi, poter inviare in streaming il video dal proprio Smartphone
+ alla TV è sempre più interessante, tanto che Google l'ha realizzato con
+ il 
+\emph on
+Chromecast
+\emph default
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "chromecast"
+
+\end_inset
+
+, mentre Samsung ed altri produttori hanno integrato le tecnologie necessarie
+ direttamente nelle loro TV
+\begin_inset CommandInset citation
+LatexCommand cite
+key "device_discovery-caching_nscreen_services,tv_smartphone"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+È comunque importante sottolineare che i Media Player come per esempio quelli
+ prodotti da Western Digital (WD TV Live) o Apple (Apple TV) non sono una
+ novità sul mercato.
+ Infatti, la WD TV Live permette già di utilizzare 
+\emph on
+Wi-Fi Direct
+\emph default
+ per lo streaming video e addirittura per la condivisione dello schermo
+ di uno Smartphone Android, come il Nexus 5.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/streaming-tv-smartphone.png
+	lyxscale 15
+	width 80col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Streaming-video-da-device-a-tv"
+
+\end_inset
+
+Streaming video da Smartphone a Samsung Smart TV
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection*
+Streaming video su N dispositivi senza interruzioni
+\end_layout
+
+\begin_layout Standard
+Uno scenario che ha attirato l'attenzione in ambito di ricerca è quello
+ di sfruttare le potenzialità di 
+\emph on
+Wi-Fi Direct
+\emph default
+ per visualizzare un video da uno Smartphone/Tablet su N dispositivi in
+ un ambiente domestico, sfruttando il protocollo DLNA
+\begin_inset CommandInset citation
+LatexCommand cite
+key "dlna"
+
+\end_inset
+
+.
+ Il problema principale è che la procedura di ricerca dei dispositivi vicini,
+ detta 
+\emph on
+Discovery
+\emph default
+ (per approfondire vedi Appendice 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "app:prima-appendice"
+
+\end_inset
+
+), richiede alcuni secondi e intanto il flusso video potrebbe subire interruzion
+i.
+ 
+\end_layout
+
+\begin_layout Standard
+L'articolo di Bong-Jin Oh e Sunggeun Jin
+\begin_inset CommandInset citation
+LatexCommand cite
+key "device_discovery-caching_nscreen_services"
+
+\end_inset
+
+ mostra come modificare questa fase del protocollo per renderla più veloce
+ ed evitare interruzioni nel flusso video, nel caso della specifica applicazione
+ in esame.
+ La tecnica si basa sullo sfruttamento di un meccanismo di caching.
+ 
+\end_layout
+
+\begin_layout Standard
+Lo scenario proposto dagli autori è quello di una persona che con lo Smartphone
+ guarda un video sulla TV, dopodiché inizia a muoversi ed automaticamente
+ continua il video su una seconda TV in un altro luogo.
+
+\color black
+ Il miglioramento della fase di Discovery consiste nel salvataggio di informazio
+ni in una cache per far si che i dispositivi vicini si aiutino a trovarsi,
+ come in Figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Esempio-di-Discovery"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/device-discovery-con-dispositivo-vicino.tiff
+	lyxscale 50
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Esempio-di-Discovery"
+
+\end_inset
+
+Esempio di Discovery con l'aiuto di un dispositivo vicino
+\begin_inset CommandInset citation
+LatexCommand cite
+key "device_discovery-caching_nscreen_services"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Per migliorare l'
+\emph on
+hit ratio
+\emph default
+ della cache, l'AP può stimare il movimento dello smartphone in modo che
+ l'
+\emph on
+Access Point
+\emph default
+ stesso possa mandare le risposte solo nel caso in cui lo Smartphone si
+ stia avvicinando
+\begin_inset CommandInset citation
+LatexCommand cite
+key "device_discovery-caching_nscreen_services"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection*
+Condivisione collaborativa di contenuti multimediali in streaming 
+\end_layout
+
+\begin_layout Standard
+Hayoung Yoon e JongWon Kim si sono occupati sempre di questo problema, ma
+ essendo uno scenario costituito da dispositivi molto vari che coesistono,
+ tra cui prodotti Wi-Fi convenzionali, e 
+\emph on
+Wi-Fi Direct,
+\emph default
+ oltre al problema della 
+\emph on
+qualità del servizio
+\emph default
+ (Quality of Service, 
+\emph on
+QoS
+\emph default
+) hanno evidenziato che il trasferimento dati tra i dispositivi può non
+ essere efficiente.
+ La loro soluzione è 
+\emph on
+Decentralized cOllaborative Media contents Streaming
+\emph default
+ (DOMS) che si occupa di questi problemi sfruttando: una versione modificata
+ di 
+\emph on
+DLS
+\emph default
+, che hanno chiamato 
+\emph on
+inter-BSS Direct Link Setup 
+\emph default
+(iDLS)
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Direct Link Setup (DLS) permette trasferimenti diretti stazione-a-stazione
+ nello stesso BSS e fa parte di IEEE 802.11e.
+ Esiste anche una versione pubblicata con IEEE 802.11z detta TDLS che permette
+ il funzionamento del protocollo anche senza AP.
+ Di fatto TDLS è considerata come un'alternativa a Wi-Fi Direct
+\begin_inset CommandInset citation
+LatexCommand cite
+key "dls_wikipedia"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+ e la condivisione collaborativa di contenuti multimediali tra i dispositivi.
+ 
+\end_layout
+
+\begin_layout Standard
+Per la 
+\emph on
+QoS
+\emph default
+ è stato creato lo standard 
+\emph on
+IEEE 802.11e
+\emph default
+ che definisce i concetti di
+\emph on
+ QoS enabled STA
+\emph default
+ (QSTA), dove una 
+\emph on
+QSTA
+\emph default
+ può trasmettere dati direttamente ad un'altra creando una connessione diretta,
+ cioè usando quello che è stato specificato nel protocollo 
+\emph on
+DLS
+\emph default
+.
+ Quest'ultimo ne permette un aumento del throughput
+\begin_inset CommandInset citation
+LatexCommand cite
+key "collaborative_streaming_media_content_sharing"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/inviofile_e_caso_iDLS.tiff
+	lyxscale 50
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:iDLS"
+
+\end_inset
+
+Esempio (a) invio contenuto senza iDLS, (b) con iDLS
+\begin_inset CommandInset citation
+LatexCommand cite
+key "collaborative_streaming_media_content_sharing"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Riduzione del traffico sulla rete mobile
+\end_layout
+
+\begin_layout Standard
+LU Xiaofeng, HUI Pan e Pietro Lio'
+\begin_inset CommandInset citation
+LatexCommand cite
+key "offloading_mobile_data_cellular_network_through_p2p_subscrive_sender_architecture"
+
+\end_inset
+
+ hanno utilizzato 
+\emph on
+Wi-Fi Direct
+\emph default
+ in un ambito differente, cioè hanno pensato ad un modo per ridurre il traffico
+ a cui sono soggette le reti mobili.
+ Infatti, attualmente le reti dati cellulari non hanno capacità sufficienti
+ per soddisfare le crescenti richieste degli utenti e nonostante gli operatori
+ telefonici siano in grado di aumentare le capacità della rete, tutto ciò
+ è costoso e richiede tempo.
+ Quindi, si può utilizzare un protocollo per far scambiare dati tra i dispositiv
+i, senza doverli scaricare nuovamente dalla rete mobile.
+ Il problema è che i contatti tra i terminali sono costantemente disturbati
+ dalla mobilità stessa degli utenti.
+ Questo può creare problemi quando le performance sono essenziali, come
+ lo streaming video, ma vi sono scenari in cui un piccolo ritardo può essere
+ considerato accettabile dall'utente, per esempio l'invio di una e-mail.
+ 
+\end_layout
+
+\begin_layout Standard
+Gli autori partono dal presupposto verosimile che molte persone tenderanno
+ a richiedere gli stessi contenuti.
+ Scaricarli su ogni dispositivo può rischiare di saturare la rete, ma quando
+ un utente richiede un contenuto si aspetta di ottenerlo nel più breve tempo
+ possibile.
+ Per questo hanno pensato ad un'architettura in cui prima di ottenere il
+ contenuto attraverso la rete cellulare, venga richiesto ai dispositivi
+ vicini.
+ Gli autori si sono basati su alcune ricerche preesistenti, come quella
+ di Haddadi che ha proposto una soluzione scalabile chiamata 
+\emph on
+MobiAd
+\emph default
+ per sfruttare le informazioni in ambiente mobile per fornire pubblicità
+ personalizzate.
+ Oppure quella di Dimatteo et.
+ al., che hanno proposto un'architettura per migrare il traffico da reti
+ cellulari a AP Wi-Fi metropolitani, considerando come riferimento il traffico
+ di video in streaming.
+\end_layout
+
+\begin_layout Standard
+Inoltre, nel passato sono stati presentati molti protocolli di 
+\emph on
+Opportunistic Routing
+\emph default
+, come 
+\emph on
+Epidemic Routing
+\emph default
+ (ER) affetto da problemi di performance e con dimensione del buffer limitate,
+ o 
+\emph on
+PRoPHET
+\emph default
+ che usa la storia degli incontri tra dispositivi per calcolare la transitività
+ di un messaggio alla destinazione, cioè tiene conto della probabilità che
+ un dispositivo riesca ad inviare un messaggio a destinazione.
+\end_layout
+
+\begin_layout Standard
+Un'altra soluzione è 
+\emph on
+Spray-and-Wait
+\emph default
+, un protocollo di routing che tenta di trarre benefici dalla replicazione.
+ Invece, 
+\emph on
+MaxProp
+\emph default
+ replica solo messaggi che non sono posseduti dal nodo incontrato.
+ Quando i dispositivi si incontrano, si scambiano i messaggi che non hanno.
+ Purtroppo, la complessità di 
+\emph on
+MaxProp
+\emph default
+ è elevata.
+\end_layout
+
+\begin_layout Standard
+La soluzione degli autori, chiamata 
+\emph on
+HPRO
+\emph default
+, è un protocollo che si basa sul fatto che è meglio inviare i dati solo
+ quando i nodi incontrati raggiungono una certa soglia.
+ Essi hanno creato un'architettura 
+\emph on
+Subscribe-and-Send
+\emph default
+ rappresentata in Figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:subscribe-and-sendarchitecture-e-hpro"
+
+\end_inset
+
+, basata su una tabella detta 
+\emph on
+Subscription table
+\emph default
+, dove un utente si 
+\emph on
+sottoscrive
+\emph default
+ ai contenuti attraverso l'infrastruttura di rete cellulare, ma non li scarica
+ se non strettamente necessario.
+ Alcuni utenti che hanno i contenuti li inviano ad altri 
+\emph on
+subscriber
+\emph default
+ attraverso Wi-Fi con 
+\emph on
+HPRO
+\emph default
+.
+ Usando questo protocollo, chi possiede il contenuto lo invia quando il
+ numero dei suoi vicini è più grande o uguale di una certa soglia che varia
+ in base alla densità locale di chi lo possiede.
+ Le simulazioni dicono che 
+\emph on
+HPRO
+\emph default
+ e l'architettura 
+\emph on
+Subscribe-and-Send
+\emph default
+ permettono di ridurre il traffico di rete cellulare
+\begin_inset CommandInset citation
+LatexCommand cite
+key "offloading_mobile_data_cellular_network_through_p2p_subscrive_sender_architecture"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/architettura_subcribe_sender.tiff
+	lyxscale 50
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:subscribe-and-sendarchitecture-e-hpro"
+
+\end_inset
+
+Architettura Subscribe-and-Send
+\begin_inset CommandInset citation
+LatexCommand cite
+key "offloading_mobile_data_cellular_network_through_p2p_subscrive_sender_architecture"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Diffusione d'informazioni impedendo la censura
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Diffusione-info-impededendo-censura"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Lombera et.
+ al.
+ hanno creato 
+\emph on
+iTrust
+\emph default
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "peer_management_for_itrust_over_wifi_direct"
+
+\end_inset
+
+, cioè un sistema P2P decentralizzato di pubblicazione, ricerca ed acquisizione
+ con l'obiettivo di disseminare informazioni impedendone la censura.
+ iTrust è stato creato focalizzandosi su HTTP, SMS, ma anche 
+\emph on
+Wi-Fi Direct
+\emph default
+.
+ Gli autori hanno scelto Android, perché l'unico con 
+\emph on
+Wi-Fi Direct
+\emph default
+.
+ Inoltre, hanno citato altri progetti simili, come per esempio:
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+Commotion Wireless
+\begin_inset CommandInset citation
+LatexCommand cite
+key "commotion"
+
+\end_inset
+
+
+\emph default
+ che ha l'obiettivo di impedire il controllo o la censura delle comunicazioni
+ da parte di regimi autoritari;
+\end_layout
+
+\begin_layout Itemize
+Thomas e altri
+\begin_inset CommandInset citation
+LatexCommand cite
+key "off_grid_communication_android"
+
+\end_inset
+
+ che hanno creato un sistema per la gestione dei disastri e emergenze usando
+ Smartphone Android, permettendo connessioni senza la rete cellulare.
+ Inoltre, hanno proposto 
+\emph on
+Smart Phone Ad-Hoc Networks 
+\emph default
+(SPAN) che riconfigura i chip Wi-Fi sugli Smartphone per agire come router
+ Wi-Fi, ma non utilizza 
+\emph on
+Wi-Fi Direct
+\emph default
+;
+\end_layout
+
+\begin_layout Itemize
+il 
+\emph on
+Serval Project
+\emph default
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "servel_project"
+
+\end_inset
+
+ che sta sviluppando una piattaforma wireless ad-hoc per Smartphone chiamata
+ 
+\emph on
+Serval BatPhone
+\emph default
+.
+ Il progetto ha come obiettivo le zone rurali e popolazioni in zone isolate/remo
+te, gestione di disastri ed emergenze ed ovviamente le comunicazioni anche
+ in caso di censura.
+ Questo progetto usa le 
+\emph on
+reti ad-hoc
+\emph default
+ su dispositivi Android, apportando delle modifiche agli Smartphone;
+\end_layout
+
+\begin_layout Itemize
+Meroni et.
+ al.
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "opportunistic_platform_for_androidbased-mobile_devices"
+
+\end_inset
+
+ hanno creato una piattaforma per dispositivi Android che usano
+\emph on
+ reti ad-hoc
+\emph default
+ per ridurre il consumo delle reti cellulari.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/itrust-1.tiff
+	lyxscale 50
+	scale 50
+
+\end_inset
+
+
+\begin_inset space \hfill{}
+\end_inset
+
+
+\begin_inset Graphics
+	filename immagini/itrust-architecture.tiff
+	lyxscale 50
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:figura_itrust"
+
+\end_inset
+
+Architettura iTrust
+\begin_inset CommandInset citation
+LatexCommand cite
+key "offloading_mobile_data_cellular_network_through_p2p_subscrive_sender_architecture"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Utilizzo in caso di emergenze e disastri
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:malabocchia-telecom-paper"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Un'altro possibile utilizzo di 
+\emph on
+Wi-Fi Direct
+\emph default
+ è stato mostrato da Malabocchia et.
+ al.
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "wifidirect_multigroup_dissemination_publicsafety"
+
+\end_inset
+
+ permettendo la comunicazione dei peer tra più gruppi.
+\end_layout
+
+\begin_layout Standard
+Lo scenario di utilizzo è quello delle emergenze, dove strutture sovraccariche
+ o danneggiate possono essere aiutate/sostituite da dispositivi Android.
+ In caso di emergenza, devono essere inviati alcuni messaggi in broadcast
+ per informare e istruire le persone su come comportarsi, anche se sono
+ al di fuori della copertura cellulare.
+ Comunque, organizzatori o membri di squadre di emergenza possono usarlo
+ per predisporre punti di raccolta e ciò richiede che l'informazione raggiunga
+ le persone in una precisa regione.
+\end_layout
+
+\begin_layout Standard
+Addirittura, un'individuo nella folla potrebbe usarlo per richiedere aiuto
+ per una persona vicina che si è sentita male
+\begin_inset CommandInset citation
+LatexCommand cite
+key "wifidirect_multigroup_dissemination_publicsafety"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Per raggiungere tali obiettivi, gli autori hanno creato un 
+\emph on
+sistema di tunnelling
+\emph default
+ per rinviare un messaggio attraverso più hop in più gruppi.
+ Per disseminare dati attraverso un grande numero di dispositivi hanno proposto
+ un topologia che connette un numero arbitrario di gruppi, come in Figura
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:toplogia_multi_gruppo"
+
+\end_inset
+
+.
+ In teoria, l'approccio potrebbe scalare all'infinito, ma questa soluzione
+ prevede l'uso di 
+\emph on
+Wi-Fi Direct
+\emph default
+ in contemporanea con una comune connessione Wi-Fi su Android.
+ Nonostante ciò, come già anticipato nell'introduzione di questo documento,
+ tale ricerca è quella che più si avvicina ad uno dei nostri obiettivi.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/multigroup-physical-topology-6device.tiff
+	lyxscale 50
+	scale 50
+
+\end_inset
+
+
+\begin_inset space \hfill{}
+\end_inset
+
+
+\begin_inset Graphics
+	filename immagini/multigroup-physical-topology-6device_con_IP.tiff
+	lyxscale 50
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:toplogia_multi_gruppo"
+
+\end_inset
+
+Topologia multi gruppo con e senza indirizzi IP
+\begin_inset CommandInset citation
+LatexCommand cite
+key "wifidirect_multigroup_dissemination_publicsafety"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Evitare incidenti tra veicoli
+\end_layout
+
+\begin_layout Standard
+Il numero di veicoli in circolazione sulle strade è in continuo aumento
+ e il rischio di incidenti cresce.
+ In U.S.A.
+ è stato creato 
+\emph on
+Dedicated short-range communications 
+\emph default
+(DSRC)
+\begin_inset CommandInset citation
+LatexCommand cite
+key "dsrc"
+
+\end_inset
+
+, cioè canali di comunicazione Wi-Fi a medio/corto raggio progettati per
+ ambito automobilistico e un corrispondente insieme di protocolli e standard.
+ 
+\emph on
+DSRC
+\emph default
+ è un rete in cui i nodi sono rappresentati dai veicoli in movimento e da
+ unità fisse poste lungo le strade che entrano in comunicazione, vedi Figura
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:its_dsrc"
+
+\end_inset
+
+.
+ L'obiettivo è quello di fornire informazioni sul traffico e avvisi di sicurezza
+, cioè per ridurre il rischio di congestione e di incidenti.
+ Questo è più efficace rispetto a lasciare che il veicolo li risolva individualm
+ente.
+\end_layout
+
+\begin_layout Standard
+Inoltre, è in fase di sviluppo da General Motors e altre società come Toyota
+ e BMW, una tecnologia chiamata 
+\emph on
+Vechicular-to-Vechicular
+\emph default
+ (V2V).
+ Essa è anche nota come 
+\emph on
+Vehicular Ad-Hoc Network
+\emph default
+ (VANET), cioè la variazione di una 
+\emph on
+Mobile Ad-Hoc Network
+\emph default
+ (MANET), orientata ai veicoli.
+ L'obiettivo è formare 
+\emph on
+reti ad-hoc
+\emph default
+ tra i veicoli per evitare incidenti.
+ Nell'aprile 2014, negli U.S.A.
+ questa tecnologia è stata approvata e nel 2017 dovrebbe diventare obbligatoria
+\begin_inset CommandInset citation
+LatexCommand cite
+key "v2v_wikipedia"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Un'altra applicazione è quella in cui le informazioni sono scambiate tra
+ veicoli e infrastrutture, cioè 
+\emph on
+Vehicle to Infrastructure
+\emph default
+ (V2I), facilitando lo scambio di informazioni per esempio sui parcheggi
+ liberi o sul traffico
+\begin_inset CommandInset citation
+LatexCommand cite
+key "v2i"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Poiché in questo lavoro di tesi mi sono concentrato su 
+\emph on
+Wi-Fi Direct
+\emph default
+, è sensato pensarne l'applicazione in questo ambito, soprattutto perché
+ riflette perfettamente una 
+\emph on
+Opportunistic Newtork
+\emph default
+ ed evita di creare costose infrastrutture lungo le strade.
+ Un esempio di studio in tale campo è stato realizzato da Chaitra Satish
+\begin_inset CommandInset citation
+LatexCommand cite
+key "inter-veichular-communication-for-collision-avoidance"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/ITS_dsrc.jpg
+	lyxscale 50
+	scale 70
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:its_dsrc"
+
+\end_inset
+
+Rappresentazione di uno scenario di utilizzo di DSRC
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

@@ -1,0 +1,6584 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass book
+\options openright
+\use_default_options false
+\master ../tesi.lyx
+\maintain_unincluded_children false
+\language italian
+\language_package default
+\inputencoding auto
+\fontencoding T1
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 11
+\spacing single
+\use_hyperref false
+\papersize a4paper
+\use_geometry false
+\use_package amsmath 2
+\use_package amssymb 2
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 0
+\use_package mathtools 1
+\use_package mhchem 0
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 0
+\index Indice
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 2
+\paperpagestyle fancy
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+L'
+\emph on
+Android Open Source Project
+\emph default
+ (AOSP)
+\begin_inset CommandInset citation
+LatexCommand cite
+key "aosp_homepage"
+
+\end_inset
+
+ è un'iniziativa creata per guidare lo sviluppo di Android da parte di Google
+ e molte altre società come per esempio Qualcomm, Broadcom, Samsung e HTC.
+ Nonostante sia un progetto 
+\emph on
+Open Source,
+\emph default
+ non significa che si possa visionare il codice in fase di sviluppo e provare
+ le nuove versioni di Android prima del rilascio da parte di Google.
+ AOSP gestisce il codice e le versioni di Android in 
+\emph on
+code line
+\emph default
+ che non corrispondono necessariamente ai 
+\emph on
+branch
+\emph default
+ 
+\emph on
+Git
+\emph default
+, cioè una 
+\emph on
+code line
+\emph default
+ può essere costituita da più 
+\emph on
+branch
+\emph default
+.
+ Un esempio è in Figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:codelines"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/code-lines.png
+	lyxscale 40
+	scale 40
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:codelines"
+
+\end_inset
+
+Esempio di Code line in Android
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Quando esce una versione di Android di solito viene creato un nuovo 
+\emph on
+branch
+\emph default
+.
+ Intanto, i produttori di dispositivi e i 
+\emph on
+contributors ufficiali 
+\emph default
+possono lavorare sull'ultima versione correggendo bug e sperimentando funzionali
+tà.
+ Nel frattempo, Google lavora sulla prossima versione di Android internamente
+ (eventualmente con alcune collaborazioni) su dispositivi con le caratteristiche
+ che vuole utilizzare per la prossima versione.
+ Una volta completata, il codice sorgente diventa disponibile nella pagina
+ web ufficiale 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "aosp_git_repo"
+
+\end_inset
+
+.
+ Oltre alle minor release identificate con l'aumento della terza cifra della
+ versione (per esempio tra 5.0.0 e 5.0.1), spesso per ogni versione sono usati
+ più 
+\emph on
+branch,
+\emph default
+ specificando la release per esempio 
+\begin_inset Quotes eld
+\end_inset
+
+r1
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+r2
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Poiché Android è un progetto
+\emph on
+ Open source
+\emph default
+, si può scaricare il codice di tutte le versioni rilasciate pubblicamente
+ dalla 
+\emph on
+repository Git
+\emph default
+, eventualmente modificandolo e compilandolo.
+ 
+\end_layout
+
+\begin_layout Standard
+In questo capitolo mostrerò la compilazione del sistema operativo, la modifica
+ e la compilazione del kernel ed infine, l'installazione su un dispositivo
+ fisico reale.
+ Tali operazioni dipendono molto dalla configurazione dell'ambiente di sviluppo
+ scelto, quindi mi concentrerò in modo specifico solo sugli elementi essenziali
+ e sui problemi affrontati.
+ Inoltre, fornirò anche dei consigli pratici basati sulle mie esperienze.
+ Alcune delle procedure che mostrerò non sono state descritte da Google
+ in modo così dettagliato nella documentazione ufficiale
+\begin_inset CommandInset citation
+LatexCommand cite
+key "aosp_build_tutorial"
+
+\end_inset
+
+.
+ Prima di analizzare i requisiti per compilare Android ed il kernel, voglio
+ trattare brevemente alcuni aspetti più teorici dell'architettura di questo
+ sistema operativo, analizzandone i blocchi fondamentali, ponendo particolare
+ attenzione ai livelli più bassi.
+\end_layout
+
+\begin_layout Section
+L'architettura di Android
+\end_layout
+
+\begin_layout Standard
+L'architettura di Android è fatta a livelli dove i più bassi sono vicini
+ all'hardware, mentre i più alti all'utente, come rappresentato in Figura
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Android-framework"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/android_framework_details.png
+	lyxscale 50
+	scale 60
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Android-framework"
+
+\end_inset
+
+Android framework
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Il primo è costituito dalle applicazioni.
+ A seguire c'è il framework Android, cioè un insieme molto vasto di codice
+ Java con cui il programmatore può interagire, già analizzato nel Capitolo
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:secondo-capitolo"
+
+\end_inset
+
+.
+ Dopodiché, c'è il livello delle librerie native, cioè in C/C++, che mettono
+ in comunicazione la parte Java con la parte più a basso livello.
+ Anche questa parte l'ho analizzata nel Capitolo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:secondo-capitolo"
+
+\end_inset
+
+, mostrando esempi di utilizzo di NDK, cioè lo strumento che permette di
+ interagirci.
+ Data la vastità dell'argomento, mi ero concentrato solo su alcuni aspetti
+ a titolo esemplificativo, come per esempio 
+\emph on
+wpa_supplicant
+\emph default
+ che tratterò meglio nel Capitolo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:quarto-capitolo"
+
+\end_inset
+
+.
+ Subito sotto c'è l'
+\emph on
+Android Runtime
+\emph default
+, costituito da ART e Dalvik, che permette l'esecuzione di programmi dei
+ livelli superiori e l'HAL, che si occupa di astrarre l'hardware creando
+ un'interfaccia software standard.
+ Questi livelli richiederebbero una trattazione specifica, ma non fanno
+ parte di questo lavoro di tesi.
+ Piuttosto, mi concentrerò sull'ultimo, cioè il kernel Linux.
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace smallskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/ape_fwk_all.png
+	lyxscale 80
+	scale 80
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Android-framework-dettaglio"
+
+\end_inset
+
+Android framework nel dettaglio
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Per una questione di completezza ho deciso di analizzare brevemente ciò
+ che Google chiama nella sua documentazione come 
+\emph on
+Android Low-Level System Framework
+\emph default
+, vedi Figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Android-framework-dettaglio"
+
+\end_inset
+
+.
+ Il primo componente è quello che ho spiegato poco fa, detto
+\emph on
+ Application Framework
+\emph default
+.
+ Il livello inferiore, detto 
+\emph on
+Binder IPC Proxies
+\emph default
+ contiene un meccanismo che permette all'
+\emph on
+Application Framework
+\emph default
+ di superare i limiti dei processi e chiamare in Android i servizi di sistema,
+ da API di alto livello.
+ Esso è detto IPC, cioè 
+\emph on
+InterProcess Communication.
+
+\emph default
+ Subito sotto vi sono i servizi di sistema che permettono alle API di alto
+ livello di comunicare con l'hardware.
+ Per esempio, ci sono servizi come il
+\emph on
+ Windows Manager
+\emph default
+, l'
+\emph on
+Activity Manager
+\emph default
+ e quelli per i contenuti multimediali.
+ Nel penultimo livello c'è l'
+\emph on
+Hardware Abstraction Layer
+\emph default
+ (HAL), come in Figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:hal"
+
+\end_inset
+
+, cioè un'interfaccia standard che permette ad Android di chiamare i driver,
+ facendo si che l'implementazione di basso livello e l'hardware siano separati
+ dal software presente nei livelli superiori.
+ Quando un produttore utilizza un suo componente, implementa la parte dell'HAL
+ e il driver necessario.
+ Android non standardizza l'interazione tra l'elemento nell'HAL e il driver,
+ ma richiede che siano rispettati gli standard per far si che il sistema
+ operativo possa comunicare con il nuovo elemento.
+ Di solito le implementazioni dell'HAL sono salvate in librerie condivise,
+ cioè file 
+\begin_inset Quotes eld
+\end_inset
+
+.so
+\begin_inset Quotes erd
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/ape_fwk_hal.png
+	lyxscale 50
+	scale 50
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:hal"
+
+\end_inset
+
+HAL
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Infine vi è il kernel, basato su Linux, ma con alcune modifiche come i 
+\emph on
+wakelock
+\emph default
+, una gestione più aggressiva della memoria, il 
+\emph on
+Binder IPC driver
+\emph default
+ ed altre caratteristiche utili in ambienti embedded.
+ Nel corso di questo capitolo e dei successivi, analizzerò più nel dettaglio
+ il kernel di Android.
+\end_layout
+
+\begin_layout Section
+Il processo di boot in Android
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Il-processo-di-boot-android"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In questa sezione mostrerò il processo di boot di Android, ma per comprenderla
+ meglio riporto una breve sintesi della struttura delle partizioni 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "miui_spiegazione_boot"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+/boot: include kernel e 
+\emph on
+ramdisk
+\emph default
+ e quindi è essenziale per avviare il sistema operativo.
+\end_layout
+
+\begin_layout Enumerate
+/system: contiene Android, il kernel e 
+\emph on
+ramdisk
+\emph default
+.
+ Rimuoverla vuol dire cancellare il sistema operativo e rendere impossibile
+ l'avvio del dispositivo.
+\end_layout
+
+\begin_layout Enumerate
+/recovery: utile per i backup e può essere usata come procedura alternativa
+ per il boot, per esempio per ripristinare un backup.
+\end_layout
+
+\begin_layout Enumerate
+/data: dati dell'utente e applicazioni installate.
+ È la partizione cancellata quando si fa il 
+\emph on
+factory reset
+\emph default
+, cioè si ritorna alle impostazioni di fabbrica.
+\end_layout
+
+\begin_layout Enumerate
+/cache: usata da Android per salvare elementi a cui accede spesso.
+ Può essere cancellata senza rischi.
+\end_layout
+
+\begin_layout Enumerate
+/misc: impostazioni di Android, tra cui le configurazioni hardware e dell'operat
+ore.
+\end_layout
+
+\begin_layout Enumerate
+/sdcard rappresenta la memoria usata dall'utente, che può essere in una
+ partizione o in una scheda esterna.
+\end_layout
+
+\begin_layout Enumerate
+altre che dipendono dal produttore.
+\end_layout
+
+\begin_layout Standard
+Nel momento in cui si accende il dispositivo premendo l'apposito pulsante,
+ iniziano una serie di eventi sequenziali che portano all'avvio di Android.
+ Il questo lavoro di testi mostrerò queste fasi (vedi Figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Processo-di-boot-completo"
+
+\end_inset
+
+) in modo sintetico e schematico
+\begin_inset CommandInset citation
+LatexCommand cite
+key "learnlinuxconcepts_boot,androidbootprocess"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/bootsteps/schema_boot.jpg
+	lyxscale 50
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Processo-di-boot-completo"
+
+\end_inset
+
+Processo di boot completo
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Fase 1: Avvio del sistema
+\end_layout
+
+\begin_layout Standard
+Acceso il dispositivo, inizia la procedura divisa nelle due fasi, in Figura
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:boot1"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+Il codice non modificabile scritto nella BootROM (che di solito è un chip
+ dedicato) rileva il
+\emph on
+ Boot media (NAND)
+\emph default
+.
+ Questo serve per determinare dove si troverà il 
+\emph on
+first stage Bootloader 
+\emph default
+(cioè la prima parte del Bootloader)
+\emph on
+.
+\end_layout
+
+\begin_layout Enumerate
+La 
+\emph on
+BootROM
+\emph default
+ tenta di caricare il 
+\emph on
+first stage Bootloader
+\emph default
+ nella 
+\emph on
+Internal RAM
+\emph default
+.
+ Una volta fatto, il codice nella 
+\emph on
+BootROM
+\emph default
+ esegue un'istruzione di salto (jump) e l'esecuzione passa alla fase successiva.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/bootsteps/step1.tiff
+	lyxscale 50
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:boot1"
+
+\end_inset
+
+Processo di boot - passo 1
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Fase 2: Bootloader
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Fase-2:-Bootloader"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Il Bootloader è in due fasi (o stage), cioè 
+\emph on
+first stage Bootloader
+\emph default
+ e 
+\emph on
+second stage Bootloader.
+
+\emph default
+ In Figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:boot2"
+
+\end_inset
+
+ è rappresentata la procedura in dettaglio.
+\end_layout
+
+\begin_layout Enumerate
+Il 
+\emph on
+first stage Bootloader
+\emph default
+ rileva e imposta l'
+\emph on
+External RAM.
+\end_layout
+
+\begin_layout Enumerate
+Una volta che l
+\emph on
+'External RAM 
+\emph default
+è disponibile e il sistema è pronto ad eseguire operazioni, il 
+\emph on
+first stage Bootloader
+\emph default
+ esegue il caricamento della seconda fase nella 
+\emph on
+External RAM.
+\end_layout
+
+\begin_layout Enumerate
+Il
+\emph on
+ second stage Bootloader
+\emph default
+ può contenere codice per impostare il filesystem, memoria aggiuntiva ed
+ il supporto di rete.
+ Inoltre, può essere utile anche per attivare protezioni della memoria e
+ di sicurezza sui moderni dispositivi
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Spesso in ambiente embedded, le società che producono i dispositivi usano
+ Bootloader proprietari e bloccati.
+ L'obiettivo è impedire la modifica del software, per esempio come fa Samsung.
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+Ricerca il 
+\emph on
+kernel Linux
+\emph default
+ per avviarlo, lo prende dal 
+\emph on
+Boot media
+\emph default
+ e lo mette in RAM.
+ Cioè carica la 
+\family sans
+zImage
+\family default
+, il file binario compresso del 
+\emph on
+kernel
+\emph default
+.
+ In esso vi è anche tutta la descrizione dell'hardware.
+\end_layout
+
+\begin_layout Enumerate
+Esegue un'operazione di salto al 
+\emph on
+kernel Linux
+\emph default
+ e svolge alcune procedure di decompressione.
+ Infine il controllo è passato al kernel.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/bootsteps/step2.tiff
+	lyxscale 50
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:boot2"
+
+\end_inset
+
+Processo di boot - passo 2
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Nei dispositivi più vecchi, sono stati usati usati due registri: 
+\emph on
+r1
+\emph default
+ per salvare il 
+\emph on
+tipo di macchina
+\emph default
+ ed 
+\emph on
+r2
+\emph default
+ per l'
+\emph on
+ATAGS
+\emph default
+ che contiene informazioni come la posizione e la dimensione della memoria.
+ In quelli più moderni, il kernel non contiene più le informazioni sull'hardware
+, che invece sono in un file binario a parte, detto 
+\emph on
+Device Tree Blob 
+\emph default
+(DTB).
+ Di conseguenza, il 
+\emph on
+Bootloader
+\emph default
+ carica due file binari, cioè la 
+\family sans
+zImage
+\family default
+ e il 
+\emph on
+DTB
+\emph default
+, passando l'indirizzo di memoria di quest'ultimo attraverso il registro
+ 
+\emph on
+r2
+\emph default
+.
+ Il 
+\emph on
+tipo di macchina
+\emph default
+ non è più necessario e quindi il registro 
+\emph on
+r1
+\emph default
+ non è più utilizzato.
+ Per architetture ARM, tutti i DTS sono in 
+\emph on
+arch/arm/boot/dts
+\emph default
+, cioè sia i 
+\begin_inset Quotes eld
+\end_inset
+
+.dts
+\begin_inset Quotes erd
+\end_inset
+
+ con informazioni sulla 
+\emph on
+board
+\emph default
+ e i 
+\begin_inset Quotes eld
+\end_inset
+
+.dtsi
+\begin_inset Quotes erd
+\end_inset
+
+ per informazioni sul 
+\emph on
+SoC
+\emph default
+.
+ Questi file sono compilati da un programma chiamato 
+\emph on
+Device Tree Compiler
+\emph default
+, il cui codice sorgente si trova in 
+\emph on
+scripts/dtc
+\emph default
+.
+ Quindi, il 
+\emph on
+DTB
+\emph default
+ generato dal compilatore è caricato dal 
+\emph on
+Bootloader
+\emph default
+ e letto dal 
+\emph on
+kernel
+\emph default
+ al momento del boot.
+ Per maggiori informazioni e la spiegazione del linguaggio di descrizione
+ hardware DT vedere 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "dtb_kernel_embedded_linux"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection*
+Fase 3: Kernel Linux
+\end_layout
+
+\begin_layout Standard
+Il kernel si avvia in modo molto simile sia in Android, sia in altri sistemi
+ (vedi Figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:boot3"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Enumerate
+Una volta che 
+\emph on
+Memory Management Unit
+\emph default
+ (MMU) e cache sono inizializzate, il sistema sarà in grado di usare la
+ memoria virtuale e lanciare i processi nello spazio dell'utente (
+\emph on
+user space
+\emph default
+).
+\end_layout
+
+\begin_layout Enumerate
+Il kernel guarda nella radice del filesystem per trovare la procedura di
+ 
+\emph on
+init
+\emph default
+ e l'avvia come un processo utente.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/bootsteps/step3.tiff
+	lyxscale 50
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:boot3"
+
+\end_inset
+
+Processo di boot - passo 3
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Fase 4: Il processo di init
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+Init
+\emph default
+ è il primo vero processo eseguito ed ha due responsabilità (vedi Figura
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:boot4"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Itemize
+Fa il 
+\emph on
+mount 
+\emph default
+di cartelle come 
+\emph on
+/sys
+\emph default
+, 
+\emph on
+/dev
+\emph default
+, 
+\emph on
+/proc
+\emph default
+, tramite 
+\emph on
+procfs
+\emph default
+, 
+\emph on
+sysfs
+\emph default
+ e 
+\emph on
+cgroupfs
+\emph default
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "embedded_android_libro"
+
+\end_inset
+
+.
+ Questi ultimi tre sono tutti filesystem virtuali mantenuti dal kernel in
+ esecuzione.
+ Essi non sono usati per il salvataggio di dati, infatti le strutture dati
+ sono nel kernel.
+ Per esempio
+\emph on
+, procfs
+\emph default
+ è il modo tradizionale con cui il kernel esporta informazioni su se stesso
+ nello spazio dell'utente.
+ Tipicamente, queste informazioni sono viste come file accessibili o log
+ per ottenere informazioni.
+\end_layout
+
+\begin_layout Itemize
+Esegue lo script 
+\family sans
+init.rc
+\family default
+, che esegue il 
+\emph on
+mount
+\emph default
+ di diverse altre 
+\begin_inset Quotes eld
+\end_inset
+
+immagini
+\begin_inset Quotes erd
+\end_inset
+
+ e filesystem virtuali, come in Figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Android-root-filesystem"
+
+\end_inset
+
+.
+ Questo perché ognuno ha scopi differenti.
+ Per esempio, 
+\family sans
+ramdisk.img
+\family default
+\emph on
+ 
+\emph default
+è una 
+\begin_inset Quotes eld
+\end_inset
+
+immagine
+\begin_inset Quotes erd
+\end_inset
+
+ compressa prima di essere caricata in RAM dal kernel, che viene poi montata
+ come un filesystem di root in sola lettura.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/init-file_system.tiff
+	lyxscale 70
+	scale 60
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Android-root-filesystem"
+
+\end_inset
+
+Android root filesystem
+\begin_inset CommandInset citation
+LatexCommand cite
+key "embedded_android_libro"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/bootsteps/step4.tiff
+	lyxscale 50
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:boot4"
+
+\end_inset
+
+Processo di boot - passo 4
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Fasi 5 e 6: Zygote, Dalvik e System server
+\end_layout
+
+\begin_layout Standard
+Queste fasi non fanno parte del mio lavoro di tesi, quindi non le considererò.
+ Comunque, in esse è avviata la parte Java di Android, c'è la gestione delle
+ macchine virtuali Dalvik, una per ogni app ed infine sono gestiti ed avviati
+ i servizi di sistema.
+\end_layout
+
+\begin_layout Subsection*
+Fase 7: Boot completato
+\end_layout
+
+\begin_layout Standard
+Una volta che i servizi di sistema sono avviati ed in esecuzione in memoria,
+ Android ha completato il processo di boot ed è quindi attivata l'azione
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+seqsplit{ACTION
+\backslash
+_BOOT
+\backslash
+_COMPLETED}
+\end_layout
+
+\end_inset
+
+, intercettabile dai 
+\emph on
+Broadcast Receiver
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/bootsteps/step6.tiff
+	lyxscale 50
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:boot5-6-e-7"
+
+\end_inset
+
+Processo di boot completato
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Tutto ciò tornerà molto utile nel proseguo del capitolo, in particolare
+ le informazioni per quanto riguardano il kernel, cioè la fase 3.
+\end_layout
+
+\begin_layout Section
+Requisiti
+\end_layout
+
+\begin_layout Standard
+I requisiti per compilare Android sono:
+\end_layout
+
+\begin_layout Itemize
+Una distribuzione Linux 64 bit (consiglio Ubuntu 14.04.2 64 bit, poiché utilizzata
+ da Google), MAC OS X (estremamente sconsigliato per minore supporto e altri
+ problemi che ho incontrato, come la necessità di cambiare filesystem o
+ usare immagini 
+\begin_inset Quotes eld
+\end_inset
+
+.dmg
+\begin_inset Quotes erd
+\end_inset
+
+ con filesystem 
+\emph on
+HFS case sensitive
+\emph default
+), Windows non è nemmeno supportato ufficialmente e ne sconsiglio vivamente
+ l'utilizzo.
+\end_layout
+
+\begin_layout Itemize
+Un PC/MAC con installato Linux (anche come seconda partizione) con almeno
+ 8GB di RAM o una macchina virtuale (Google consiglia come minimo 16GB di
+ RAM in caso di macchine virtuali).
+ Dalla mia esperienza con VMware Fusion 2 su MAC OS X, consiglio di assegnare
+ almeno 8GB o 10GB alla macchina virtuale Linux ed ovviamente configurarla
+ per usare tutti i core della CPU.
+\end_layout
+
+\begin_layout Itemize
+Almeno 50 GB di spazio libero, 100 GB per una singola versione e 150 GB
+ o più per più versioni.
+ Utilizzando la 
+\emph on
+Ccache
+\emph default
+, che tratterò nella Sezione 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:ccache"
+
+\end_inset
+
+, sono necessari altri 50GB o più.
+ Dalla mia esperienza, una macchina virtuale Linux di 200 GB di disco non
+ permette di avere i sorgenti di KitKat, Lollipop e i kernel associati con
+ anche i file compilati, infatti sono necessari almeno altri 50 GB.
+ Inoltre, se possibile, è meglio non usare macchine virtuali, per questioni
+ di performance e per problemi nel gestire immagini di dischi così grosse.
+ Lo stesso MAC OS X mi ha creato enormi problemi nel trasferimento di questi
+ file da HD esterni usati come backup di 
+\emph on
+Apple TimeMachine
+\emph default
+, creando errori nel processo chiamato 
+\emph on
+Finder
+\emph default
+.
+ Se possibile creare la macchina virtuale con un disco espandibile di almeno
+ 1 TB e usare immagini multiple, cioè divise in tanti file.
+\end_layout
+
+\begin_layout Itemize
+Python 2.6 - 2.7.
+\end_layout
+
+\begin_layout Itemize
+GNU Make 3.81 - 3.82.
+\end_layout
+
+\begin_layout Itemize
+Git 1.7 o superiore.
+\end_layout
+
+\begin_layout Itemize
+JDK (bisogna rispettare vincoli molto stringenti sia sulla versione, sia
+ sul fornitore, cioè Oracle o OpenJDK).
+ Avendo compilato più versioni di Android, ho dovuto installare più versione
+ di Java e selezionare quella corretta prima di ogni compilazione, tramite
+ i comandi del terminale 
+\family sans
+update-alternatives --config java 
+\family default
+e 
+\family sans
+update-alternatives --config javac.
+
+\family default
+ Le versioni sono:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+7 per compilare l'ultima versione su 
+\emph on
+branch
+\emph default
+ 
+\emph on
+master
+\emph default
+ di git (Lollipop richiede necessariamente Open JDK 7);
+\end_layout
+
+\begin_layout Itemize
+6 per compilare versioni da Gingerbread a KitKat (KitKat richiede necessariament
+e Oracle JDK 6);
+\end_layout
+
+\begin_layout Itemize
+5 per compilare versioni da Cupcake a Froyo.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Una connessione ad internet estremamente veloce, infatti scaricare il sorgente
+ di Android ha richiesto diverse ore, anche con una fibra ottica a 1MB/s
+ ed un'intera notte non è stata sufficiente).
+\end_layout
+
+\begin_layout Itemize
+Il processo di compilazione di Android richiede alcune ore anche su macchine
+ di ultima generazione, quindi ho usato un MacBook Pro (mid 2012) modificato
+ con 16GB di RAM Corsair Vengeance DDR3 1600 MHz, Intel Core i7 2,3 GHz
+ (Turbo Boost 3,3 GHz) quad core, disco da 750 GB 7200 RPM Seagate Momentus
+ XT ibrido con 8GB di SSD.
+ Nonostante queste specifiche, nella macchina virtuale, la compilazione
+ di Lollipop ha richiesto 2 ore e 40 minuti.
+\end_layout
+
+\begin_layout Itemize
+Evitare qualunque tipo di aggiornamento di Ubuntu.
+ Nel mio caso, l'installazione di alcuni aggiornamenti ha reso impossibile
+ la compilazione ed è stato necessario ripristinare 200GB di macchina virtuale
+ da un disco esterno di backup, con notevoli difficoltà.
+\end_layout
+
+\begin_layout Itemize
+Android NDK 10d 64 bit
+\begin_inset CommandInset citation
+LatexCommand cite
+key "ndk_download_link"
+
+\end_inset
+
+ o superiore per la compilazione (nonostante non sia obbligatorio, dato
+ che il sorgente di Android contiene già il 
+\emph on
+toolchain 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "toolchain"
+
+\end_inset
+
+
+\emph default
+ necessario, in tutta la procedura ho utilizzato quello incluso nell'NDK,
+ perché mi ha dato meno problemi).
+\end_layout
+
+\begin_layout Section
+Inizializzazione dell'ambiente di sviluppo
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Inizializzazione-dell'ambiente-android"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Prima di procedere, ho aggiornato Ubuntu 14.04.2 via terminale con i comandi
+ nell'Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Aggiornare-Ubuntu"
+
+\end_inset
+
+ e ho disattivato gli aggiornamenti automatici per evitare problemi in futuro.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+$ sudo apt-get update
+\end_layout
+
+\begin_layout LyX-Code
+$ sudo apt-get upgrade
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:Aggiornare-Ubuntu"
+
+\end_inset
+
+Aggiornare Ubuntu
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Installare Java, Android NDK e le dipendenze
+\end_layout
+
+\begin_layout Standard
+Mi sono assicurato di rimuovere tutte le versioni di Java da Ubuntu e dopo
+ il riavvio, ho eseguito l'installazione tramite linea di comando come nell'Algo
+ritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Installare-Java-7"
+
+\end_inset
+
+ scegliendo la versione da utilizzare con gli ultimi due comandi
+\family sans
+ update-alternatives
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+$ sudo apt-get install openjdk-7-jdk
+\end_layout
+
+\begin_layout LyX-Code
+$ sudo add-apt-repository ppa:webupd8team/java
+\end_layout
+
+\begin_layout LyX-Code
+$ sudo apt-get update
+\end_layout
+
+\begin_layout LyX-Code
+$ sudo apt-get install oracle-java6-installer
+\end_layout
+
+\begin_layout LyX-Code
+$ sudo update-alternatives --config java
+\end_layout
+
+\begin_layout LyX-Code
+$ sudo update-alternatives --config javac
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:Installare-Java-7"
+
+\end_inset
+
+Installare Java 7 e 6 e scegliere la versione da usare
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+La guida ufficiale di Google per Ubuntu 14.04 fornisce già i comandi da utilizzar
+e per installare le dipendenze (vedi Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Installare-le-dipendenze-ubuntu"
+
+\end_inset
+
+).
+ Però, non specifica che bisogna installare anche altri programmi perché
+ le procedure di compilazione possano avere successo.
+ Quindi, in base alla mia esperienza ho aggiunto all'Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Installare-le-dipendenze-ubuntu"
+
+\end_inset
+
+ quattro righe con altri software utili a tale scopo.
+\end_layout
+
+\begin_layout Standard
+Dopodiché, ho installato Android NDK, cioè ho scaricato NDK Linux x64 da
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "ndk_download_link"
+
+\end_inset
+
+ ed eseguito i comandi nell'Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:installare_ndk"
+
+\end_inset
+
+ dalla mia cartella 
+\emph on
+home
+\emph default
+.
+ In questo lavoro di tesi ho utilizzato l'ultima versione disponibile, cioè
+ la 
+\emph on
+r10d
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+$ sudo apt-get install bison g++-multilib git
+\end_layout
+
+\begin_layout LyX-Code
+$ sudo apt-get install gperf libxml2-utils
+\end_layout
+
+\begin_layout LyX-Code
+$ sudo apt-get install libncurses5-dev
+\end_layout
+
+\begin_layout LyX-Code
+$ sudo apt-get install libc6-i386 lib32stdc++6 
+\end_layout
+
+\begin_layout LyX-Code
+$ sudo apt-get install lib32gcc1 lib32ncurses5 
+\end_layout
+
+\begin_layout LyX-Code
+$ sudo apt-get install zlib1g lib32z1 
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:Installare-le-dipendenze-ubuntu"
+
+\end_inset
+
+Installare le dipendenze in Ubuntu
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+$ mkdir ~/androidNdk
+\end_layout
+
+\begin_layout LyX-Code
+$ cd ~/Scaricati
+\end_layout
+
+\begin_layout LyX-Code
+$ mv android-ndk-r10d-linux-x86_64.bin 
+\end_layout
+
+\begin_layout LyX-Code
+  ../androidNdk/android-ndk-r10d-linux-x86_64.bin
+\end_layout
+
+\begin_layout LyX-Code
+$ cd ../androidNdk
+\end_layout
+
+\begin_layout LyX-Code
+$ chmod a+x android-ndk-r10d-linux-x86_64.bin
+\end_layout
+
+\begin_layout LyX-Code
+$ ./android-ndk-r10d-linux-x86_64.bin
+\end_layout
+
+\begin_layout LyX-Code
+$ rm android-ndk-r10d-linux-x86_64.bin
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:installare_ndk"
+
+\end_inset
+
+Installare Android NDK
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Configurare l'accesso USB in Ubuntu
+\end_layout
+
+\begin_layout Standard
+Per configurare l'accesso USB in Ubuntu, l'approccio raccomandato da Google
+ è di creare o modificare il file 
+\emph on
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+seqsplit{/etc/udev/rules.d/51-android.rules}
+\end_layout
+
+\end_inset
+
+
+\emph default
+ accedendo coi privilegi di root in Ubuntu.
+ Il problema è che la guida ufficiale è per Ubuntu 8.04 e 10.04, mentre ora
+ il sistema operativo consigliato per lo sviluppo è Ubuntu 14.04.
+ Quindi ho utilizzato il file 
+\family sans
+51-android.rules
+\family default
+ nell'appendice 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "app:seconda-appendice-1"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+Variabili d'ambiente e CChace
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:ccache"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+I dispositivi Android non hanno la stessa architettura di un normale PC,
+ infatti si basano principalmente su ARM.
+ Quindi, le istruzioni compilate devono essere per ARM e non per processori
+ Intel o AMD.
+\end_layout
+
+\begin_layout Standard
+Quando su una macchina con una certa architettura si compila un programma
+ per un'altra, si dice 
+\emph on
+
+\begin_inset Quotes eld
+\end_inset
+
+cross-compilazione
+\begin_inset Quotes erd
+\end_inset
+
+
+\emph default
+.
+ Non è da confondere con la 
+\emph on
+
+\begin_inset Quotes eld
+\end_inset
+
+compilazione source-to-source
+\begin_inset Quotes erd
+\end_inset
+
+
+\emph default
+, perché in quest'ultima è il codice sorgente ad essere tradotto, mentre
+ nella 
+\emph on
+cross-compilazione
+\emph default
+ è il codice binario.
+ Per fortuna, Google fornisce tutti i programmi per svolgere questa procedura,
+ ma è necessaria un'accurata configurazione.
+ Spesso, il principale errore nella compilazione di Android è l'uso di variabili
+ d'ambiente sbagliate.
+ Ciò comporta errori, che potrebbero non essere visibili all'inizio del
+ processo, ma solo in seguito, interrompendolo e quindi perdendo tempo.
+ In questo lavoro di tesi mi sono concentrato su Android 4.4.4 e 5.0.1 per Nexus
+ 4 e Nexus 5, cioè architetture ARM a 32 bit molto diffuse.
+\end_layout
+
+\begin_layout Standard
+Per impostare le variabili d'ambiente, ho dovuto visualizzare i file nascosti
+ in Ubuntu ed aggiungere le righe nell'Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Configurazione-variabili-d'ambiente-bashrc"
+
+\end_inset
+
+ al file 
+\family sans
+~/.bashrc
+\family default
+ (se non presente crearne uno).
+ Questa operazione permetterà la cross-compilazione del kernel.
+ La prima riga specifica l'architettura verso cui 
+\emph on
+cross-compilare
+\emph default
+, che nel nostro caso sarà ARM
+\begin_inset CommandInset citation
+LatexCommand cite
+key "arm"
+
+\end_inset
+
+, la seconda la sotto-architettura, cioè sempre ARM ed infine il parametro
+ da passare per 
+\emph on
+cross-compilare
+\emph default
+, cioè il nome del 
+\emph on
+toolchain
+\emph default
+ scelto, seguito da 
+\begin_inset Quotes eld
+\end_inset
+
+-
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Dopodiché, ho modificato il file 
+\family sans
+~/.profile
+\family default
+ (eventualmente crearlo) aggiungendo le righe nell'Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Configurazione-variabili-d'ambiente-profile"
+
+\end_inset
+
+.
+ Da notare che il primo 
+\emph on
+export
+\emph default
+ aggiunge alla variabile d'ambiente 
+\emph on
+PATH
+\emph default
+ il percorso del 
+\emph on
+toolchain
+\emph default
+ di NDK, mentre le altre configurano la 
+\emph on
+Ccache
+\emph default
+.
+ Modificati questi due file, ho riavviato il sistema operativo per applicare
+ le modifiche.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+export ARCH=arm
+\end_layout
+
+\begin_layout LyX-Code
+export SUBARCH=arm
+\end_layout
+
+\begin_layout LyX-Code
+export CROSS_COMPILE=arm-linux-androideabi-
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:Configurazione-variabili-d'ambiente-bashrc"
+
+\end_inset
+
+Configurazione variabili d'ambiente in .bashrc
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+export PATH=$PATH:~/androidNdk/android-ndk-r10d/
+\end_layout
+
+\begin_layout LyX-Code
+   toolchains/arm-linux-androideabi-4.6/
+\end_layout
+
+\begin_layout LyX-Code
+   prebuilt/linux-x86_64/bin
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+#cache per compilare android
+\end_layout
+
+\begin_layout LyX-Code
+export USE_CCACHE=1
+\end_layout
+
+\begin_layout LyX-Code
+export CCACHE_DIR=~/androidsource/aosp-main/cache/.ccache
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:Configurazione-variabili-d'ambiente-profile"
+
+\end_inset
+
+Configurazione variabili d'ambiente in .profile
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Quando inizia la compilazione di Android, sono compilati molti file C e
+ C++.
+ Per migliorare le performance in caso di ricompilazioni, modifiche, passaggi
+ tra diverse versioni di Android, consiglio di attivare la Ccache
+\begin_inset CommandInset citation
+LatexCommand cite
+key "ccache"
+
+\end_inset
+
+ con 
+\emph on
+USE_CCACHE=1
+\emph default
+, e la cartella della Ccache nella variabile 
+\emph on
+CCACHE_DIR.
+
+\emph default
+ Ccache è una cache del compilatore C/C++/Objective-C/Objective-C++ che
+ rendere più veloce la ricompilazione, poiché memorizza i file in una cartella
+ sul disco.
+ Ovviamente, al primo avvio sarà vuota e ogni operazione sarà un 
+\emph on
+miss
+\emph default
+, ma successive ricompilazione poteranno a degli 
+\emph on
+hit
+\emph default
+ facendo risparmiare tempo.
+ Ccache è sicura perché fornisce sempre lo stesso output, cioè produce sempre
+ lo stesso file oggetto.
+ Purtroppo è limitata ai file C/C++ di Android e non a quelli Java, ciò
+ vuol dire che il framework Android e tutte le app predefinite devono sempre
+ essere ricompilate.
+ In realtà usare questa cache è comunque vantaggioso, perché Android è costituit
+o da una consistente parte in C/C++ e grazie a Ccache si può risparmiare
+ quasi un'ora.
+\end_layout
+
+\begin_layout Section
+Scaricare il codice sorgente di Android
+\end_layout
+
+\begin_layout Standard
+Per scaricare il sorgente di Android è necessario installare 
+\emph on
+Repo
+\emph default
+, cioè un programma per gestire 
+\emph on
+repository
+\emph default
+ costruito sopra a 
+\emph on
+Git
+\emph default
+.
+ 
+\emph on
+Repo
+\emph default
+ non ha l'obiettivo di sostituire quest'ultimo, ma serve solo per rendere
+ più facile l'uso di 
+\emph on
+Git
+\emph default
+ nel caso di Android.
+ Il questo lavoro di tesi l'ho utilizzato tramite il comando 
+\family sans
+repo
+\family default
+\emph on
+, 
+\emph default
+cioè
+\emph on
+ 
+\emph default
+uno script 
+\emph on
+Python
+\emph default
+ fornito da Google, e mi siamo concentrato solo sugli aspetti fondamentali
+ per scaricare il codice sorgente.
+ Per maggiori informazioni c'è la documentazione ufficiale 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "repo"
+
+\end_inset
+
+.
+ 
+\emph on
+Repo
+\emph default
+ non è incluso in Linux, quindi ho eseguito i comandi nell'Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Comandi-per-installare-repo"
+
+\end_inset
+
+ per installarlo.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+$ mkdir ~/bin
+\end_layout
+
+\begin_layout LyX-Code
+$ PATH=~/bin:$PATH
+\end_layout
+
+\begin_layout LyX-Code
+$ curl https://storage.googleapis.com/git-repo-downloads/repo
+\end_layout
+
+\begin_layout LyX-Code
+  > ~/bin/repo
+\end_layout
+
+\begin_layout LyX-Code
+$ chmod a+x ~/bin/repo
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:Comandi-per-installare-repo"
+
+\end_inset
+
+Comandi per installare 
+\emph on
+Repo
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A questo punto ho lanciato il comando per inizializzare 
+\emph on
+Repo
+\emph default
+ in una cartella vuota
+\emph on
+ ~/androidsource
+\emph default
+, come in Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Comandi-per-inizializzare-repo"
+
+\end_inset
+
+, ma sostituendo 
+\begin_inset Quotes eld
+\end_inset
+
+<BRANCH NAME>
+\begin_inset Quotes erd
+\end_inset
+
+ con il nome del 
+\emph on
+branch
+\emph default
+ da scaricare
+\begin_inset CommandInset citation
+LatexCommand cite
+key "branch_list"
+
+\end_inset
+
+.
+ Per poter scaricare il codice sorgente superando i limiti assegnati da
+ Google ad ogni indirizzo IP ad accesso anonimo, ho eseguito l'autenticazione.
+ Per fare ciò ho usato l'indirizzo https in Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Comandi-per-installare-repo"
+
+\end_inset
+
+ con la directory 
+\begin_inset Quotes eld
+\end_inset
+
+/a
+\begin_inset Quotes erd
+\end_inset
+
+ nel percorso, per forzare l'autenticazione.
+ Rimuovendo 
+\begin_inset Quotes eld
+\end_inset
+
+/a
+\begin_inset Quotes erd
+\end_inset
+
+ si disattiva automaticamente (operazione sconsigliata).
+ Per autenticarmi, ho eseguito lo script in Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Comandi-per-installare-repo"
+
+\end_inset
+
+ da 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "google_source_new_password"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+$ mkdir ~/androidsource
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+//visitare sito https://www.googlesource.com/new-password
+\end_layout
+
+\begin_layout LyX-Code
+//per ottenere il seguente script
+\end_layout
+
+\begin_layout LyX-Code
+//personalizzato
+\end_layout
+
+\begin_layout LyX-Code
+$ touch ~/.gitcookies chmod 0600 ~/.gitcookies
+\end_layout
+
+\begin_layout LyX-Code
+  git config --global http.cookiefile ~/.gitcookies
+\end_layout
+
+\begin_layout LyX-Code
+  tr , 
+\backslash
+
+\backslash
+t <<
+\backslash
+__END__ >>~/.gitcookies
+\end_layout
+
+\begin_layout LyX-Code
+  .googlesource.com,TRUE,/,TRUE,<nodice numerico>,o,
+\end_layout
+
+\begin_layout LyX-Code
+  git-<email senza la @>=1/<codice alfanumerico> __END__ 
+\end_layout
+
+\begin_layout LyX-Code
+$ cd ~/androidsource/aosp-main
+\end_layout
+
+\begin_layout LyX-Code
+$ git config --global user.email "you@example.com"
+\end_layout
+
+\begin_layout LyX-Code
+$ git config --global user.name "Your Name" 
+\end_layout
+
+\begin_layout LyX-Code
+
+\series bold
+$ repo init -u 
+\end_layout
+
+\begin_layout LyX-Code
+
+\series bold
+  https://android.googlesource.com/a/platform/manifest 
+\end_layout
+
+\begin_layout LyX-Code
+
+\series bold
+  -b <BRANCH NAME>
+\series default
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:Comandi-per-inizializzare-repo"
+
+\end_inset
+
+Comandi per inizializzare Repo
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Fatto ciò, ho iniziato il processo di download con il comando in Algoritmo
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Avvio-del-download-sorgente-android"
+
+\end_inset
+
+.
+ Per migliorare le performance, ho usato il parametro -jN, con N = numero
+ core * numero thread per core * 2.
+ Parlerò dell'opzione -jN in modo dettagliato nella Sezione 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Cross-compilare-Android-per-arm"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+$ repo sync -jN
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:Avvio-del-download-sorgente-android"
+
+\end_inset
+
+Avvio del download del sorgente di Android
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Aggiungere i file binari proprietari
+\end_layout
+
+\begin_layout Standard
+Per poter compilare Android ed installarlo su un dispositivo fisico e non
+ nell'emulatore, è necessario inserire nel codice sorgente i 
+\begin_inset Quotes eld
+\end_inset
+
+file binari proprietari
+\begin_inset Quotes erd
+\end_inset
+
+, solitamente driver, scaricabili a parte.
+ Da 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "proprietary_drivers"
+
+\end_inset
+
+ ho scaricato quelli per la versione che ho scelto, ma se volessi compilare
+ Android dal 
+\emph on
+branch master
+\emph default
+, dovrei usare 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "proprietary_drivers_master"
+
+\end_inset
+
+.
+ Completato il processo di download, li ho aggiunti al sorgente.
+\end_layout
+
+\begin_layout Enumerate
+Ho spostato i file scaricati su Ubuntu senza estrarli in altri sistemi operativi
+ per evitare di modificare i permessi dei singoli file e far fallire il
+ processo di compilazione di Android.
+\end_layout
+
+\begin_layout Enumerate
+Ho creato la cartella 
+\emph on
+~/androidsrouce/vendor
+\emph default
+.
+\end_layout
+
+\begin_layout Enumerate
+Ho estratto i file .tgz nella cartella principale del sorgente di Android
+ col seguente comando: 
+\family sans
+$ tar -xf nomefile.tgz.
+\end_layout
+
+\begin_layout Enumerate
+Ho modificato i permessi ai file .sh estratti permettendone l'esecuzione
+ con: 
+\family sans
+$ chmod +x nomefile.sh.
+\end_layout
+
+\begin_layout Enumerate
+Ho eseguito i file 
+\begin_inset Quotes eld
+\end_inset
+
+.sh
+\begin_inset Quotes erd
+\end_inset
+
+ da terminale con 
+\family sans
+$ sudo ./nomefile.sh
+\family default
+ accettando i termini di licenza premendo ENTER fino alla sottosezione 
+\emph on
+8.e
+\emph default
+.
+ Allora ho premuto ancora alcune volte il tasto invio fino alla comparsa
+ della scritta in Figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Licenza-file-binari-1"
+
+\end_inset
+
+ e mi sono fermato.
+ Quindi ho inserito 
+\begin_inset Quotes eld
+\end_inset
+
+I ACCEPT
+\begin_inset Quotes erd
+\end_inset
+
+ per confermare.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Per sicurezza ed evitare inutili problemi in fase di compilazione ho eseguito
+ anche il comando 
+\family sans
+$ make clobber
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Attenzione, perché alcuni dispositivi presenti in AOSP richiedono binari
+ proprietari non inclusi nella 
+\emph on
+repository
+\emph default
+.
+ Per esempio il Galaxy Nexus prodotto da Samsung usa driver proprietari
+ per la fotocamera, scaricabili dal sito web di Samsung.
+ Senza di essi, l'app per scattare le foto si bloccherà all'avvio.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/file_binari_estratti_correttamente.png
+	lyxscale 50
+	width 100col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Licenza-file-binari-1"
+
+\end_inset
+
+Licenza dei file binari proprietari ed estrazione completa
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+L'Android Build System e la compilazione di Android
+\end_layout
+
+\begin_layout Standard
+L'insieme di strumenti per compilare Android è definito 
+\begin_inset Quotes eld
+\end_inset
+
+
+\emph on
+Android Build System
+\emph default
+
+\begin_inset Quotes erd
+\end_inset
+
+, sia nella documentazione ufficiale, sia in libri come per esempio 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "embedded_android_libro"
+
+\end_inset
+
+.
+ Da ora in poi utilizzerò sempre tale termine o le versioni contratte 
+\emph on
+
+\begin_inset Quotes eld
+\end_inset
+
+Build System
+\begin_inset Quotes erd
+\end_inset
+
+
+\emph default
+ e 
+\emph on
+
+\begin_inset Quotes eld
+\end_inset
+
+ABS
+\begin_inset Quotes erd
+\end_inset
+
+
+\emph default
+ per riferirmi al processo di compilazione di Android.
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace smallskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+L'Android Build System si basa su 
+\emph on
+GNU make
+\emph default
+
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+GNU Make è un programma per generare eseguibili dal codice sorgente.
+ Make capisce come compilare questo codice usando file chiamati 
+\begin_inset Quotes eld
+\end_inset
+
+.makefile
+\begin_inset Quotes erd
+\end_inset
+
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "make_gnu"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+, ma non usa 
+\emph on
+makefile
+\emph default
+ ricorsivi, come avviene nel kernel Linux.
+ Infatti, in quest'ultimo si usa uno script che invoca i 
+\emph on
+makefile
+\emph default
+ delle sottocartelle, in modo ricorsivo.
+ Invece, l'ABS ne usa uno che esplora tutte le sottocartelle fino a trovare
+ gli 
+\family sans
+Android.mk
+\family default
+, cioè l'equivalente dei 
+\emph on
+makefile
+\emph default
+.
+ Quando vengono trovati i file 
+\begin_inset Quotes eld
+\end_inset
+
+.mk
+\begin_inset Quotes erd
+\end_inset
+
+, l'ABS si ferma, a meno che essi non lo istruiscano di continuare ad esplorare
+ le sottocartelle.
+ Addirittura, non usa nemmeno veri 
+\emph on
+makefile
+\emph default
+, ma si appoggia ai 
+\family sans
+Android.mk
+\family default
+ che specificano dove il 
+\emph on
+modulo locale
+\emph default
+ deve essere compilato.
+ Un 
+\emph on
+modulo Android
+\emph default
+ non ha nulla a che vedere con un modulo del kernel.
+ In Android si definisce 
+\emph on
+modulo
+\emph default
+ ogni componente di AOSP che richiede di essere compilato, che può essere,
+ per esempio, una libreria, un 
+\emph on
+package
+\emph default
+ di un'app o un file binario.
+\end_layout
+
+\begin_layout Standard
+Un'altra specificità di Android è il modo con cui l'ABS è configurato.
+ Infatti, si appoggia su un insieme di variabili che sono impostate dinamicament
+e come parte della shell dallo script 
+\family sans
+envsetup.sh
+\family default
+ e dal comando 
+\family sans
+lunch
+\family default
+ o definite staticamente in un file 
+\family sans
+buildpsec.mk
+\family default
+.
+ In più, l'ABS non genera file oggetto o altri file intermedi con la stessa
+ posizione dei sorgenti.
+ Cioè non ci sono file 
+\begin_inset Quotes eld
+\end_inset
+
+.o
+\begin_inset Quotes erd
+\end_inset
+
+ vicino agli equivalenti 
+\begin_inset Quotes eld
+\end_inset
+
+.c
+\begin_inset Quotes erd
+\end_inset
+
+, come per esempio avviene quando si compila un programma scritto in C.
+ L'ABS crea un cartella chiamata 
+\emph on
+out
+\emph default
+ in cui sono salvati tutti i file generati.
+ Quindi, il comando 
+\family sans
+make clean
+\family default
+ cancella semplicemente la cartella 
+\begin_inset Quotes eld
+\end_inset
+
+
+\emph on
+out
+\emph default
+
+\begin_inset Quotes erd
+\end_inset
+
+, poiché tutti i file compilati da rimuovere si trovano lì, cioè esegue
+ la stessa operazione del comando Linux 
+\family sans
+rm -rf out
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Subsection*
+ABS: Architettura
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/architettura_android_buil.tiff
+	scale 50
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Architettura-dell'Android-Build-System"
+
+\end_inset
+
+Architettura dell'Android Build System
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In Figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Architettura-dell'Android-Build-System"
+
+\end_inset
+
+ è rappresentata l'architettura dell'ABS.
+ Dopo la fase iniziale di configurazione con 
+\family sans
+envsetup.sh
+\family default
+ e 
+\family sans
+lunch
+\family default
+, si entra nel cuore di ABS, cioè 
+\emph on
+build/core
+\emph default
+.
+ L'entry point è il 
+\family sans
+main.mk
+\family default
+ che si trova in 
+\emph on
+build/core
+\emph default
+ ed è invocato attraverso l'
+\family sans
+Android.mk
+\family default
+ di livello più alto.
+ Ricordo che non è ricorsivo, quindi alla fine sarà creato un 
+\emph on
+makefile
+\emph default
+ unico, cioè tutti i 
+\family sans
+Android.mk
+\family default
+ vengono incorporati in uno.
+ Questa fase è quella che avviene subito dopo aver lanciato il comando 
+\family sans
+make
+\family default
+.
+ L'ABS di Android 2.3 non la mostra nel terminale e in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "embedded_android_libro"
+
+\end_inset
+
+ spiega come abilitarne la visualizzazione, mentre per le versioni più recenti
+ non è più necessario.
+\end_layout
+
+\begin_layout Standard
+Dopodiché, c'è la configurazione dell'ABS, cioè viene incluso il
+\emph on
+ 
+\family sans
+\emph default
+config.mk
+\family default
+, ed altre operazioni.
+ Capire esattamente come funziona tutta la procedura non è l'obiettivo di
+ questo lavoro di tesi, quindi rimando a 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "embedded_android_libro"
+
+\end_inset
+
+.
+ Le uniche informazioni che interessano sono il fatto che 
+\family sans
+envsetup.sh
+\family default
+ definisce una serie di comandi della shell e che in tutta la procedura
+ non vi è niente che riguarda il kernel, infatti il sorgente di Android
+ non è fornito insieme, ma quest'ultimo deve essere scaricato e compilato
+ a parte (vedi Sezione 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Compilare-il-kernel-e-creare-zip-flashabile"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Standard
+Piuttosto, mi voglio concentrare su un argomento che nel Capitolo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:secondo-capitolo"
+
+\end_inset
+
+ ho rimandato, i 
+\emph on
+Module template
+\emph default
+.
+ Google fornisce alcuni 
+\emph on
+template
+\emph default
+ in modo che gli autori dei moduli possano far si che i loro software siano
+ compilati in modo corretto.
+ Ogni 
+\emph on
+template
+\emph default
+ è fatto su misura per uno specifico tipo di modulo e gli autori possono
+ usare un insieme di variabili ben documentato e fatte su misura.
+ Questi 
+\emph on
+template
+\emph default
+ si trovano sempre in 
+\emph on
+build/core
+\emph default
+ e vi si accede con la direttiva 
+\emph on
+include
+\emph default
+, la stessa che si usa in C.
+ Un esempio di 
+\emph on
+include
+\emph default
+ è: 
+\emph on
+include $(BUILD_PACKAGE)
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Alcuni esempi di 
+\emph on
+Module template
+\emph default
+ sono BUILD_EXECUTABLES (usato da comandi nativi e daemon), BUILD_JAVA_LIBRARY
+ (usato dal framework Android e da Apache Harmony), BUILD_SHARED_LIBRARY
+ (molto usato in 
+\emph on
+external
+\emph default
+ e in 
+\emph on
+framework/base
+\emph default
+), BUILD_STATIC_LIBRARY (molto usato in tutto AOSP, in particolare in 
+\emph on
+external
+\emph default
+), BUILD_PREBUILT (usato in file di configurazione e binari), BUILD PACKAGE
+ (usato da tutte le app di AOSP).
+ Questi 
+\emph on
+template
+\emph default
+ fan si che gli 
+\family sans
+Android.mk
+\family default
+ siano molto compatti e forniscano con semplicità tutto ciò che serve all'autore
+ dei moduli.
+ Per fare un paragone con un concetto dell'ingegneria del software, sono
+ i 
+\emph on
+design pattern
+\emph default
+ applicati a basso livello in Android.
+ 
+\end_layout
+
+\begin_layout Standard
+Il vantaggio di una struttura a moduli è che si può compilarne anche un
+ solo alla volta, o una lista di essi.
+ E' sufficiente sapere i nomi dei moduli, per esempio 
+\begin_inset Quotes eld
+\end_inset
+
+Launcher2
+\begin_inset Quotes erd
+\end_inset
+
+ lo si può compilare con 
+\family sans
+make Launcher2
+\family default
+.
+ Inoltre, si può fare la pulizia di un singolo modulo alla volta.
+ Per esempio 
+\begin_inset Quotes eld
+\end_inset
+
+Launcher2
+\begin_inset Quotes erd
+\end_inset
+
+ si usa 
+\family sans
+make clean-Launcher2
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+I template corrispondono a delle posizioni predefinite di output nel filesystem.
+ Riporto alcuni esempi in Tabella 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Posizioni-di-default-moduli-template"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="7" columns="2">
+<features rotate="0" tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="left" valignment="top" width="7cm">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Template
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Cartella d'output di default
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+BUILD_EXECUTABLE
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+/system/bin
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+BUILD_JAVA_LIBRARY
+\end_layout
+
+\end_inset
+</cell>
+<cell mroffset="1cm" alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+/system/framework
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+BUILD_SHARED_LIBRARY
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+/system/lib
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+BUILD_PREBUILT
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+No default, specificare con LOCAL_MODULE_CLASS o LOCAL_MODULE_PATH
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+BUILD_PACKAGE
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+/system/app
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+BUILD_KEY_CHAR_MAP
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+/syste/usr/keychars
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Posizioni-di-default-moduli-template"
+
+\end_inset
+
+Posizioni di default dei moduli in base al template usato
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Cross-compilare Android per ARM
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Cross-compilare-Android-per-arm"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Innanzitutto, ho inizializzato l'ambiente con lo script 
+\family sans
+envsetup.sh,
+\family default
+ eseguendo il comando nell'Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Inizializzare-l'ambiente-per-compilare-android"
+
+\end_inset
+
+.
+ Dopodiché, ho specificato la configurazione con il comando 
+\emph on
+lunch
+\emph default
+, indicando il nome della build (
+\emph on
+build name
+\emph default
+) e il tipo (
+\emph on
+build type
+\emph default
+) nel formato 
+\emph on
+BUILD-BUILDTYPE
+\emph default
+.
+ Per esempio nel caso del Nexus 4, consiglio 
+\emph on
+full_mako-userdebug
+\emph default
+, mentre il Nexus 5, 
+\emph on
+aosp_hammerhead-userdebug
+\emph default
+.
+ Una lista sufficientemente completa si trova nella Tabella 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Tabella-Buildconfiguration-per-lunch"
+
+\end_inset
+
+, mentre per capire le differenze tra le varie 
+\emph on
+buildtype
+\emph default
+ riporto la Tabella 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Differenze-tra-le-buildtype"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Il vero processo di compilazione si avvia con il comando 
+\emph on
+make
+\emph default
+ nella riga 3, seguito da quello in riga 4 per creare il 
+\begin_inset Quotes eld
+\end_inset
+
+.zip
+\begin_inset Quotes erd
+\end_inset
+
+ installabile.
+ Poiché il codice è veramente molto vasto e richiede molto tempo, conviene
+ sfruttare al massimo i processori moderni multi-core e multi-thread, specifican
+do il numero di processi paralleli per compilare con il parametro 
+\emph on
+-jN
+\emph default
+.
+ Nella macchina virtuale che ho utilizzato ho scelto -j8.
+ Ovviamente, nelle impostazioni della macchina virtuale ho dovuto configurare
+ il processore virtualizzato per essere multi-core.
+ Secondo la mia esperienza un buon valore di N per la mia macchina virtuale
+ è il doppio del numero dei core del processore.
+ Ovviamente, ciò dipende molto dal tipo di CPU e dalla macchina stessa.
+ È impossibile definire un numero standard adatto a tutti.
+ Google consiglia di usare due volte il numero dei thread hardware, cioè
+ N = numero core * numero thread per core * 2.
+ L'unico consiglio che posso dare in questa fase è fare una compilazione
+ con make -j1, la prima volta, per far si che il log generato sia in ordine
+ e in caso di errori sia più facile individuare la causa.
+ Infatti, utilizzando più processi paralleli il log risulta quasi illeggibile,
+ poiché ogni processo scrive nel terminale le operazioni che sta svolgendo
+ in modo concorrente.
+ Inoltre, è capitato molto spesso di incontrare problemi durante la compilazione
+ della parte bluetooth e usb di Android.
+ Le soluzioni che ho adottato sono state quelle di verificare di avere i
+ driver proprietari ed eseguire una completa pulizia dei file compilati
+ tramite
+\family sans
+\size small
+ make clean
+\family default
+\size default
+ o addirittura 
+\family sans
+\size small
+make clobber
+\family default
+\size default
+.
+ Se anche così non si ottengono risultati positivi, conviene provare a riavviare
+ la macchina, assicurandoci che l'ambiente venga inizializzato correttamente,
+ cioè leggendo le variabili d'ambiente con il comando 
+\family sans
+printenv
+\family default
+, oppure 
+\family sans
+\size small
+echo $NOME_VARIABILE
+\family default
+\size default
+ per vedere il contenuto di una sola di esse.
+\end_layout
+
+\begin_layout Standard
+Nell'Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Scegliere-obiettivo-con-lunch"
+
+\end_inset
+
+ ho riportato la procedura per avviare la compilazione ed impostare la Ccache
+ a 50 GB, cioè la dimensione raccomandata da Google.
+ Perché ciò funzioni, ho definito la variabile d'ambiente 
+\emph on
+CCACHE
+\emph default
+ con percorso 
+\emph on
+~/androidsource/aosp-main/cache/.ccache
+\emph default
+ nel file 
+\family sans
+.profile
+\family default
+.
+ Per visionare in tempo reale l'utilizzo della Ccache (hit e miss) durante
+ la compilazione, ho usato il comando
+\family sans
+ watch -n1 -d 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+seqsplit{prebuilts/misc/linux-x86/ccache/ccache}
+\end_layout
+
+\end_inset
+
+ -s 
+\family default
+dalla cartella principale del codice sorgente di Android.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+$ cd ~/androidsource/aosp-main
+\end_layout
+
+\begin_layout LyX-Code
+$ source build/envsetup.sh
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:Inizializzare-l'ambiente-per-compilare-android"
+
+\end_inset
+
+Inizializzare l'ambiente per compilare Android
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+ 1.
+ $ lunch BUILD-BUILDTYPE
+\end_layout
+
+\begin_layout LyX-Code
+ 2.
+ $ prebuilts/misc/linux-x86/ccache/ccache -M 50G
+\end_layout
+
+\begin_layout LyX-Code
+ 3.
+ $ make -jN
+\end_layout
+
+\begin_layout LyX-Code
+ 4.
+ $ make otapackage -jN
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:Scegliere-obiettivo-con-lunch"
+
+\end_inset
+
+Scegliere obiettivo con lunch, attivare la ccache e compilare
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="18" columns="3">
+<features rotate="0" tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+Device name
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+Code name
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+Build configuration
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+Nexus 6
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+shamu
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+aosp_shamu-userdebug
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+Nexus Player
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+fugu
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+aosp_fugu-userdebug
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+Nexus 9
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+volantis (flounder)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+aosp_flounder-userdebug
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+Nexus 5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+hammerhead
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+aosp_hammerhead-userdebug
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+Nexus 7 Wi-Fi
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+razor (flo)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+aosp_flo-userdebug
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+Nexus 7 Mobile
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+razorg (deb)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+aosp_deb-userdebug
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+Nexus 10
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+mantaray (manta)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+full_manta-userdebug
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+Nexus 4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+occam (mako)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+full_mako-userdebug
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+Nexus 7 Wi-Fi
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+nakasi (grouper)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+full_grouper-userdebug
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+Nexus 7 Mobile
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+nakasig (tilapia)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+full_tilapia-userdebug
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+Galaxy Nexus GSM/HSPA+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+yakju (maguro)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+full_maguro-userdebug
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+Galaxy Nexus Verizon
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+mysid (toro)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+aosp_toro-userdebug
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+Galaxy Nexus Experimental
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+mysidspr (toroplus)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+aosp_toroplus-userdebug
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+PandaBoard
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+panda
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+aosp_panda-userdebug
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+Motorola Xoom
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+wingray
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+full_wingray-userdebug
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+Nexus S
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+soju (crespo)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+full_crespo-userdebug
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+Nexus S 4G
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+sojus (crespo4g)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+full_crespo4g-userdebug
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Tabella-Buildconfiguration-per-lunch"
+
+\end_inset
+
+Tabella Build configuration per il comando lunch
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="2">
+<features rotate="0" tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Buildtype
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Uso
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\emph on
+user
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+accesso limitato
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\emph on
+userdebug
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+come 
+\emph on
+user
+\emph default
+ ma con la possibilità di debug e privilegi di root
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\emph on
+eng
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+destinata agli sviluppatori con funzionalità di debug aggiuntive
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Differenze-tra-le-buildtype"
+
+\end_inset
+
+Differenze tra le varie buildtype
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Compilare il kernel e creare zip installabili
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Compilare-il-kernel-e-creare-zip-flashabile"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Ora è giunto il momento di vedere nel dettaglio la compilazione del kernel
+ di Android.
+ Dato che il codice sorgente è incluso in quello di Android, l'ho scaricato
+ in base alla piattaforma in uso, cioè un SoC Qualcomm, per esempio il Nexus
+ 4 e il Nexus 5.
+ Accedendo alla 
+\emph on
+repository 
+\emph default
+di Google e cercando nella pagina il testo 
+\begin_inset Quotes eld
+\end_inset
+
+kernel/
+\begin_inset Quotes erd
+\end_inset
+
+, si può facilmente vedere la lista di tutte quelle supportate, cioè: bcm,
+ common, exynos, goldfish, lk, mediatek, msm, omap, samsung, tegra, x86_64.
+ Quella associata a Qualcomm è chiamata 
+\emph on
+msm
+\emph default
+ e si trova in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "kernel_msm_qualcomm_source"
+
+\end_inset
+
+.
+ Per maggiori informazioni fare riferimento alla Tabella 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Nomi-e-posizioni-codici-sprgenti-kernel"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="18" columns="3">
+<features rotate="0" tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Device name
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Source location
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Build configuration
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Nexus 6
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+kernel/msm
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+shamu_defconfig
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Nexus Player
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+kernel/x86_64
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+fugu_defconfig
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Nexus 9
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+kernel/tegra
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+flounder_defconfig
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Nexus 5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+kernel/msm
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+hammerhead_defconfig
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Nexus 7 Wi-Fi
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+kernel/msm
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+flo_defconfig
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Nexus 7 Mobile
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+kernel/msm
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+flo_defconfig
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Nexus 10
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+kernel/exynos
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+manta_defconfig
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Nexus 4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+kernel/msm
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+mako_defconfig
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Nexus 7 Wi-Fi
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+kernel/tegra
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+tegra3_android_defconfig
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Nexus 7 Mobile
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+kernel/tegra
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+tegra3_android_defconfig
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Galaxy Nexus GSM/HSPA+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+kernel/omap
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+tuna_defconfig
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Galaxy Nexus Verizon
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+kernel/omap
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+tuna_defconfig
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Galaxy Nexus Experimental
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+kernel/omap
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+panda_defconfig
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+PandaBoard
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+kernel/tegra
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+stingray_defconfig
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Motorola Xoom
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+kernel/tegra
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+stingray_defconfig
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Nexus S
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+kernel/samsung
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+herring_defconfig
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Nexus S 4G
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+kernel/samsung
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+herring_defconfig
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Nomi-e-posizioni-codici-sprgenti-kernel"
+
+\end_inset
+
+Nomi e posizioni dei codici sorgenti del kernel
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace smallskip
+\end_inset
+
+Il kernel l'ho scaricato in modo specifico per il mio dispositivo e per
+ fare ciò non ho considerato i 
+\emph on
+tag
+\emph default
+ della 
+\emph on
+repository
+\emph default
+, ma solo i 
+\emph on
+branch
+\emph default
+, cioè per esempio Android 5.0.1 del Nexus 5 si trova nel 
+\emph on
+branch
+\emph default
+ chiamato 
+\emph on
+android-msm-hammerhead-3.4-lollipop-release
+\emph default
+.
+ Una volta individuato il sorgente da compilare, ho eseguito i comandi nell'Algo
+ritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Scaricare-il-codice-kernel-qualcomm"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+$ makedir ~/kernel_nexus5
+\end_layout
+
+\begin_layout LyX-Code
+$ cd ~/kernel_nexus5
+\end_layout
+
+\begin_layout LyX-Code
+$ git clone https://android.googlesource.com/kernel/msm/
+\end_layout
+
+\begin_layout LyX-Code
+$ cd msm
+\end_layout
+
+\begin_layout LyX-Code
+$ git checkout <branch>
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:Scaricare-il-codice-kernel-qualcomm"
+
+\end_inset
+
+Scaricare il codice sorgente del kernel msm Qualcomm
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+Prima di procedere ho verificato di avere i tre 
+\emph on
+export
+\emph default
+ corretti in 
+\family sans
+.bashrc
+\family default
+ ed di aver eseguito i comandi nell'Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Configurazione-di-default-kernel"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+$ make <device code name>_defconfig
+\end_layout
+
+\begin_layout LyX-Code
+$ make -jN
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:Configurazione-di-default-kernel"
+
+\end_inset
+
+Configurazione di default e compilazione del kernel
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+Quando la compilazione termina, nella cartella
+\family sans
+ 
+\emph on
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+seqsplit{/home/<cartella utente>/androidKernel/msm/arch/arm/boot}
+\end_layout
+
+\end_inset
+
+
+\emph default
+ 
+\family default
+ci sarà il file 
+\family sans
+zImage
+\family default
+, cioè il binario del kernel compilato e compresso.
+ Durante i miei esperimenti, mi sono accorto che alcuni dispositivi, come
+ il Nexus 5, usano la versione 
+\emph on
+DTB
+\emph default
+ di tale file, cioè 
+\family sans
+zImage-dtb
+\family default
+.
+ Usare la 
+\family sans
+zImage
+\family default
+ sbagliata impedisce l'avvio del sistema operativo e spesso causa un problema
+ noto come 
+\emph on
+bootloop
+\emph default
+, cioè il dispositivo continuerà a riavviarsi.
+ Per scoprire se usare 
+\emph on
+DTB
+\emph default
+, ho verificato se nel sorgente, la variabile 
+\emph on
+LOCAL_KERNEL
+\emph default
+ (nel file 
+\family sans
+device.mk
+\family default
+) contiene un percorso della 
+\family sans
+zImage
+\family default
+ in versione 
+\emph on
+DTB
+\emph default
+ o no.
+ Nel caso del Nexus 5 si può trovare in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "nexus5_device_mk"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/kernel/default_configurazione_kernel.png
+	lyxscale 50
+	width 100col%
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Creazione-configurazione-default-kernel"
+
+\end_inset
+
+Creazione configurazione di default per il kernel
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/kernel/kernel_compilato.png
+	lyxscale 50
+	width 100col%
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Kernel-compilato"
+
+\end_inset
+
+Kernel compilato
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+Per mantenere il dispositivo sbloccato, con i privilegi di root e poter
+ installare solamente il kernel, ho deciso di non adottare la tecnica classica
+ fornita da Google, tramite il comando 
+\emph on
+fastboot
+\emph default
+, ma creare un 
+\begin_inset Quotes eld
+\end_inset
+
+.zip
+\begin_inset Quotes erd
+\end_inset
+
+ installabile direttamente dal dispositivo.
+ Ovviamente, per installare Android e/o il kernel è richiesto lo sblocco
+ del 
+\emph on
+Bootloader
+\emph default
+, tramite una procedura detta 
+\emph on
+
+\begin_inset Quotes eld
+\end_inset
+
+
+\emph default
+unlock
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Tutto ciò esula da questo documento, ma le procedure possono essere reperite
+ facilmente su internet.
+\end_layout
+
+\begin_layout Section
+Inserire il kernel in uno zip installabile
+\end_layout
+
+\begin_layout Standard
+Come anticipato nella sezione precedente, il mio obiettivo è creare un file
+ 
+\begin_inset Quotes eld
+\end_inset
+
+.zip
+\begin_inset Quotes erd
+\end_inset
+
+ installabile contenente il kernel.
+ I motivi sono i seguenti:
+\end_layout
+
+\begin_layout Itemize
+la 
+\emph on
+community Android
+\emph default
+ è abituata ad utilizzare file 
+\begin_inset Quotes eld
+\end_inset
+
+.zip
+\begin_inset Quotes erd
+\end_inset
+
+ sia per installare 
+\emph on
+Custom ROM
+\emph default
+, sia per 
+\emph on
+Custom kernel
+\emph default
+;
+\end_layout
+
+\begin_layout Itemize
+la maggior parte delle app che permettono di installare il kernel direttamente
+ dal dispositivo richiedono file 
+\begin_inset Quotes eld
+\end_inset
+
+.zip
+\begin_inset Quotes erd
+\end_inset
+
+, per esempio 
+\emph on
+ROM Manager
+\emph default
+ e 
+\emph on
+ROM Toolbox
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+le più famose e diffuse 
+\emph on
+Custom Recovery 
+\emph default
+permettono di installare solo file 
+\begin_inset Quotes eld
+\end_inset
+
+.zip
+\begin_inset Quotes erd
+\end_inset
+
+, per esempio 
+\emph on
+TWRP
+\emph default
+ e 
+\emph on
+ClockworkMod Recovery
+\emph default
+;
+\end_layout
+
+\begin_layout Itemize
+all'interno di un 
+\begin_inset Quotes eld
+\end_inset
+
+.zip
+\begin_inset Quotes erd
+\end_inset
+
+ è possibile anche inserire script personalizzati per modificare il processo
+ di installazione.
+\end_layout
+
+\begin_layout Standard
+Per semplicità sfrutterò un file 
+\begin_inset Quotes eld
+\end_inset
+
+.zip
+\begin_inset Quotes erd
+\end_inset
+
+ già disponibile della stessa versione del kernel che voglio installare
+ e per lo stesso dispositivo.
+ Questo permette di risparmiare tempo e posso agire sul kernel senza perdere
+ i privilegi di root in Android.
+ Prima è necessario procurarmi uno di questi file.
+ Per esperienze personali, i migliori per i miei dispositivi di riferimento
+ (Nexus 4 e 5) sono quelli realizzati da 
+\begin_inset Quotes eld
+\end_inset
+
+Francisco Franco
+\begin_inset Quotes erd
+\end_inset
+
+ e 
+\begin_inset Quotes eld
+\end_inset
+
+faux123
+\begin_inset Quotes erd
+\end_inset
+
+, disponibili rispettivamente in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "francoKernel_website"
+
+\end_inset
+
+ e 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "faux123Kernel_website"
+
+\end_inset
+
+.
+ Sia per Nexus 4, sia per Nexus 5, ho scelto i kernel sviluppati da faux123,
+ ma le procedure sarebbero equivalenti anche con quelli di Francisco Franco.
+\end_layout
+
+\begin_layout Standard
+Per poter raggiungere il mio obiettivo ho dovuto separare il 
+\emph on
+kernel
+\emph default
+ e la 
+\emph on
+ramdisk
+\emph default
+
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+La RAM disk è una porzione di RAM utilizzata da un software come se fosse
+ un'unità a dischi, cioè una memoria secondaria 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "ramdisk"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+ dal file 
+\family sans
+boot.img
+\family default
+, contenuto nel file 
+\begin_inset Quotes eld
+\end_inset
+
+.zip
+\begin_inset Quotes erd
+\end_inset
+
+ di 
+\begin_inset Quotes eld
+\end_inset
+
+faux123
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Dopodiché, ho sostituito il kernel e re-impacchettato il tutto nel 
+\begin_inset Quotes eld
+\end_inset
+
+.img
+\begin_inset Quotes erd
+\end_inset
+
+ e poi nuovamente nel 
+\begin_inset Quotes eld
+\end_inset
+
+.zip
+\begin_inset Quotes erd
+\end_inset
+
+.
+ L'estrazione dal file 
+\begin_inset Quotes eld
+\end_inset
+
+.img
+\begin_inset Quotes erd
+\end_inset
+
+ non è un'operazione semplice, infatti richiede una perfetta gestione della
+ posizione di 
+\emph on
+kernel
+\emph default
+ e
+\emph on
+ ramdisk
+\emph default
+ a livello degli indirizzi di memoria.
+ Per capire meglio questo argomento fare riferimento al file 
+\family sans
+mkbootimg.h
+\family default
+ nella 
+\emph on
+repository
+\emph default
+ di Android e alla Figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:mkbootimg.h"
+
+\end_inset
+
+.
+ Un modo per farlo è utilizzare due programmi, il primo chiamato 
+\emph on
+mkbootimg
+\emph default
+, il cui sorgente è in 
+\emph on
+platform/system/core
+\emph default
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "mkbootimg_official"
+
+\end_inset
+
+ nella 
+\emph on
+repository
+\emph default
+ ufficiale di Android, mentre il secondo, chiamato 
+\emph on
+unmkbootimg
+\family sans
+\emph default
+,
+\family default
+ si trova su Github
+\begin_inset CommandInset citation
+LatexCommand cite
+key "unmkbootimg_pbatard"
+
+\end_inset
+
+.
+ Google fornisce 
+\emph on
+mkbootimg
+\emph default
+ in grado di svolgere anche la procedura del secondo, ma in modo estremamente
+ complesso.
+ Questo software non viene aggiornato da molto tempo, così uno sviluppatore
+ ha deciso di modificarlo e crearne una versione semplificata.
+ Prima di poterli usare, ho dovuto compilarli.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/mkbootimg.h.tiff
+	lyxscale 60
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:mkbootimg.h"
+
+\end_inset
+
+mkbootimg.h
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Compilare mkbootimg
+\end_layout
+
+\begin_layout Standard
+Per compilare 
+\emph on
+mkbootimg
+\emph default
+ ho dovuto seguire la procedura nell'Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Compilare-mkbootimg"
+
+\end_inset
+
+ ed infine ho riavviato il sistema operativo nella macchina virtuale.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+$ mkdir ~/mkbootimg
+\end_layout
+
+\begin_layout LyX-Code
+$ cd ~/mkbootimg
+\end_layout
+
+\begin_layout LyX-Code
+$ git clone https://android.googlesource.com/platform/system/core
+\end_layout
+
+\begin_layout LyX-Code
+bootimg-tools
+\end_layout
+
+\begin_layout LyX-Code
+$ cd bootimg-tools/libmincrypt/
+\end_layout
+
+\begin_layout LyX-Code
+$ gcc -c *.c -I../include
+\end_layout
+
+\begin_layout LyX-Code
+$ ar rcs libmincrypt.a *.o
+\end_layout
+
+\begin_layout LyX-Code
+$ cd ../mkbootimg
+\end_layout
+
+\begin_layout LyX-Code
+$ gcc mkbootimg.c -o mkbootimg -I../include 
+\end_layout
+
+\begin_layout LyX-Code
+../libmincrypt/libmincrypt.a
+\end_layout
+
+\begin_layout LyX-Code
+$ sudo cp mkbootimg /usr/local/bin/
+\end_layout
+
+\begin_layout LyX-Code
+$ cd ../cpio
+\end_layout
+
+\begin_layout LyX-Code
+$ gcc mkbootfs.c  -o mkbootfs -I../include
+\end_layout
+
+\begin_layout LyX-Code
+$ sudo cp mkbootfs /usr/local/bin/
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:Compilare-mkbootimg"
+
+\end_inset
+
+Compilare mkbootimg dalla repository di Android 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Compilare unmkbootimg
+\end_layout
+
+\begin_layout Standard
+Per compilare 
+\emph on
+unmkbootimg
+\emph default
+ ho seguito la procedura nell'Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Compilare-unmkbootimg-da-github"
+
+\end_inset
+
+ ed infine ho riavviato nuovamente.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout LyX-Code
+$ mkdir ~/unmkbootimg
+\end_layout
+
+\begin_layout LyX-Code
+$ cd ~/unmkbootimg
+\end_layout
+
+\begin_layout LyX-Code
+$ git clone https://github.com/pbatard/bootimg-tools.git
+\end_layout
+
+\begin_layout LyX-Code
+$ cd bootimg-tools/mkbootimg
+\end_layout
+
+\begin_layout LyX-Code
+$ gcc -o unmkbootimg unmkbootimg.c
+\end_layout
+
+\begin_layout LyX-Code
+$ chmod a+x unmkbootimg
+\end_layout
+
+\begin_layout LyX-Code
+$ sudo cp unmkbootimg /usr/local/bin/
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:Compilare-unmkbootimg-da-github"
+
+\end_inset
+
+Compilare unmkbootimg da Github 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Creare il file 
+\begin_inset Quotes eld
+\end_inset
+
+.zip
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Grazie all'ultima riga degli algoritmi 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Compilare-mkbootimg"
+
+\end_inset
+
+ e 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Compilare-unmkbootimg-da-github"
+
+\end_inset
+
+, il terminale Linux è abilitato ai comandi 
+\emph on
+mkbootimg
+\emph default
+ e 
+\emph on
+unmkbootimg
+\emph default
+ e possono essere utilizzati ovunque, a patto di aver fatto un riavvio del
+ sistema operativo come ho indicato.
+ Dopo la compilazione di questi strumenti, aver fatto un 
+\emph on
+Nandroid backup 
+\emph default
+tramite la 
+\emph on
+modalità recovery
+\emph default
+ (procedura molto semplice, ma che esula da questo lavoro di tesi), ho svolto
+ le seguenti operazioni.
+\end_layout
+
+\begin_layout Enumerate
+Ho scaricato il faux123 kernel corretto da 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "faux123Kernel_website"
+
+\end_inset
+
+ ed ho estratto solo il 
+\family sans
+boot.img
+\family default
+ dal file zip.
+\end_layout
+
+\begin_layout Enumerate
+Ho eseguito il comando 
+\emph on
+unmkbootimg -i boot.img
+\emph default
+ per ottenere i file 
+\family sans
+kernel
+\family default
+ e
+\emph on
+ 
+\family sans
+\emph default
+ramdisk.cpio.gz
+\family default
+ (vedi Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Comando-mkbootimg-per-rimpacchettare-boot-img"
+
+\end_inset
+
+ e Figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:unmkbootimg-eseguito"
+
+\end_inset
+
+).
+ Quindi, ho rimosso sia il file 
+\family sans
+kernel
+\family default
+, sia il 
+\family sans
+boot.img
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+Ho spostato il file compilato 
+\family sans
+zImage
+\family default
+ (o 
+\family sans
+zImage-dtb
+\family default
+ in base al dispositivo, per esempio Nexus 5 richiede la 
+\emph on
+dtb
+\emph default
+) nella stessa cartella di 
+\family sans
+ramdisk.cpio.gz
+\family default
+ e rinominato 
+\family sans
+zImage
+\family default
+ in 
+\family sans
+kernel.
+\end_layout
+
+\begin_layout Enumerate
+Ho eseguito il comando mostrato automaticamente nel terminale da 
+\emph on
+unmkbootimg
+\emph default
+ (con la versione di Google, avrei dovuto inserire tutti questi parametri
+ manualmente, dopo averli calcolati).
+ Per esempio, per il Nexus 5 il comando da inserire su una sola riga del
+ terminale è quello nell'Algoritmo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Comando-mkbootimg-per-rimpacchettare-boot-img"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+Il risultato è un nuovo file 
+\family sans
+boot.img
+\family default
+ contenente il 
+\emph on
+kernel
+\emph default
+ e la 
+\emph on
+ramdisk
+\emph default
+ di faux123.
+ Quindi, ho inserito il 
+\family sans
+boot.img
+\family default
+ nel file 
+\begin_inset Quotes eld
+\end_inset
+
+.zip
+\begin_inset Quotes erd
+\end_inset
+
+ per completare la procedura.
+\end_layout
+
+\begin_layout Enumerate
+Come passo finale, ho rimosso tutti i file ad eccezione del 
+\begin_inset Quotes eld
+\end_inset
+
+.zip
+\begin_inset Quotes erd
+\end_inset
+
+ modificato e l'ho copiarlo nella 
+\emph on
+/sdcard 
+\emph default
+del dispositivo.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+mkbootimg --base 0 --pagesize 2048 --kernel_offset 0x00008000 
+\end_layout
+
+\begin_layout LyX-Code
+--ramdisk_offset 0x02900000 --second_offset 0x00f00000 
+\end_layout
+
+\begin_layout LyX-Code
+--tags_offset 0x02700000 --cmdline 'console=ttyHSL0,115200,n8
+\end_layout
+
+\begin_layout LyX-Code
+androidboot.hardware=hammerhead user_debug=31 maxcpus=2 
+\end_layout
+
+\begin_layout LyX-Code
+msm_watchdog_v2.enable=1' --kernel kernel --ramdisk 
+\end_layout
+
+\begin_layout LyX-Code
+ramdisk.cpio.gz -o boot.img
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:Comando-mkbootimg-per-rimpacchettare-boot-img"
+
+\end_inset
+
+Comando mkbootimg di Google per rimpacchettare il boot.img del Nexus 5
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/kernel/unmkbootimg.png
+	lyxscale 50
+	width 100col%
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:unmkbootimg-eseguito"
+
+\end_inset
+
+unmkbootimg eseguito
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Installare il file 
+\begin_inset Quotes eld
+\end_inset
+
+.zip
+\begin_inset Quotes erd
+\end_inset
+
+ tramite TWRP Recovery Mode
+\end_layout
+
+\begin_layout Standard
+Esistono diverse 
+\emph on
+modalità recovery
+\emph default
+, io ho scelto 
+\emph on
+TWRP
+\emph default
+ su Nexus 5.
+ La procedura è molto semplice, cioè entrare in 
+\emph on
+modalità recovery
+\emph default
+ cercando su internet la procedura corretta per lo specifico dispositivo
+ (per i Nexus 4 e 5 bisogna premere contemporaneamente i tasti 
+\emph on
+accensione
+\emph default
+ e 
+\emph on
+volume-
+\emph default
+ quando il telefono è spento).
+ Una volta avviata la 
+\emph on
+modalità recovery
+\emph default
+, ho scelto la voce 
+\emph on
+install
+\emph default
+ dal menu e ho caricato il file 
+\begin_inset Quotes eld
+\end_inset
+
+.zip
+\begin_inset Quotes erd
+\end_inset
+
+ dalla 
+\emph on
+/sdcard
+\emph default
+.
+ Terminata la procedura, ho eseguito il 
+\emph on
+wipe di cache e dalvik cache
+\emph default
+ per evitare problemi all'avvio.
+\end_layout
+
+\begin_layout Standard
+Durante gli esperimenti eseguiti ho avuto modo di stilare una lista di soluzioni
+ ai problemi comuni.
+\end_layout
+
+\begin_layout Itemize
+Se il dispositivo si accende ma resta tutto nero (con retroilluminazione
+ dello schermo LCD attiva) e tende a scaldarsi molto velocemente, il problema
+ può essere causato dall'uso della versione sbagliata del kernel, per esempio
+ la 
+\family sans
+zImage
+\family default
+ invece di usare la 
+\family sans
+zImage-dtb
+\family default
+;
+\end_layout
+
+\begin_layout Itemize
+Se il dispositivo si accende, mostra il logo 
+\begin_inset Quotes eld
+\end_inset
+
+Google
+\begin_inset Quotes erd
+\end_inset
+
+ e si riavvia continuamente (
+\emph on
+bootloop
+\emph default
+), può essere dovuto ad un errore nel reimpacchetare il 
+\family sans
+boot.img
+\family default
+ o la struttura del file 
+\begin_inset Quotes eld
+\end_inset
+
+.zip
+\begin_inset Quotes erd
+\end_inset
+
+ è stata alterata.
+ I motivi che possono causare questo problema sono davvero molti.
+ Mentre si opera con il kernel di Android, tale problema è frequentissimo
+ e l'unico modo è continuare a provare ed imparare dai propri sbagli.
+ Non c'è da preoccuparsi, in quanto è sufficiente reinstallare il kernel
+ o nel peggiore dei casi formattare tutto e re-installare Android dal file
+ 
+\begin_inset Quotes eld
+\end_inset
+
+.zip
+\begin_inset Quotes erd
+\end_inset
+
+ del sistema operativo fornito dal produttore del telefono o da Google nel
+ caso dei Nexus.
+\end_layout
+
+\begin_layout Itemize
+Se il dispositivo si accende e resta bloccato per diversi minuti (Lollipop
+ è più lento ad avviarsi dopo la cancellazione della cache, per sicurezza
+ attendere anche 15 minuti prima di essere sicuri di aver commesso qualche
+ errore) nella fase di avvio di Android, questo problema, solitamente, è
+ causato di solito dall'uso del kernel sbagliato, soprattutto avviene nel
+ tentativo di installare il kernel per una versione di Android su una differente
+ nel proprio dispositivo.
+ Inoltre, può capitare anche nel caso non venga pulita la cache.
+ 
+\end_layout
+
+\begin_layout Section
+Configurare il kernel di Android
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Configurare-il-kernel"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Prima della procedura di compilazione possiamo anche apportare alcune modifiche
+ al Kernel.
+ Ovviamente, si può modificare il codice sorgente, ma essendo un kernel
+ Linux, posso eseguire
+\family sans
+ make menuconfig
+\family default
+ per personalizzarlo, aggiungendo funzionalità e moduli del kernel (che
+ non hanno nulla a che vedere con i moduli di Android).
+\end_layout
+
+\begin_layout Standard
+Vi sono due metodi per farlo, il primo è modificare manualmente il file
+ 
+\family sans
+.config
+\family default
+, l'altro è usare 
+\family sans
+make menuconfig
+\family default
+ per caricare una sorta di interfaccia grafica nel terminale, vedi Figura
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Configurazione-kernel-Linux"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename immagini/kernel/kernel-menuconfig.png
+	lyxscale 50
+	width 100col%
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Configurazione-kernel-Linux"
+
+\end_inset
+
+Configurazione kernel Linux
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Il menu di configurazione è costituito da diverse sezioni, sottosezioni
+ e impostazioni da abilitare/disabilitare e campi di testo da completare.
+ E' impossibile conoscere e spiegare ogni voce, comunque in caso di dubbi,
+ risulta utile l'help integrato.
+ Infatti, premendo il tasto 
+\begin_inset Quotes eld
+\end_inset
+
+h
+\begin_inset Quotes erd
+\end_inset
+
+ sulla tastiera sull'elemento del menu, si ottiene una breve descrizione
+ del funzionamento e la lista di altre funzioni che saranno modificate automatic
+amente.
+ In basso c'è anche il menu per scegliere il tipo di azione, cioè selezionare,
+ uscire e mostrare l'aiuto.
+ Con le frecce laterali si scorre, con barra spaziatrice si seleziona l'elemento
+ e con invio si esplorano le voci del menu di configurazione.
+ La voce selezione può essere usata più volte per modificare la modalità
+ di inclusione, cioè [ ] è non incluso, [*] è incluso di default nel kernel
+ e [M] è un modulo del kernel che deve essere caricato manualmente tramite
+ il comando 
+\family sans
+insmod <Nome_Modulo.o>
+\family default
+ sul dispositivo e ad ogni riavvio sarà necessario ri-eseguirlo (a meno
+ di soluzioni particolari per far caricare automaticamente il modulo all'avvio
+ che però esulano da questo lavoro di tesi).
+\end_layout
+
+\begin_layout Standard
+Nel Capitolo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:quarto-capitolo"
+
+\end_inset
+
+ mostrerò come l'uso di tale menu di configurazione mi aiuterà ad abilitare
+ il supporto alle interfacce virtuali di rete in Android, ma per ora mi
+ voglio concentrare solo su due impostazioni:
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+General Setup
+\emph default
+ per scegliere il nome del kernel personalizzato in 
+\emph on
+(-perf) Local version - append to kernel release
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+General Setup
+\emph default
+ per abilitare 
+\emph on
+Kernel .config support
+\emph default
+ e la sua sottovoce 
+\emph on
+Enable access to .config through /proc/config.gz
+\emph default
+, poiché permette di vedere la configurazione del kernel direttamente sul
+ dispositivo in cui è installato.
+\end_layout
+
+\begin_layout Standard
+Terminata la configurazione, scegliere 
+\emph on
+Exit
+\emph default
+ dal menu il basso e confermare con 
+\emph on
+Yes
+\emph default
+ per salvare la configurazione.
+ Tutte le modifiche fatte in questo menu modificheranno automaticamente
+ il file 
+\family sans
+.config
+\family default
+.
+ Quindi usare il file manualmente o l'interfaccia grafica porta allo stesso
+ risultato.
+ A questo punto, compilare nuovamente il kernel per ottenere la 
+\family sans
+zImage
+\family default
+ personalizzata.
+\end_layout
+
+\begin_layout Standard
+Continuerò questa sezione nel Capitolo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:quarto-capitolo"
+
+\end_inset
+
+ per abilitare il supporto alle interfacce di rete virtuali, ma prima è
+ necessario spiegare alcuni concetti che non ho ancora trattato.
+\end_layout
+
+\end_body
+\end_document
