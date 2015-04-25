@@ -13,7 +13,7 @@ Nel corso di questo lavoro di tesi sarà mostrata, inoltre, la progettazione di 
 ## Credits
 - Template LYX di [POUL.ORG](https://www.poul.org/)
 - .... non so chi altro citare
-- nella bibliografia e nei rigraziamenti ho citato più o meno tutti :)
+- **nella bibliografia e nei rigraziamenti ho citato più o meno tutti :)**
 
 ## Regole per usare questo materiale
 - Questo progetto riflette esattamanente nel suo contenuto la tesi pubblicata su [POLITESI](www.politesi.polimi.it). Il motivo per cui l'ho caricata qui è per rendere pubblico il template LyX che ho utilizzato e le mie personalizzazioni. Ripeto il contenuto testuale e grafico è esattamente lo stesso.
