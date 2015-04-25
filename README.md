@@ -19,9 +19,9 @@ Nel corso di questo lavoro di tesi sarà mostrata, inoltre, la progettazione di 
 - Questo progetto riflette esattamanente nel suo contenuto la tesi pubblicata su [POLITESI](www.politesi.polimi.it). Il motivo per cui l'ho caricata qui è per rendere pubblico il template LyX che ho utilizzato e le mie personalizzazioni. Ripeto il contenuto testuale e grafico è esattamente lo stesso.
 - Per utilizzare il template LyX in questione valgono le regole definite dalla licenza Apache v2 (inoltre, ricordo che il template originale è stato creato da POUL.ORG)
 - Per utilizzare il contenuto (testo e immagini) di questa tesi, valgono le regole generali definite dal Politecnico di Milano
+- **In caso di dubbi contattatemi, rispondo subito. Sono molto aperto all'uso di questo materiale, è sufficiente una breve email con gentilezza e io risponderò con altrettanta gentilezza.**
 
-
-## Licenza per il template LyX e l'altro materiale di mia creazione/modifica
+## Licenza per il template LyX e l'altro materiale di mia creazione/modifica (testo escluso)
 
 Copyright 2014-2015 Stefano Cappa
 
