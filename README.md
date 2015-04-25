@@ -20,6 +20,7 @@ Nel corso di questo lavoro di tesi sarà mostrata, inoltre, la progettazione di 
 - Per utilizzare il template LyX in questione valgono le regole definite dalla licenza Apache v2 (inoltre, ricordo che il template originale è stato creato da POUL.ORG)
 - Per utilizzare il contenuto (testo e immagini) di questa tesi, valgono le regole generali definite dal Politecnico di Milano
 - **In caso di dubbi contattatemi, rispondo subito. Sono molto aperto all'uso di questo materiale, è sufficiente una breve email con gentilezza e io risponderò con altrettanta gentilezza.**
+- Nel progetto ho caricato anche il Kernel che ho modificato e compilato per Nexus 5 con Android KitKat 4.4.4 ([QUI](https://github.com/Ks89/Tesi_Magistrale_Polimi_2015/blob/master/Tesi%20LYX%202.1.3/capitolo-5/printk_mac_address/k-kernel-4.4.4-printk-macaddress-hammerhead-based_on_faux123-021u.zip)). E' qui solo per completezza. Per favore non spacciatelo per vostro, perchè è facile verificare chi l'ha compilato. Se avete problemi a creare la vostra versione, piuttosto di copiare, contattatemi che magari vi posso aiutare.
 
 ## Licenza per il template LyX e l'altro materiale di mia creazione/modifica (testo escluso)
 
