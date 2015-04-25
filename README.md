@@ -16,8 +16,26 @@ Nel corso di questo lavoro di tesi sarà mostrata, inoltre, la progettazione di 
 - nella bibliografia e nei rigraziamenti ho citato più o meno tutti :)
 
 ## Regole per usare questo materiale
-- Per utilizzare il contenuto di questa tesi, valgono le regole generali definite dal Politecnico di Milano
-- L'utilizzo del template è libero a patto di citare me e questa repository (magari anche il POUL.ORG visto che lo hanno fatto loro :))
+- Questo progetto riflette esattamanente nel suo contenuto la tesi pubblicata su [POLITESI](www.politesi.polimi.it). Il motivo per cui l'ho caricata qui è per rendere pubblico il template LyX che ho utilizzato e le mie personalizzazioni. Ripeto il contenuto testuale e grafico è esattamente lo stesso.
+- Per utilizzare il template LyX in questione valgono le regole definite dalla licenza Apache v2 (inoltre, ricordo che il template originale è stato creato da POUL.ORG)
+- Per utilizzare il contenuto (testo e immagini) di questa tesi, valgono le regole generali definite dal Politecnico di Milano
 
 
+## Licenza per il template LyX e l'altro materiale di mia creazione/modifica
+
+Copyright 2014-2015 Stefano Cappa
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+<br/>
 **Stefano Cappa**
