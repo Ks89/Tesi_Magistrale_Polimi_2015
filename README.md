@@ -10,13 +10,15 @@ Questo lavoro di tesi tratta nello specifico uno di essi, cioè Wi-Fi Direct, ch
 
 Nel corso di questo lavoro di tesi sarà mostrata, inoltre, la progettazione di due app Android con lo scopo di verificare i limiti del protocollo Wi-Fi Direct in Android e proporre uno scenario specifico di utilizzo in cui essi non sono significativi, creando un'app utilizzabile a tutti gli effetti.
 
+La pagina ufficiale di PoliTesi con il PDF scaricabile dal sito del Politecnico di Milano è [QUI](http://hdl.handle.net/10589/107204)
+
 ## Credits
 - Template LYX di [POUL.ORG](https://www.poul.org/)
 - .... non so chi altro citare
 - **nella bibliografia e nei rigraziamenti ho citato più o meno tutti :)**
 
 ## Regole per usare questo materiale
-- Questo progetto riflette esattamanente nel suo contenuto la tesi pubblicata su [POLITESI](https://www.politesi.polimi.it/). Il motivo per cui l'ho caricata qui è per rendere pubblico il template LyX che ho utilizzato e le mie personalizzazioni. Ripeto il contenuto testuale e grafico è esattamente lo stesso.
+- Questo progetto riflette esattamanente nel suo contenuto la tesi pubblicata su [POLITESI](http://hdl.handle.net/10589/107204). Il motivo per cui l'ho caricata qui è per rendere pubblico il template LyX che ho utilizzato e le mie personalizzazioni. Ripeto il contenuto testuale e grafico è esattamente lo stesso.
 - Per utilizzare il template LyX in questione valgono le regole definite dalla licenza Apache v2 (inoltre, ricordo che il template originale è stato creato da POUL.ORG)
 - Per utilizzare il contenuto (testo e immagini) di questa tesi, valgono le regole generali definite dal Politecnico di Milano
 - **In caso di dubbi contattatemi, rispondo subito. Sono molto aperto all'uso di questo materiale, è sufficiente una breve email con gentilezza e io risponderò con altrettanta gentilezza.**
