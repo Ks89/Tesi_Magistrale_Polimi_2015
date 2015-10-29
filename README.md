@@ -12,10 +12,31 @@ Nel corso di questo lavoro di tesi sarà mostrata, inoltre, la progettazione di 
 
 La pagina ufficiale di PoliTesi con il PDF scaricabile dal sito del Politecnico di Milano è [QUI](http://hdl.handle.net/10589/107204)
 
+
+## Aggiornamento Ottobre 2015
+
+Ho verificato su un Nexus 9 con Android Marshmallow 6.0 se si potessero create più gruppi Wi-Fi Direct su uno stesso dispositivo, seguendo esattamente la procedura descritta nella tesi.
+I log risultanti sono [QUI](https://github.com/Ks89/Tesi_Magistrale_Polimi_2015/tree/master/nexus9_screenshots_updated_october_2015).
+**Come si può vedere, sono presenti ancora le stesse limitazioni.**
+
+Attenzione: ho riscontrato grossi problemi nell'eseguire la stessa procedura su Nexus 9 con versioni di Android 5.x.x e su Nexus5 con Android 5.1.x.
+Nel caso di Android 6.0, la procedura utilizzata in questa tesi è tornata ad essere valida. E' possibile anche compilare "iw" sia a 32bit (Nexus5) sia a 64bit (Nexus 9) senza problemi.
+
+In caso di dubbi sul percorso da aggiungere in wpa_supplicant.conf e/o p2p_supplicant.conf, fare riferimento al file Android.mk nella repository ufficiale di wpa_supplicant [QUI](http://w1.fi/cgit/hostap/tree).
+Riporto qui un estratto:
+```
+# Use Android specific directory for control interface sockets
+L_CFLAGS += -DCONFIG_CTRL_IFACE_CLIENT_DIR=\"/data/misc/wifi/sockets\"
+L_CFLAGS += -DCONFIG_CTRL_IFACE_DIR=\"/data/misc/wifi/sockets\"
+```
+Per completezza ho aggiunto [QUI](https://github.com/Ks89/Tesi_Magistrale_Polimi_2015/tree/master/my_compiled_bins) i file binari per Android 6.0 a 32 e a 64 bit di wpa_supplicant, wpa_cli ed iw.
+
+
 ## Credits
 - Template LYX di [POUL.ORG](https://www.poul.org/)
 - .... non so chi altro citare
 - **nella bibliografia e nei rigraziamenti ho citato più o meno tutti :)**
+
 
 ## Regole per usare questo materiale
 - Questo progetto riflette esattamanente nel suo contenuto la tesi pubblicata su [POLITESI](http://hdl.handle.net/10589/107204). Il motivo per cui l'ho caricata qui è per rendere pubblico il template LyX che ho utilizzato e le mie personalizzazioni. Ripeto il contenuto testuale e grafico è esattamente lo stesso.
@@ -23,6 +44,7 @@ La pagina ufficiale di PoliTesi con il PDF scaricabile dal sito del Politecnico 
 - Per utilizzare il contenuto (testo e immagini) di questa tesi, valgono le regole generali definite dal Politecnico di Milano
 - **In caso di dubbi contattatemi, rispondo subito. Sono molto aperto all'uso di questo materiale, è sufficiente una breve email con gentilezza e io risponderò con altrettanta gentilezza.**
 - Nel progetto ho caricato anche il Kernel (basato su quello di Faux123) che ho modificato e compilato per Nexus 5 con Android KitKat 4.4.4 ([QUI](https://github.com/Ks89/Tesi_Magistrale_Polimi_2015/blob/master/Tesi%20LYX%202.1.3/capitolo-5/printk_mac_address/k-kernel-4.4.4-printk-macaddress-hammerhead-based_on_faux123-021u.zip)). E' qui solo per completezza. Per favore non spacciatelo per vostro, perchè è facile verificare chi l'ha compilato. Se avete problemi a creare la vostra versione, piuttosto di copiare, contattatemi che magari vi posso aiutare.
+
 
 ## Licenza per il template LyX e l'altro materiale di mia creazione/modifica (testo escluso)
 
