@@ -13,6 +13,15 @@ Nel corso di questo lavoro di tesi sarà mostrata, inoltre, la progettazione di 
 La pagina ufficiale di PoliTesi con il PDF scaricabile dal sito del Politecnico di Milano è [QUI](http://hdl.handle.net/10589/107204)
 
 
+## Aggiornamento Marzo 2016
+
+Ho verificato su un Nexus 6P con Android Marshmallow 6.0.1 se si potessero create più gruppi Wi-Fi Direct su uno stesso dispositivo, seguendo esattamente la procedura descritta nella tesi.
+I log risultanti sono [QUI](https://github.com/Ks89/Tesi_Magistrale_Polimi_2015/tree/master/nexus6P_screenshots_updated_march_2016).
+**Come si può vedere, sono presenti ancora le stesse limitazioni.**
+
+Gli stessi file binari, compilati in precedenza, sono funzionanti anche su Nexus 6P Marshmallow 6.0.1 (ovviamente quelli a 64 bit).
+
+
 ## Aggiornamento Ottobre 2015
 
 Ho verificato su un Nexus 9 con Android Marshmallow 6.0 se si potessero create più gruppi Wi-Fi Direct su uno stesso dispositivo, seguendo esattamente la procedura descritta nella tesi.
@@ -48,7 +57,7 @@ Per completezza ho aggiunto [QUI](https://github.com/Ks89/Tesi_Magistrale_Polimi
 
 ## Licenza per il template LyX e l'altro materiale di mia creazione/modifica (testo escluso)
 
-Copyright 2014-2015 Stefano Cappa
+Copyright 2014-2016 Stefano Cappa
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
